@@ -1,0 +1,3673 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#15131e">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>Blind Test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Karla:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout : une colonne façon « carte de club » centrée, enseigne lumineuse en tête, sets empilés comme un programme de soirée. Thème unique : club de nuit. */
+:root {
+  --night: #15131e;
+  --velvet: #221c30;
+  --curtain: #5e1a26;
+  --brass: #e0b04f;
+  --brass-deep: #9c7228;
+  --cream: #f3e6c8;
+  --smoke: #a8a0ba;
+  --line: #3a3150;
+  --ok: #73c98f;
+  --ko: #ee6b73;
+  --f-display: "Abril Fatface", "Playfair Display", Georgia, serif;
+  --f-body: "Karla", "Helvetica Neue", Arial, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: dark;
+}
+html, body { min-height: 100%; }
+body {
+  background:
+    radial-gradient(ellipse 70% 40% at 50% -5%, rgba(224,176,79,.16), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(94,26,38,.45), transparent 70%),
+    var(--night);
+  background-attachment: fixed;
+  color: var(--cream);
+  font-family: var(--f-body);
+  font-size: 16px;
+  line-height: 1.5;
+}
+.app {
+  max-width: 680px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 48px;
+  display: flex; flex-direction: column; gap: 28px;
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--brass); outline-offset: 3px; border-radius: 6px; }
+.mono { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.eyebrow { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--smoke); font-weight: 700; }
+h1, h2, h3 { font-family: var(--f-display); font-weight: 400; margin: 0; text-wrap: balance; letter-spacing: .01em; }
+p { margin: 0; }
+
+/* ——— Enseigne ——— */
+.marquee {
+  position: relative;
+  border: 2px solid var(--brass);
+  border-radius: 20px;
+  padding: 26px 22px 22px;
+  background: linear-gradient(180deg, rgba(94,26,38,.55), rgba(34,28,48,.9));
+  display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center;
+  overflow: hidden;
+}
+.bulbs { position: absolute; inset: 7px; pointer-events: none; border-radius: 14px;
+  background-image: radial-gradient(circle, var(--brass) 2px, transparent 2.6px);
+  background-size: 18px 18px; mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  padding: 5px; opacity: .55; animation: twinkle 2.4s steps(2) infinite; }
+@keyframes twinkle { 50% { opacity: .9; } }
+.marquee h1 { font-size: clamp(40px, 11vw, 64px); line-height: .95; color: var(--cream); }
+.marquee h1 em { font-style: normal; color: var(--brass); display: block; }
+.marquee .tag { margin-top: 10px; color: var(--smoke); max-width: 30ch; }
+.hero-vinyl { width: clamp(96px, 26vw, 150px); }
+.hero-vinyl svg { width: 100%; height: auto; display: block; animation: spin 6s linear infinite; }
+
+/* ——— Liste des sets ——— */
+.section-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.section-head h2 { font-size: 28px; }
+.sets { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.set {
+  width: 100%; text-align: left;
+  display: grid; grid-template-columns: 72px 1fr auto; gap: 14px; align-items: center;
+  background: var(--velvet); border: 1px solid var(--line); border-radius: 16px;
+  padding: 12px 16px 12px 12px;
+  transition: transform .15s ease, border-color .15s ease;
+}
+.set:hover { transform: translateY(-2px); border-color: var(--lvl); }
+.set .art { width: 72px; height: 72px; }
+.set .art svg { width: 100%; height: 100%; display: block; }
+.set .txt { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.set .num { font-family: var(--f-mono); font-size: 12px; color: var(--lvl); letter-spacing: .08em; }
+.set h3 { font-size: 21px; line-height: 1.15; }
+.set .blurb { color: var(--smoke); font-size: 14px; }
+.set .meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.diff { display: flex; gap: 3px; }
+.diff i { width: 7px; height: 14px; border-radius: 2px; background: var(--line); }
+.diff i.on { background: var(--lvl); }
+.best { font-size: 12px; color: var(--smoke); white-space: nowrap; }
+.stars { color: var(--brass); letter-spacing: 2px; font-size: 14px; }
+.stars .off { color: var(--line); }
+
+.foot-note { font-size: 13px; color: var(--smoke); display: flex; gap: 10px; align-items: flex-start;
+  border-top: 1px dashed var(--line); padding-top: 16px; }
+.foot-note .chip { flex: none; }
+.chip { font-family: var(--f-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+  border: 1px solid var(--brass-deep); color: var(--brass); padding: 3px 8px; border-radius: 999px; }
+
+/* ——— Partie ——— */
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.back { background: none; border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; color: var(--smoke); }
+.back:hover { color: var(--cream); border-color: var(--smoke); }
+.scorebox { text-align: right; }
+.scorebox .val { font-size: 22px; color: var(--brass); }
+.level-title { display: flex; flex-direction: column; gap: 4px; }
+.level-title h2 { font-size: clamp(28px, 7vw, 38px); }
+.dots { display: flex; gap: 6px; margin-top: 6px; }
+.dots span { flex: 1; height: 5px; border-radius: 3px; background: var(--line); }
+.dots span.ok { background: var(--ok); }
+.dots span.ko { background: var(--ko); }
+.dots span.cur { background: var(--lvl); }
+
+.stage {
+  position: relative; border-radius: 22px; padding: 20px;
+  background: linear-gradient(160deg, #2b2340, #1a1626);
+  border: 1px solid var(--line);
+  display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: center;
+}
+.deck { position: relative; width: clamp(130px, 36vw, 180px); aspect-ratio: 1; max-width: 100%; }
+.deck .disc { width: 100%; height: 100%; display: block; }
+.deck .disc.spinning { animation: spin 1.8s linear infinite; }
+.deck .arm { position: absolute; width: 46%; right: -10%; top: -6%; transform-origin: 78% 12%;
+  transform: rotate(-26deg); transition: transform .6s cubic-bezier(.3,1.4,.5,1); }
+.deck .arm.down { transform: rotate(0deg); }
+@keyframes spin { to { transform: rotate(360deg); } }
+.controls { min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.play {
+  align-self: flex-start;
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--brass); color: #231a08; border: none; border-radius: 999px;
+  padding: 12px 22px 12px 14px; font-weight: 700; font-size: 17px;
+  box-shadow: 0 6px 0 var(--brass-deep);
+  transition: transform .1s ease, box-shadow .1s ease;
+}
+.play:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--brass-deep); }
+.play .ico { width: 30px; height: 30px; border-radius: 50%; background: #231a08; display: grid; place-items: center; }
+.play .ico svg { width: 12px; height: 12px; }
+.play[disabled] { opacity: .45; cursor: default; box-shadow: none; transform: none; }
+.timer { display: flex; flex-direction: column; gap: 6px; }
+.timer .row { display: flex; justify-content: space-between; font-size: 13px; color: var(--smoke); }
+.timer .clock { color: var(--cream); font-size: 15px; }
+.bar { height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.bar i { display: block; height: 100%; width: 100%; background: var(--lvl); transform-origin: left; }
+.sim { font-size: 12px; color: var(--smoke); }
+
+.choices { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.choice {
+  width: 100%; height: 100%; text-align: left;
+  display: grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: start;
+  background: var(--velvet); border: 1px solid var(--line); border-radius: 14px; padding: 14px;
+  transition: border-color .15s ease, background .15s ease, transform .1s ease;
+}
+.choice:not([disabled]):hover { border-color: var(--lvl); transform: translateY(-1px); }
+.choice .k { font-family: var(--f-mono); font-size: 13px; width: 28px; height: 28px; border-radius: 8px;
+  display: grid; place-items: center; border: 1px solid var(--line); color: var(--smoke); }
+.choice .t { min-width: 0; display: flex; flex-direction: column; }
+.choice .title { font-weight: 700; font-size: 16px; line-height: 1.25; }
+.choice .artist { color: var(--smoke); font-size: 14px; }
+.choice[disabled] { cursor: default; }
+.choices.locked .choice { opacity: .45; filter: blur(.6px); }
+.choice.is-ok { border-color: var(--ok); background: rgba(115,201,143,.12); opacity: 1 !important; filter: none !important; }
+.choice.is-ok .k { background: var(--ok); color: #10251a; border-color: var(--ok); }
+.choice.is-ko { border-color: var(--ko); background: rgba(238,107,115,.12); opacity: 1 !important; filter: none !important; }
+.choice.is-ko .k { background: var(--ko); color: #2c0d10; border-color: var(--ko); }
+.hint { text-align: center; color: var(--smoke); font-size: 14px; }
+
+.feedback {
+  border-radius: 18px; padding: 18px 20px; border: 1px solid var(--line);
+  background: var(--velvet); display: flex; flex-direction: column; gap: 10px;
+}
+.feedback.ok { border-color: var(--ok); }
+.feedback.ko { border-color: var(--ko); }
+.feedback h3 { font-size: 26px; }
+.feedback.ok h3 { color: var(--ok); }
+.feedback.ko h3 { color: var(--ko); }
+.feedback .answer { font-weight: 700; }
+.feedback .answer span { color: var(--smoke); font-weight: 400; }
+.feedback .fact { color: var(--smoke); font-size: 15px; }
+.reveal { display: flex; gap: 14px; align-items: center; }
+.reveal img { width: 72px; height: 72px; border-radius: 8px; flex: none; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
+.reveal-t { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.dz { color: var(--brass); font-size: 14px; }
+.feedback .pts { font-size: 14px; color: var(--brass); }
+.next { align-self: flex-end; background: var(--cream); color: var(--night); border: none; border-radius: 999px;
+  padding: 10px 20px; font-weight: 700; }
+
+/* ——— Résultat ——— */
+.result-card { border: 2px solid var(--lvl); border-radius: 22px; padding: 24px 22px;
+  background: linear-gradient(180deg, rgba(94,26,38,.4), var(--velvet));
+  display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; }
+.result-card .big { font-family: var(--f-display); font-size: clamp(48px, 14vw, 72px); line-height: 1; color: var(--brass); }
+.result-card .verdict { font-size: 18px; }
+.result-card .stars { font-size: 26px; }
+.result-card .art { width: clamp(90px, 24vw, 120px); }
+.result-card .art svg { width: 100%; height: auto; display: block; }
+.recap { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.recap li { display: grid; grid-template-columns: 22px 1fr auto; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+.recap .mark { font-weight: 700; }
+.recap .mark.ok { color: var(--ok); }
+.recap .mark.ko { color: var(--ko); }
+.recap .t { min-width: 0; }
+.recap .t span { color: var(--smoke); }
+.recap .p { font-size: 14px; color: var(--brass); }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn { border-radius: 999px; padding: 11px 20px; font-weight: 700; border: 1px solid var(--line); background: var(--velvet); }
+.btn.primary { background: var(--brass); color: #231a08; border-color: var(--brass); }
+
+@media (max-width: 560px) {
+  .choices { grid-template-columns: 1fr; }
+  .stage { grid-template-columns: 1fr; justify-items: center; }
+  .controls { width: 100%; }
+  .play { align-self: center; }
+  .set { grid-template-columns: 56px 1fr; }
+  .set .art { width: 56px; height: 56px; }
+  .set .meta { grid-column: 2; flex-direction: row; align-items: center; justify-content: flex-start; gap: 12px; }
+  .result-card { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ——— Salles & thèmes ——— */
+.stack { display: flex; flex-direction: column; gap: 14px; }
+.marquee h1 em { display: inline; }
+.rooms { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.room { width: 100%; height: 100%; text-align: left; display: flex; flex-direction: column; gap: 14px;
+  background: var(--velvet); border: 1px solid var(--line); border-radius: 20px; padding: 18px;
+  transition: transform .15s ease, border-color .15s ease; }
+.room:hover { transform: translateY(-3px); border-color: var(--lvl); }
+.room-art { width: 88px; height: 88px; flex: none; }
+.room-art svg { width: 100%; height: 100%; display: block; }
+.room-txt { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.room .num { font-family: var(--f-mono); font-size: 12px; color: var(--lvl); letter-spacing: .08em; text-transform: uppercase; }
+.room h3 { font-size: 30px; line-height: 1.05; }
+.room .blurb { color: var(--smoke); font-size: 14px; }
+.room-meta { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+.room-head { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; border-bottom: 1px dashed var(--line); padding-bottom: 20px; }
+.room-title { font-size: clamp(40px, 11vw, 60px); line-height: .95; color: var(--lvl); margin-top: 4px; }
+.room-head .tag { margin-top: 10px; color: var(--smoke); max-width: 40ch; }
+.room-art.lg { width: clamp(90px, 24vw, 130px); height: auto; }
+.decade { font-size: 12px; color: var(--lvl); white-space: nowrap; }
+.decade-group { border-top: 1px dashed var(--line); padding-top: 20px; }
+.decade-head { display: flex; gap: 14px; align-items: center; }
+.decade-head h2 { font-size: 28px; color: var(--lvl); }
+.decade-head .blurb { color: var(--smoke); font-size: 14px; margin-top: 2px; }
+.decade-art { width: 60px; height: 60px; flex: none; }
+.decade-art svg { width: 100%; height: 100%; display: block; }
+.sets.tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.set.tier { grid-template-columns: 1fr; height: 100%; align-content: space-between; padding: 14px; }
+.set.tier h3 { font-size: 22px; }
+.set.tier .meta { align-items: flex-start; }
+@media (max-width: 560px) {
+  .sets.tiers { grid-template-columns: 1fr; }
+  .set.tier { grid-template-columns: 1fr auto; align-items: center; }
+  .set.tier .meta { grid-column: auto; flex-direction: column; align-items: flex-end; }
+}
+.play.is-pause { background: var(--cream); }
+/* ——— Duo ——— */
+.modes { display: flex; flex-direction: column; gap: 10px; }
+.seg { display: inline-flex; align-self: flex-start; padding: 4px; gap: 4px; border-radius: 999px; background: var(--velvet); border: 1px solid var(--line); }
+.seg-b { border: none; background: none; border-radius: 999px; padding: 8px 22px; font-weight: 700; color: var(--smoke); }
+.seg-b.on { background: var(--brass); color: #231a08; }
+.mode-line { color: var(--smoke); font-size: 14px; }
+.mode-line strong { color: var(--cream); }
+.linkish { background: none; border: none; padding: 0; color: var(--brass); text-decoration: underline; text-underline-offset: 3px; font-size: 14px; }
+.duo-form { display: flex; flex-direction: column; gap: 16px; max-width: 420px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-weight: 700; }
+.field input { font: inherit; color: var(--cream); background: var(--velvet); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.field input:focus-visible { border-color: var(--brass); }
+.field input[aria-invalid="true"] { border-color: var(--ko); }
+.err { color: var(--ko); font-weight: 700; }
+.duo-score { display: flex; gap: 8px; }
+.duo-score .pl { display: flex; flex-direction: column; align-items: flex-end; padding: 6px 12px; border-radius: 12px; border: 1px solid var(--line); min-width: 0; }
+.duo-score .pl.on { border-color: var(--lvl); background: var(--velvet); }
+.duo-score .nm { font-size: 12px; color: var(--smoke); max-width: 10ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.duo-score .pl.on .nm { color: var(--cream); font-weight: 700; }
+.duo-score .val { font-size: 18px; color: var(--brass); }
+.handoff { border: 2px solid var(--lvl); border-radius: 22px; padding: 28px 22px; text-align: center;
+  background: linear-gradient(160deg, #2b2340, #1a1626); display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.handoff h2 { font-size: clamp(32px, 9vw, 46px); color: var(--lvl); }
+.handoff .tag { color: var(--smoke); }
+.handoff .play { align-self: center; }
+.podium { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.podium li { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: baseline; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line); }
+.podium li.win { border-color: var(--lvl); }
+.podium .nm { font-weight: 700; min-width: 0; overflow-wrap: anywhere; }
+.podium .pts { color: var(--brass); }
+.recap .who { display: block; font-size: 12px; color: var(--smoke); }
+.play.is-pause .ico { background: #231a08; }
+.reveal { display: flex; gap: 14px; align-items: center; }
+@media (max-width: 560px) {
+  .rooms { grid-template-columns: 1fr; }
+  .room { flex-direction: row; align-items: flex-start; }
+  .room-art { width: 64px; height: 64px; }
+}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<div class="sr" aria-live="polite" id="live"></div>
+
+<script>
+/* ===================== Données : Jazz Club ===================== */
+const JAZZ = [
+  { id: 1, name: "Les incontournables", instrument: "trumpet", color: "#e0b04f",
+    blurb: "Les morceaux que même ton oncle reconnaît.",
+    tracks: [
+      { title: "Take Five", artist: "The Dave Brubeck Quartet", year: 1959,
+        fact: "Composé par le saxophoniste Paul Desmond, et joué à 5/4, une mesure rare à l'époque.",
+        decoys: [["In the Mood","Glenn Miller"],["Fly Me to the Moon","Frank Sinatra"],["The Girl from Ipanema","Stan Getz & João Gilberto"]] },
+      { title: "What a Wonderful World", artist: "Louis Armstrong", year: 1967,
+        fact: "Boudé aux États-Unis à sa sortie, il est devenu numéro 1 au Royaume-Uni en 1968.",
+        decoys: [["La Vie en rose","Édith Piaf"],["Dream a Little Dream of Me","Ella Fitzgerald & Louis Armstrong"],["Mack the Knife","Bobby Darin"]] },
+      { title: "So What", artist: "Miles Davis", year: 1959,
+        fact: "Morceau d'ouverture de Kind of Blue, l'album de jazz le plus vendu de l'histoire.",
+        decoys: [["Take the “A” Train","Duke Ellington"],["Autumn Leaves","Cannonball Adderley"],["Round Midnight","Thelonious Monk"]] },
+      { title: "Sing, Sing, Sing", artist: "Benny Goodman", year: 1937,
+        fact: "Le solo de batterie de Gene Krupa a fait sensation au concert du Carnegie Hall en 1938.",
+        decoys: [["In the Mood","Glenn Miller"],["Minnie the Moocher","Cab Calloway"],["It Don't Mean a Thing","Duke Ellington"]] },
+      { title: "Feeling Good", artist: "Nina Simone", year: 1965,
+        fact: "Écrit à l'origine pour la comédie musicale The Roar of the Greasepaint (1964).",
+        decoys: [["Fever","Peggy Lee"],["Summertime","Ella Fitzgerald"],["I Put a Spell on You","Screamin' Jay Hawkins"]] },
+      { title: "Moonlight Serenade", artist: "Glenn Miller", year: 1939,
+        fact: "Composé par Glenn Miller lui-même, il est devenu l'indicatif de son orchestre.",
+        decoys: [["Stardust","Hoagy Carmichael"],["Stompin' at the Savoy","Benny Goodman"],["A String of Pearls","Glenn Miller"]] },
+      { title: "Hello, Dolly!", artist: "Louis Armstrong", year: 1963,
+        fact: "En mai 1964, il a délogé les Beatles de la première place du classement américain.",
+        decoys: [["When the Saints Go Marching In","Louis Armstrong"],["Blueberry Hill","Fats Domino"],["Ain't Misbehavin'","Fats Waller"]] },
+      { title: "Blue Rondo à la Turk", artist: "The Dave Brubeck Quartet", year: 1959,
+        fact: "Ouvre l'album Time Out, sur un rythme en 9/8 inspiré de musiciens de rue turcs.",
+        decoys: [["Unsquare Dance","Dave Brubeck"],["Caravan","Duke Ellington"],["Mas Que Nada","Sérgio Mendes"]] },
+      { title: "Cry Me a River", artist: "Julie London", year: 1955,
+        fact: "Écrit par Arthur Hamilton, d'abord pour Ella Fitzgerald dans un film, avant d'être coupé au montage.",
+        decoys: [["Fever","Peggy Lee"],["Misty","Sarah Vaughan"],["I'm a Fool to Want You","Billie Holiday"]] },
+      { title: "Petite Fleur", artist: "Sidney Bechet", year: 1952,
+        fact: "Enregistré à Paris par le clarinettiste et saxophoniste américain, installé en France depuis 1950.",
+        decoys: [["Les Oignons","Sidney Bechet"],["Nuages","Django Reinhardt"],["Minor Swing","Django Reinhardt"]] }
+    ] },
+  { id: 2, name: "Les grands classiques", instrument: "sax", color: "#e2765a",
+    blurb: "Standards et ballades du répertoire.",
+    tracks: [
+      { title: "Round Midnight", artist: "Thelonious Monk", year: 1947,
+        fact: "C'est l'un des standards de jazz les plus enregistrés de tous les temps.",
+        decoys: [["Blue in Green","Miles Davis"],["Lush Life","John Coltrane & Johnny Hartman"],["Body and Soul","Coleman Hawkins"]] },
+      { title: "My Funny Valentine", artist: "Chet Baker", year: 1954,
+        fact: "Signé Rodgers & Hart pour la comédie musicale Babes in Arms (1937).",
+        decoys: [["Misty","Erroll Garner"],["Stella by Starlight","Miles Davis"],["Embraceable You","Charlie Parker"]] },
+      { title: "Take the “A” Train", artist: "Duke Ellington Orchestra", year: 1941,
+        fact: "Composé par Billy Strayhorn, il est devenu l'indicatif de l'orchestre d'Ellington.",
+        decoys: [["One O'Clock Jump","Count Basie"],["Cotton Tail","Duke Ellington"],["Stompin' at the Savoy","Chick Webb"]] },
+      { title: "A Love Supreme, Pt. I – Acknowledgement", artist: "John Coltrane", year: 1964,
+        fact: "Vers la fin, le quartette psalmodie « a love supreme » en chœur.",
+        decoys: [["Giant Steps","John Coltrane"],["Footprints","Wayne Shorter"],["Maiden Voyage","Herbie Hancock"]] },
+      { title: "Summertime", artist: "Ella Fitzgerald & Louis Armstrong", year: 1957,
+        fact: "Un air de l'opéra Porgy and Bess de George Gershwin, créé en 1935.",
+        decoys: [["Cheek to Cheek","Ella Fitzgerald & Louis Armstrong"],["Autumn in New York","Billie Holiday"],["Strange Fruit","Billie Holiday"]] },
+      { title: "Autumn Leaves", artist: "Cannonball Adderley", year: 1958,
+        fact: "Une reprise des Feuilles mortes de Kosma et Prévert, avec Miles Davis en invité sur l'album Somethin' Else.",
+        decoys: [["All Blues","Miles Davis"],["Alone Together","Chet Baker"],["Bags' Groove","Miles Davis"]] },
+      { title: "God Bless the Child", artist: "Billie Holiday", year: 1941,
+        fact: "Coécrit par Billie Holiday, après une dispute d'argent avec sa mère.",
+        decoys: [["Lover Man","Billie Holiday"],["Willow Weep for Me","Sarah Vaughan"],["Stormy Weather","Lena Horne"]] },
+      { title: "In a Sentimental Mood", artist: "Duke Ellington & John Coltrane", year: 1962,
+        fact: "Ellington avait composé ce thème en 1935 ; il le reprend ici avec Coltrane, de trente ans son cadet.",
+        decoys: [["My One and Only Love","John Coltrane & Johnny Hartman"],["Solitude","Duke Ellington"],["Mood Indigo","Duke Ellington"]] },
+      { title: "A Night in Tunisia", artist: "Dizzy Gillespie", year: 1946,
+        fact: "Gillespie l'a composé en 1942, quand il jouait dans l'orchestre de Benny Carter.",
+        decoys: [["Salt Peanuts","Dizzy Gillespie"],["Manteca","Dizzy Gillespie"],["Caravan","Duke Ellington"]] },
+      { title: "Lullaby of Birdland", artist: "Sarah Vaughan", year: 1954,
+        fact: "Signé George Shearing, en hommage au club Birdland, lui-même baptisé d'après le surnom de Charlie Parker.",
+        decoys: [["Tenderly","Sarah Vaughan"],["How High the Moon","Ella Fitzgerald"],["Moonlight in Vermont","Ella Fitzgerald & Louis Armstrong"]] }
+    ] },
+  { id: 3, name: "Hard bop & groove", instrument: "bass", color: "#4fa39a",
+    blurb: "Blue Note, swing gras et lignes de basse.",
+    tracks: [
+      { title: "Moanin'", artist: "Art Blakey & The Jazz Messengers", year: 1958,
+        fact: "Le thème est du pianiste du groupe, Bobby Timmons.",
+        decoys: [["The Sidewinder","Lee Morgan"],["Blues March","Art Blakey"],["Señor Blues","Horace Silver"]] },
+      { title: "Song for My Father", artist: "Horace Silver", year: 1964,
+        fact: "Inspiré d'un voyage au Brésil et dédié à son père, d'origine cap-verdienne.",
+        decoys: [["Cantaloupe Island","Herbie Hancock"],["Señor Blues","Horace Silver"],["Blue Bossa","Joe Henderson"]] },
+      { title: "Watermelon Man", artist: "Herbie Hancock", year: 1962,
+        fact: "Tiré de son premier album, Takin' Off. Il l'a réenregistré en version funk sur Head Hunters (1973).",
+        decoys: [["Cantaloupe Island","Herbie Hancock"],["The Sidewinder","Lee Morgan"],["Back at the Chicken Shack","Jimmy Smith"]] },
+      { title: "Mercy, Mercy, Mercy", artist: "Cannonball Adderley", year: 1966,
+        fact: "Composé par Joe Zawinul, futur fondateur de Weather Report.",
+        decoys: [["Work Song","Nat Adderley"],["Sack o' Woe","Cannonball Adderley"],["The Jody Grind","Horace Silver"]] },
+      { title: "St. Thomas", artist: "Sonny Rollins", year: 1956,
+        fact: "La mélodie s'inspire d'une comptine des Caraïbes que lui chantait sa mère.",
+        decoys: [["Oleo","Sonny Rollins"],["Blue Train","John Coltrane"],["Airegin","Miles Davis"]] },
+      { title: "The Preacher", artist: "Horace Silver", year: 1955,
+        fact: "Le producteur de Blue Note le trouvait trop vieillot ; Silver a insisté, et le morceau est devenu un tube.",
+        decoys: [["Doodlin'","Horace Silver"],["Blues Walk","Lou Donaldson"],["Dat Dere","Bobby Timmons"]] },
+      { title: "Alligator Bogaloo", artist: "Lou Donaldson", year: 1967,
+        fact: "Un jeune George Benson tient la guitare, aux côtés de l'organiste Lonnie Smith.",
+        decoys: [["Memphis Soul Stew","King Curtis"],["Comin' Home Baby","Herbie Mann"],["The Sermon","Jimmy Smith"]] },
+      { title: "Cristo Redentor", artist: "Donald Byrd", year: 1963,
+        fact: "Composé par Duke Pearson, inspiré par la statue du Christ qui domine Rio.",
+        decoys: [["Wade in the Water","Ramsey Lewis"],["Sweet Honey Bee","Duke Pearson"],["Elijah","Donald Byrd"]] },
+      { title: "The “In” Crowd", artist: "Ramsey Lewis Trio", year: 1965,
+        fact: "Enregistré en public dans un club de Washington, il a valu un Grammy au trio.",
+        decoys: [["Hang On Sloopy","Ramsey Lewis"],["Grazing in the Grass","Hugh Masekela"],["Comin' Home Baby","Herbie Mann"]] },
+      { title: "Bags' Groove", artist: "Miles Davis", year: 1954,
+        fact: "Composé par le vibraphoniste Milt Jackson, surnommé « Bags ».",
+        decoys: [["Walkin'","Miles Davis"],["Django","Modern Jazz Quartet"],["Blue 'n' Boogie","Dizzy Gillespie"]] }
+    ] },
+  { id: 4, name: "Pour connaisseurs", instrument: "piano", color: "#9d8be0",
+    blurb: "Modal, free et ballades d'initiés.",
+    tracks: [
+      { title: "Peace Piece", artist: "Bill Evans", year: 1958,
+        fact: "Une improvisation solo sur deux accords répétés en boucle.",
+        decoys: [["Blue in Green","Miles Davis"],["Waltz for Debby","Bill Evans"],["Peace","Horace Silver"]] },
+      { title: "Lonely Woman", artist: "Ornette Coleman", year: 1959,
+        fact: "Enregistré par un quartette sans piano, sur l'album The Shape of Jazz to Come.",
+        decoys: [["Free Jazz","Ornette Coleman"],["Eventually","Ornette Coleman"],["Ascension","John Coltrane"]] },
+      { title: "Goodbye Pork Pie Hat", artist: "Charles Mingus", year: 1959,
+        fact: "Un hommage au saxophoniste Lester Young, mort quelques semaines plus tôt.",
+        decoys: [["Better Git It in Your Soul","Charles Mingus"],["Haitian Fight Song","Charles Mingus"],["Lester Leaps In","Count Basie"]] },
+      { title: "Naima", artist: "John Coltrane", year: 1959,
+        fact: "Dédiée à sa première épouse, Juanita « Naima » Grubbs.",
+        decoys: [["Central Park West","John Coltrane"],["Infant Eyes","Wayne Shorter"],["Alabama","John Coltrane"]] },
+      { title: "Speak No Evil", artist: "Wayne Shorter", year: 1964,
+        fact: "Herbie Hancock tient le piano sur cet album Blue Note.",
+        decoys: [["Witch Hunt","Wayne Shorter"],["Infant Eyes","Wayne Shorter"],["Dolphin Dance","Herbie Hancock"]] },
+      { title: "Maiden Voyage", artist: "Herbie Hancock", year: 1965,
+        fact: "Morceau-titre d'un album-concept sur l'océan, avec Freddie Hubbard à la trompette.",
+        decoys: [["Dolphin Dance","Herbie Hancock"],["Speak Like a Child","Herbie Hancock"],["Little One","Herbie Hancock"]] },
+      { title: "Flamenco Sketches", artist: "Miles Davis", year: 1959,
+        fact: "Dernier titre de Kind of Blue : chaque soliste improvise sur une suite de cinq modes.",
+        decoys: [["Blue in Green","Miles Davis"],["Nardis","Bill Evans"],["Solea","Miles Davis"]] },
+      { title: "Ruby, My Dear", artist: "Thelonious Monk", year: 1947,
+        fact: "Une ballade dédiée à Rubie Richardson, un amour de jeunesse de Monk.",
+        decoys: [["Crepuscule with Nellie","Thelonious Monk"],["Ask Me Now","Thelonious Monk"],["Monk's Mood","Thelonious Monk"]] },
+      { title: "Fables of Faubus", artist: "Charles Mingus", year: 1959,
+        fact: "Une charge contre le gouverneur de l'Arkansas opposé à la déségrégation ; Columbia en a retiré les paroles.",
+        decoys: [["Boogie Stop Shuffle","Charles Mingus"],["Pithecanthropus Erectus","Charles Mingus"],["Wednesday Night Prayer Meeting","Charles Mingus"]] },
+      { title: "Equinox", artist: "John Coltrane", year: 1960,
+        fact: "Enregistré pendant les mêmes séances que My Favorite Things, mais publié seulement en 1964.",
+        decoys: [["Mr. P.C.","John Coltrane"],["Impressions","John Coltrane"],["Juju","Wayne Shorter"]] }
+    ] },
+  { id: 5, name: "Jazz club secret", instrument: "drums", color: "#d2475c",
+    blurb: "Spiritual, free et bebop pointu. Bonne chance.",
+    tracks: [
+      { title: "The Creator Has a Master Plan", artist: "Pharoah Sanders", year: 1969,
+        fact: "Plus de trente minutes, avec le chant yodlé de Leon Thomas.",
+        decoys: [["Upper Egypt & Lower Egypt","Pharoah Sanders"],["Journey in Satchidananda","Alice Coltrane"],["Space Is the Place","Sun Ra"]] },
+      { title: "Hat and Beard", artist: "Eric Dolphy", year: 1964,
+        fact: "Ouverture de l'album Out to Lunch!, en hommage à Thelonious Monk.",
+        decoys: [["Gazzelloni","Eric Dolphy"],["Straight Up and Down","Eric Dolphy"],["Something Sweet, Something Tender","Eric Dolphy"]] },
+      { title: "Ghosts: First Variation", artist: "Albert Ayler", year: 1964,
+        fact: "Tiré de Spiritual Unity, l'un des tout premiers disques du label ESP-Disk'.",
+        decoys: [["Bells","Albert Ayler"],["Spirits Rejoice","Albert Ayler"],["Unit Structures","Cecil Taylor"]] },
+      { title: "Celia", artist: "Bud Powell", year: 1949,
+        fact: "Baptisé du prénom de sa fille.",
+        decoys: [["Un Poco Loco","Bud Powell"],["Tempus Fugit","Bud Powell"],["Parisian Thoroughfare","Bud Powell"]] },
+      { title: "Black Fire", artist: "Andrew Hill", year: 1963,
+        fact: "Morceau-titre de son premier album pour Blue Note.",
+        decoys: [["Refuge","Andrew Hill"],["New Monastery","Andrew Hill"],["Flight 19","Andrew Hill"]] },
+      { title: "Ptah, the El Daoud", artist: "Alice Coltrane", year: 1970,
+        fact: "Deux ténors s'y répondent : Pharoah Sanders et Joe Henderson.",
+        decoys: [["Journey in Satchidananda","Alice Coltrane"],["Turiya and Ramakrishna","Alice Coltrane"],["Karma","Pharoah Sanders"]] },
+      { title: "Koko", artist: "Charlie Parker", year: 1945,
+        fact: "Construit sur la grille de Cherokee ; Dizzy Gillespie joue l'introduction à la trompette.",
+        decoys: [["Ornithology","Charlie Parker"],["Shaw 'Nuff","Dizzy Gillespie"],["Donna Lee","Charlie Parker"]] },
+      { title: "Thème de Yoyo", artist: "Art Ensemble of Chicago", year: 1970,
+        fact: "Chanté par Fontella Bass pour la BO du film français Les Stances à Sophie, enregistrée à Paris.",
+        decoys: [["People in Sorrow","Art Ensemble of Chicago"],["Odwalla","Art Ensemble of Chicago"],["Space Is the Place","Sun Ra"]] },
+      { title: "Ezz-thetics", artist: "George Russell", year: 1961,
+        fact: "Le titre salue le boxeur Ezzard Charles ; Eric Dolphy est au saxophone alto.",
+        decoys: [["Stratusphunk","George Russell"],["All About Rosie","George Russell"],["Gazzelloni","Eric Dolphy"]] },
+      { title: "Little B's Poem", artist: "Bobby Hutcherson", year: 1965,
+        fact: "Le vibraphoniste l'a écrit pour son jeune fils, Barry.",
+        decoys: [["Dialogue","Bobby Hutcherson"],["Herzog","Bobby Hutcherson"],["Components","Bobby Hutcherson"]] }
+    ] },
+  { id: 6, group: "style", style: "Swing manouche", name: "Jazz manouche", instrument: "manouche", color: "#a3c45a",
+    blurb: "Django, Grappelli et les jams du Hot Club.",
+    tracks: [
+      { title: "Minor Swing", artist: "Django Reinhardt & Stéphane Grappelli", year: 1937,
+        fact: "Signé Django et Grappelli, il est devenu l'hymne de tous les guitaristes manouches.",
+        decoys: [["Swing 48","Django Reinhardt"],["Douce ambiance","Django Reinhardt"],["Blues clair","Django Reinhardt"]] },
+      { title: "Nuages", artist: "Django Reinhardt", year: 1940,
+        fact: "Enregistré à Paris sous l'Occupation, il y est devenu un immense succès.",
+        decoys: [["Tears","Django Reinhardt & Stéphane Grappelli"],["Anouman","Django Reinhardt"],["Mélodie au crépuscule","Django Reinhardt"]] },
+      { title: "Djangology", artist: "Django Reinhardt & Stéphane Grappelli", year: 1935,
+        fact: "Django lui a donné son propre surnom. Avec Grappelli, il l'a réenregistré à Rome en 1949.",
+        decoys: [["Daphné","Django Reinhardt & Stéphane Grappelli"],["Appel indirect","Django Reinhardt"],["Rythme futur","Django Reinhardt"]] },
+      { title: "Dinah", artist: "Quintette du Hot Club de France", year: 1934,
+        fact: "L'un des tout premiers disques du Quintette du Hot Club de France, enregistré fin 1934.",
+        decoys: [["Tiger Rag","Quintette du Hot Club de France"],["Lady Be Good","Quintette du Hot Club de France"],["Sweet Georgia Brown","Quintette du Hot Club de France"]] },
+      { title: "Swing 42", artist: "Django Reinhardt",
+        fact: "Un thème de Django incontournable dans les jams manouches.",
+        decoys: [["Swing 39","Django Reinhardt"],["Festival 48","Django Reinhardt"],["Artillerie lourde","Django Reinhardt"]] },
+      { title: "Les Yeux noirs", artist: "Django Reinhardt",
+        fact: "Une vieille romance russe devenue un standard du répertoire manouche.",
+        decoys: [["Hungaria","Django Reinhardt"],["Bouncin' Around","Django Reinhardt"],["Coquette","Biréli Lagrène"]] },
+      { title: "J'aime plus Paris", artist: "Thomas Dutronc", year: 2007,
+        fact: "Le fils de Jacques Dutronc et de Françoise Hardy s'est d'abord fait connaître comme guitariste manouche.",
+        decoys: [["Comme un manouche sans guitare","Thomas Dutronc"],["Jolie coquine","Caravan Palace"],["Les Embouteillages","Sanseverino"]] },
+      { title: "Bossa Dorado", artist: "Dorado Schmitt",
+        fact: "Composé par le guitariste lorrain Dorado Schmitt, c'est un passage obligé des jams manouches.",
+        decoys: [["Douce ambiance","Django Reinhardt"],["Blues en mineur","Django Reinhardt"],["Coquette","Biréli Lagrène"]] },
+      { title: "Manoir de mes rêves", artist: "Django Reinhardt",
+        fact: "On le connaît aussi sous son titre anglais, Django's Castle.",
+        decoys: [["Mélodie au crépuscule","Django Reinhardt"],["Tears","Django Reinhardt & Stéphane Grappelli"],["Vette","Django Reinhardt"]] },
+      { title: "Belleville", artist: "Django Reinhardt",
+        fact: "Un clin d'œil au quartier populaire de l'est parisien.",
+        decoys: [["Place de Brouckère","Django Reinhardt"],["Porto Cabello","Django Reinhardt"],["Swing de Paris","Django Reinhardt"]] }
+    ] },
+  { id: 7, group: "style", style: "Salsa & latin jazz", name: "Salsa & latin jazz", instrument: "congas", color: "#f2668b",
+    blurb: "Mambo, afro-cubain et salsa new-yorkaise.",
+    tracks: [
+      { title: "Oye Como Va", artist: "Tito Puente", year: 1963,
+        fact: "Composé par Tito Puente. Santana en a fait un tube rock en 1970.",
+        decoys: [["Ran Kan Kan","Tito Puente"],["Para los rumberos","Tito Puente"],["Black Magic Woman","Santana"]] },
+      { title: "Manteca", artist: "Dizzy Gillespie", year: 1947,
+        fact: "Coécrit avec le percussionniste cubain Chano Pozo, il a lancé le jazz afro-cubain.",
+        decoys: [["Tin Tin Deo","Dizzy Gillespie"],["Cubana Be, Cubana Bop","Dizzy Gillespie"],["Mambo Inn","Machito"]] },
+      { title: "Mambo No. 5", artist: "Pérez Prado", year: 1949,
+        fact: "Lou Bega en a fait un tube mondial en 1999, avec de nouvelles paroles.",
+        decoys: [["Qué rico el mambo","Pérez Prado"],["Patricia","Pérez Prado"],["Cherry Pink and Apple Blossom White","Pérez Prado"]] },
+      { title: "Quimbara", artist: "Celia Cruz & Johnny Pacheco", year: 1974,
+        fact: "L'un des titres phares de la « reine de la salsa », sur l'album Celia & Johnny.",
+        decoys: [["Bemba colorá","Celia Cruz"],["Usted abusó","Celia Cruz"],["Toro mata","Celia Cruz"]] },
+      { title: "Pedro Navaja", artist: "Rubén Blades & Willie Colón", year: 1978,
+        fact: "Inspiré de « Mack the Knife ». Il vient de Siembra, l'un des albums de salsa les plus vendus.",
+        decoys: [["Plástico","Rubén Blades & Willie Colón"],["Buscando guayaba","Rubén Blades & Willie Colón"],["Siembra","Rubén Blades & Willie Colón"]] },
+      { title: "Llorarás", artist: "Oscar D'León", year: 1975,
+        fact: "Le Vénézuélien Oscar D'León chante tout en jouant de la contrebasse.",
+        decoys: [["Qué bueno baila usted","Oscar D'León"],["Mi bajo y yo","Oscar D'León"],["Juanito Alimaña","Héctor Lavoe"]] },
+      { title: "El Cantante", artist: "Héctor Lavoe", year: 1978,
+        fact: "Écrit pour lui par Rubén Blades. Il a donné son titre au film sur sa vie, sorti en 2006.",
+        decoys: [["Periódico de ayer","Héctor Lavoe"],["Mi gente","Héctor Lavoe"],["Aguanile","Willie Colón & Héctor Lavoe"]] },
+      { title: "La vida es un carnaval", artist: "Celia Cruz", year: 1998,
+        fact: "Sorti quand Celia Cruz avait plus de 70 ans, il est devenu l'un de ses plus grands succès.",
+        decoys: [["Ríe y llora","Celia Cruz"],["La negra tiene tumbao","Celia Cruz"],["Vivir mi vida","Marc Anthony"]] },
+      { title: "Watermelon Man", artist: "Mongo Santamaría", year: 1963,
+        fact: "Herbie Hancock, pianiste remplaçant d'un soir dans l'orchestre de Mongo, lui a fait découvrir le morceau.",
+        decoys: [["Afro Blue","Mongo Santamaría"],["Yeh-Yeh!","Mongo Santamaría"],["Cantaloupe Island","Herbie Hancock"]] },
+      { title: "Chan Chan", artist: "Buena Vista Social Club", year: 1997,
+        fact: "Composé par Compay Segundo, il ouvre l'album Buena Vista Social Club.",
+        decoys: [["Dos gardenias","Buena Vista Social Club"],["El cuarto de Tula","Buena Vista Social Club"],["Candela","Buena Vista Social Club"]] }
+    ] },
+  { id: 8, group: "style", style: "Bossa nova", name: "Bossa nova", instrument: "maracas", color: "#3fa7e0",
+    blurb: "Rio, guitare nylon et voix feutrées.",
+    tracks: [
+      { title: "Chega de Saudade", artist: "João Gilberto", year: 1958,
+        fact: "Souvent cité comme le tout premier disque de bossa nova.",
+        decoys: [["Bim Bom","João Gilberto"],["Hô-bá-lá-lá","João Gilberto"],["Lobo bobo","João Gilberto"]] },
+      { title: "Desafinado", artist: "Stan Getz & Charlie Byrd", year: 1962,
+        fact: "Tiré de Jazz Samba, l'album qui a lancé la vague bossa nova aux États-Unis.",
+        decoys: [["Samba Triste","Stan Getz & Charlie Byrd"],["O Pato","Stan Getz & Charlie Byrd"],["Bahia","Stan Getz & Charlie Byrd"]] },
+      { title: "Águas de Março", artist: "Elis Regina & Tom Jobim", year: 1974,
+        fact: "Un duo de l'album Elis & Tom. Georges Moustaki l'a adapté en français : « Les Eaux de mars ».",
+        decoys: [["Modinha","Elis Regina & Tom Jobim"],["Corrida de jangada","Elis Regina"],["Ponta de areia","Milton Nascimento"]] },
+      { title: "Mas Que Nada", artist: "Sérgio Mendes & Brasil '66", year: 1966,
+        fact: "Composé par Jorge Ben, qui l'avait enregistré le premier, en 1963.",
+        decoys: [["País tropical","Jorge Ben"],["The Look of Love","Sérgio Mendes & Brasil '66"],["Taj Mahal","Jorge Ben"]] },
+      { title: "Corcovado", artist: "Stan Getz & João Gilberto", year: 1963,
+        fact: "Le titre désigne la montagne de Rio surmontée du Christ Rédempteur.",
+        decoys: [["Doralice","Stan Getz & João Gilberto"],["O Grande Amor","Stan Getz & João Gilberto"],["Vivo sonhando","Stan Getz & João Gilberto"]] },
+      { title: "Wave", artist: "Antônio Carlos Jobim", year: 1967,
+        fact: "Morceau-titre d'un album instrumental de Jobim, arrangé par Claus Ogerman.",
+        decoys: [["Triste","Antônio Carlos Jobim"],["Look to the Sky","Antônio Carlos Jobim"],["Stone Flower","Antônio Carlos Jobim"]] },
+      { title: "Samba de uma nota só", artist: "João Gilberto", year: 1960,
+        fact: "La mélodie reste presque sur une seule note, pendant que les accords changent dessous.",
+        decoys: [["Outra vez","João Gilberto"],["Meditação","João Gilberto"],["Discussão","João Gilberto"]] },
+      { title: "Manhã de Carnaval", artist: "Luiz Bonfá", year: 1959,
+        fact: "Écrit pour Orfeu Negro, le film de Marcel Camus, Palme d'or à Cannes en 1959.",
+        decoys: [["Samba de Orfeu","Luiz Bonfá"],["A Felicidade","Antônio Carlos Jobim"],["Gentle Rain","Luiz Bonfá"]] },
+      { title: "Insensatez", artist: "João Gilberto", year: 1961,
+        fact: "Jobim s'est inspiré d'un prélude de Chopin pour la composer.",
+        decoys: [["Este seu olhar","João Gilberto"],["Coisa mais linda","João Gilberto"],["Samba da bênção","Baden Powell"]] },
+      { title: "Só Danço Samba", artist: "Stan Getz & João Gilberto", year: 1963,
+        fact: "Son titre se traduit par « Je ne danse que la samba ».",
+        decoys: [["Para machucar meu coração","Stan Getz & João Gilberto"],["Samba de minha terra","João Gilberto"],["Berimbau","Baden Powell"]] }
+    ] }
+];
+
+/* ===================== Données : Rétro Club ===================== */
+const RETRO = [
+ {
+  "id": 1,
+  "tier": 1,
+  "decadeKey": "d60",
+  "groupTitle": "Les années 60",
+  "groupBlurb": "Beatles, Motown, psychédélisme et yé-yé.",
+  "decade": "1960 – 1969",
+  "instrument": "guitar",
+  "color": "#f2b134",
+  "name": "Les années 60 · Facile",
+  "blurb": "Les tubes que tout le monde connaît.",
+  "tracks": [
+   {
+    "title": "(I Can't Get No) Satisfaction",
+    "artist": "The Rolling Stones",
+    "year": 1965,
+    "fact": "Keith Richards a trouvé le riff en pleine nuit, l'a enregistré sur un magnétophone, puis s'est rendormi.",
+    "decoys": [
+     [ "Paint It Black", "The Rolling Stones"
+     ],
+     [ "My Generation", "The Who"
+     ],
+     [ "You Really Got Me", "The Kinks"
+     ]
+    ]
+   },
+   {
+    "title": "Hey Jude",
+    "artist": "The Beatles",
+    "year": 1968,
+    "fact": "Paul McCartney l'a écrite pour réconforter Julian, le fils de John Lennon, pendant le divorce de ses parents.",
+    "decoys": [
+     [ "Yesterday", "The Beatles"
+     ],
+     [ "Penny Lane", "The Beatles"
+     ],
+     [ "A Whiter Shade of Pale", "Procol Harum"
+     ]
+    ]
+   },
+   {
+    "title": "Respect",
+    "artist": "Aretha Franklin",
+    "year": 1967,
+    "fact": "Une reprise d'Otis Redding. Aretha y ajoute le fameux « R-E-S-P-E-C-T » épelé.",
+    "decoys": [
+     [ "Think", "Aretha Franklin"
+     ],
+     [ "Son of a Preacher Man", "Dusty Springfield"
+     ],
+     [ "River Deep – Mountain High", "Ike & Tina Turner"
+     ]
+    ]
+   },
+   {
+    "title": "Je t'aime... moi non plus",
+    "artist": "Serge Gainsbourg & Jane Birkin",
+    "year": 1969,
+    "fact": "Gainsbourg l'avait écrite en 1967 pour Brigitte Bardot, qui a renoncé à la sortir.",
+    "decoys": [
+     [ "Comic Strip", "Serge Gainsbourg & Brigitte Bardot"
+     ],
+     [ "Initials B.B.", "Serge Gainsbourg"
+     ],
+     [ "La Javanaise", "Juliette Gréco"
+     ]
+    ]
+   },
+   {
+    "title": "Comme d'habitude",
+    "artist": "Claude François",
+    "year": 1967,
+    "fact": "Paul Anka en a écrit des paroles anglaises : elle est devenue « My Way » pour Frank Sinatra.",
+    "decoys": [
+     [ "Belles ! Belles ! Belles !", "Claude François"
+     ],
+     [ "Aline", "Christophe"
+     ],
+     [ "Que je t'aime", "Johnny Hallyday"
+     ]
+    ]
+   },
+   {
+    "title": "Poupée de cire, poupée de son",
+    "artist": "France Gall",
+    "year": 1965,
+    "fact": "Écrite par Gainsbourg, elle a gagné l'Eurovision 1965, sous les couleurs du Luxembourg.",
+    "decoys": [
+     [ "Laisse tomber les filles", "France Gall"
+     ],
+     [ "Tous les garçons et les filles", "Françoise Hardy"
+     ],
+     [ "Bang Bang", "Sheila"
+     ]
+    ]
+   },
+   {
+    "title": "My Girl",
+    "artist": "The Temptations",
+    "year": 1964,
+    "fact": "Écrite par Smokey Robinson et Ronald White, deux membres des Miracles.",
+    "decoys": [
+     [ "Stop! In the Name of Love", "The Supremes"
+     ],
+     [ "I Heard It Through the Grapevine", "Marvin Gaye"
+     ],
+     [ "Dancing in the Street", "Martha and the Vandellas"
+     ]
+    ]
+   },
+   {
+    "title": "La, la, la",
+    "artist": "Massiel",
+    "year": 1968,
+    "es": true,
+    "fact": "Victoire de l'Espagne à l'Eurovision 1968, un point devant Cliff Richard. Serrat devait la chanter mais exigeait de le faire en catalan.",
+    "decoys": [
+     [ "Vivo cantando", "Salomé"
+     ],
+     [ "Yo soy aquel", "Raphael"
+     ],
+     [ "Tómbola", "Marisol"
+     ]
+    ]
+   },
+   {
+    "title": "Cuando calienta el sol",
+    "artist": "Los Hermanos Rigual",
+    "year": 1961,
+    "es": true,
+    "fact": "Adaptée en anglais sous le titre « Love Me With All Your Heart », elle devient numéro 3 aux États-Unis en 1964.",
+    "decoys": [
+     [ "Esta tarde vi llover", "Armando Manzanero"
+     ],
+     [ "La Bamba", "Trini Lopez"
+     ],
+     [ "Perfidia", "Trío Los Panchos"
+     ]
+    ]
+   },
+   {
+    "title": "Gracias a la vida",
+    "artist": "Violeta Parra",
+    "year": 1966,
+    "es": true,
+    "fact": "Elle ouvre l'album « Las últimas composiciones » (1966). Mercedes Sosa la fait connaître dans tout le monde hispanophone en 1971.",
+    "decoys": [
+     [ "Volver a los 17", "Violeta Parra"
+     ],
+     [ "Run Run se fue pa'l norte", "Violeta Parra"
+     ],
+     [ "Plegaria a un labrador", "Víctor Jara"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 6,
+  "tier": 2,
+  "decadeKey": "d60",
+  "groupTitle": "Les années 60",
+  "groupBlurb": "Beatles, Motown, psychédélisme et yé-yé.",
+  "decade": "1960 – 1969",
+  "instrument": "guitar",
+  "color": "#f2b134",
+  "name": "Les années 60 · Moyen",
+  "blurb": "Des succès un cran moins évidents.",
+  "tracks": [
+   {
+    "title": "Good Vibrations",
+    "artist": "The Beach Boys",
+    "year": 1966,
+    "fact": "Brian Wilson l'a assemblé à partir de dizaines d'heures de prises, enregistrées dans plusieurs studios.",
+    "decoys": [
+     [ "Wouldn't It Be Nice", "The Beach Boys"
+     ],
+     [ "Surfin' U.S.A.", "The Beach Boys"
+     ],
+     [ "God Only Knows", "The Beach Boys"
+     ]
+    ]
+   },
+   {
+    "title": "Light My Fire",
+    "artist": "The Doors",
+    "year": 1967,
+    "fact": "Le single a été raccourci : la version de l'album dépasse les sept minutes.",
+    "decoys": [
+     [ "Break On Through (To the Other Side)", "The Doors"
+     ],
+     [ "Somebody to Love", "Jefferson Airplane"
+     ],
+     [ "White Rabbit", "Jefferson Airplane"
+     ]
+    ]
+   },
+   {
+    "title": "Purple Haze",
+    "artist": "The Jimi Hendrix Experience",
+    "year": 1967,
+    "fact": "Il a popularisé un accord de septième dièse neuvième, surnommé depuis « l'accord Hendrix ».",
+    "decoys": [
+     [ "Hey Joe", "The Jimi Hendrix Experience"
+     ],
+     [ "All Along the Watchtower", "The Jimi Hendrix Experience"
+     ],
+     [ "Sunshine of Your Love", "Cream"
+     ]
+    ]
+   },
+   {
+    "title": "Stand By Me",
+    "artist": "Ben E. King",
+    "year": 1961,
+    "fact": "Coécrite par Ben E. King avec Leiber et Stoller, elle revient dans les charts en 1986 grâce au film du même nom.",
+    "decoys": [
+     [ "Spanish Harlem", "Ben E. King"
+     ],
+     [ "Save the Last Dance for Me", "The Drifters"
+     ],
+     [ "Under the Boardwalk", "The Drifters"
+     ]
+    ]
+   },
+   {
+    "title": "California Dreamin'",
+    "artist": "The Mamas & the Papas",
+    "year": 1965,
+    "fact": "John et Michelle Phillips l'ont écrite pendant un hiver glacial à New York, en rêvant du soleil de Californie.",
+    "decoys": [
+     [ "Monday, Monday", "The Mamas & the Papas"
+     ],
+     [ "Mr. Tambourine Man", "The Byrds"
+     ],
+     [ "San Francisco (Be Sure to Wear Flowers in Your Hair)", "Scott McKenzie"
+     ]
+    ]
+   },
+   {
+    "title": "Il est cinq heures, Paris s'éveille",
+    "artist": "Jacques Dutronc",
+    "year": 1968,
+    "fact": "Les solos de flûte ont été improvisés par Roger Bourdin, un flûtiste qui travaillait dans le même bâtiment que le studio.",
+    "decoys": [
+     [ "Et moi, et moi, et moi", "Jacques Dutronc"
+     ],
+     [ "Les Play-Boys", "Jacques Dutronc"
+     ],
+     [ "J'aime les filles", "Jacques Dutronc"
+     ]
+    ]
+   },
+   {
+    "title": "Tous les garçons et les filles",
+    "artist": "Françoise Hardy",
+    "year": 1962,
+    "fact": "Écrite par Françoise Hardy elle-même, elle la chante à la télévision le soir des résultats du référendum d'octobre 1962.",
+    "decoys": [
+     [ "Le Temps de l'amour", "Françoise Hardy"
+     ],
+     [ "Mon amie la rose", "Françoise Hardy"
+     ],
+     [ "Comment te dire adieu", "Françoise Hardy"
+     ]
+    ]
+   },
+   {
+    "title": "La vida sigue igual",
+    "artist": "Julio Iglesias",
+    "year": 1968,
+    "es": true,
+    "fact": "Avec cette chanson, Julio Iglesias remporte le Festival de Benidorm en 1968, ce qui lance sa carrière.",
+    "decoys": [
+     [ "Mi gran noche", "Raphael"
+     ],
+     [ "Cuéntame", "Fórmula V"
+     ],
+     [ "Yo soy aquel", "Raphael"
+     ]
+    ]
+   },
+   {
+    "title": "Somos novios",
+    "artist": "Armando Manzanero",
+    "year": 1968,
+    "es": true,
+    "fact": "Adaptée en anglais sous le titre « It's Impossible », elle devient un tube de Perry Como en 1971.",
+    "decoys": [
+     [ "Esta tarde vi llover", "Armando Manzanero"
+     ],
+     [ "Adoro", "Armando Manzanero"
+     ],
+     [ "Contigo aprendí", "Armando Manzanero"
+     ]
+    ]
+   },
+   {
+    "title": "Alfonsina y el mar",
+    "artist": "Mercedes Sosa",
+    "year": 1969,
+    "es": true,
+    "fact": "Composée par Ariel Ramírez et Félix Luna, elle rend hommage à la poétesse Alfonsina Storni, disparue en mer en 1938.",
+    "decoys": [
+     [ "Juana Azurduy", "Mercedes Sosa"
+     ],
+     [ "Luna tucumana", "Atahualpa Yupanqui"
+     ],
+     [ "Zamba de mi esperanza", "Jorge Cafrune"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 11,
+  "tier": 3,
+  "decadeKey": "d60",
+  "groupTitle": "Les années 60",
+  "groupBlurb": "Beatles, Motown, psychédélisme et yé-yé.",
+  "decade": "1960 – 1969",
+  "instrument": "guitar",
+  "color": "#f2b134",
+  "name": "Les années 60 · Difficile",
+  "blurb": "Pour les fouilleurs de bacs à disques.",
+  "tracks": [
+   {
+    "title": "Green Onions",
+    "artist": "Booker T. & the M.G.'s",
+    "year": 1962,
+    "fact": "Cet instrumental était d'abord la face B de « Behave Yourself », avant de devenir le vrai tube du disque.",
+    "decoys": [
+     [ "Time Is Tight", "Booker T. & the M.G.'s"
+     ],
+     [ "Hip Hug-Her", "Booker T. & the M.G.'s"
+     ],
+     [ "Last Night", "The Mar-Keys"
+     ]
+    ]
+   },
+   {
+    "title": "Gloria",
+    "artist": "Them",
+    "year": 1964,
+    "fact": "Écrite par un jeune Van Morrison, elle est d'abord sortie en face B de « Baby, Please Don't Go ».",
+    "decoys": [
+     [ "Here Comes the Night", "Them"
+     ],
+     [ "Baby, Please Don't Go", "Them"
+     ],
+     [ "Louie Louie", "The Kingsmen"
+     ]
+    ]
+   },
+   {
+    "title": "White Rabbit",
+    "artist": "Jefferson Airplane",
+    "year": 1967,
+    "fact": "Grace Slick s'inspire d'« Alice au pays des merveilles » de Lewis Carroll pour ce morceau psychédélique.",
+    "decoys": [
+     [ "Somebody to Love", "Jefferson Airplane"
+     ],
+     [ "Piece of My Heart", "Big Brother & The Holding Company"
+     ],
+     [ "Incense and Peppermints", "Strawberry Alarm Clock"
+     ]
+    ]
+   },
+   {
+    "title": "Time of the Season",
+    "artist": "The Zombies",
+    "year": 1968,
+    "fact": "Tirée de l'album « Odessey and Oracle », elle devient un tube aux États-Unis en 1969, alors que le groupe s'est déjà séparé.",
+    "decoys": [
+     [ "She's Not There", "The Zombies"
+     ],
+     [ "Tell Her No", "The Zombies"
+     ],
+     [ "A Whiter Shade of Pale", "Procol Harum"
+     ]
+    ]
+   },
+   {
+    "title": "Waterloo Sunset",
+    "artist": "The Kinks",
+    "year": 1967,
+    "fact": "Ray Davies y raconte Terry et Julie, deux amoureux qui se retrouvent chaque vendredi soir à la gare de Waterloo, à Londres.",
+    "decoys": [
+     [ "Sunny Afternoon", "The Kinks"
+     ],
+     [ "Days", "The Kinks"
+     ],
+     [ "Dedicated Follower of Fashion", "The Kinks"
+     ]
+    ]
+   },
+   {
+    "title": "Harley Davidson",
+    "artist": "Brigitte Bardot",
+    "year": 1967,
+    "fact": "Serge Gainsbourg l'a écrite pour Brigitte Bardot pendant leur liaison. Dans le clip, elle popularise les cuissardes.",
+    "decoys": [
+     [ "Bonnie and Clyde", "Serge Gainsbourg & Brigitte Bardot"
+     ],
+     [ "Comic Strip", "Serge Gainsbourg"
+     ],
+     [ "La Madrague", "Brigitte Bardot"
+     ]
+    ]
+   },
+   {
+    "title": "Les Cornichons",
+    "artist": "Nino Ferrer",
+    "year": 1966,
+    "fact": "Nino Ferrer y dresse la liste interminable des provisions emportées pour un pique-nique en famille.",
+    "decoys": [
+     [ "Mirza", "Nino Ferrer"
+     ],
+     [ "Le Téléfon", "Nino Ferrer"
+     ],
+     [ "Les Élucubrations d'Antoine", "Antoine"
+     ]
+    ]
+   },
+   {
+    "title": "El Malo",
+    "artist": "Willie Colón",
+    "year": 1967,
+    "es": true,
+    "fact": "Willie Colón n'a que 16 ans quand il enregistre cet album pour Fania, le premier qu'il réalise avec Héctor Lavoe.",
+    "decoys": [
+     [ "Che Che Colé", "Willie Colón"
+     ],
+     [ "El Watusi", "Ray Barretto"
+     ],
+     [ "Bang Bang", "Joe Cuba Sextet"
+     ]
+    ]
+   },
+   {
+    "title": "Hasta siempre, Comandante",
+    "artist": "Carlos Puebla",
+    "year": 1965,
+    "es": true,
+    "fact": "Écrite en 1965 en réponse à la lettre d'adieu de Che Guevara. Nathalie Cardone en fait un tube en France en 1997.",
+    "decoys": [
+     [ "Y en eso llegó Fidel", "Carlos Puebla"
+     ],
+     [ "Guantanamera", "Joseíto Fernández"
+     ],
+     [ "La era está pariendo un corazón", "Silvio Rodríguez"
+     ]
+    ]
+   },
+   {
+    "title": "Te recuerdo Amanda",
+    "artist": "Víctor Jara",
+    "year": 1969,
+    "es": true,
+    "fact": "Víctor Jara a donné aux deux personnages de la chanson les prénoms de ses parents, Manuel et Amanda.",
+    "decoys": [
+     [ "Plegaria a un labrador", "Víctor Jara"
+     ],
+     [ "El arado", "Víctor Jara"
+     ],
+     [ "Volver a los 17", "Violeta Parra"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 2,
+  "tier": 1,
+  "decadeKey": "d70",
+  "groupTitle": "Les années 70",
+  "groupBlurb": "Disco, rock FM et variété à paillettes.",
+  "decade": "1970 – 1979",
+  "instrument": "discoball",
+  "color": "#e8735a",
+  "name": "Les années 70 · Facile",
+  "blurb": "Les tubes que tout le monde connaît.",
+  "tracks": [
+   {
+    "title": "Bohemian Rhapsody",
+    "artist": "Queen",
+    "year": 1975,
+    "fact": "Près de six minutes sans vrai refrain, et pourtant neuf semaines numéro 1 au Royaume-Uni.",
+    "decoys": [
+     [ "We Will Rock You", "Queen"
+     ],
+     [ "Stairway to Heaven", "Led Zeppelin"
+     ],
+     [ "Wish You Were Here", "Pink Floyd"
+     ]
+    ]
+   },
+   {
+    "title": "Stayin' Alive",
+    "artist": "Bee Gees",
+    "year": 1977,
+    "fact": "Composé pour la bande originale de La Fièvre du samedi soir, avec John Travolta.",
+    "decoys": [
+     [ "Night Fever", "Bee Gees"
+     ],
+     [ "How Deep Is Your Love", "Bee Gees"
+     ],
+     [ "Disco Inferno", "The Trammps"
+     ]
+    ]
+   },
+   {
+    "title": "Dancing Queen",
+    "artist": "ABBA",
+    "year": 1976,
+    "fact": "C'est le seul numéro 1 d'ABBA aux États-Unis.",
+    "decoys": [
+     [ "Mamma Mia", "ABBA"
+     ],
+     [ "Waterloo", "ABBA"
+     ],
+     [ "Knowing Me, Knowing You", "ABBA"
+     ]
+    ]
+   },
+   {
+    "title": "Hotel California",
+    "artist": "Eagles",
+    "year": 1976,
+    "fact": "Le long solo final est partagé entre les guitares de Don Felder et de Joe Walsh.",
+    "decoys": [
+     [ "Take It Easy", "Eagles"
+     ],
+     [ "Dreams", "Fleetwood Mac"
+     ],
+     [ "Go Your Own Way", "Fleetwood Mac"
+     ]
+    ]
+   },
+   {
+    "title": "I Will Survive",
+    "artist": "Gloria Gaynor",
+    "year": 1978,
+    "fact": "Il est d'abord sorti en face B d'un single, avant que les DJ ne l'imposent.",
+    "decoys": [
+     [ "Never Can Say Goodbye", "Gloria Gaynor"
+     ],
+     [ "Hot Stuff", "Donna Summer"
+     ],
+     [ "Y.M.C.A.", "Village People"
+     ]
+    ]
+   },
+   {
+    "title": "Alexandrie Alexandra",
+    "artist": "Claude François",
+    "year": 1978,
+    "fact": "Sorti le jour des obsèques de Claude François, en mars 1978.",
+    "decoys": [
+     [ "Magnolias for Ever", "Claude François"
+     ],
+     [ "Le Lundi au soleil", "Claude François"
+     ],
+     [ "Gigi l'amoroso", "Dalida"
+     ]
+    ]
+   },
+   {
+    "title": "Ça plane pour moi",
+    "artist": "Plastic Bertrand",
+    "year": 1977,
+    "fact": "En 2010, Plastic Bertrand a reconnu que la voix du disque était celle du producteur Lou Deprijck.",
+    "decoys": [
+     [ "Banana Split", "Lio"
+     ],
+     [ "Anarchy in the U.K.", "Sex Pistols"
+     ],
+     [ "Blitzkrieg Bop", "Ramones"
+     ]
+    ]
+   },
+   {
+    "title": "Eres tú",
+    "artist": "Mocedades",
+    "year": 1973,
+    "es": true,
+    "fact": "Deuxième à l'Eurovision 1973, la chanson espagnole a ensuite atteint la 9e place du Billboard américain en 1974.",
+    "decoys": [
+     [ "Tómame o déjame", "Mocedades"
+     ],
+     [ "Libre", "Nino Bravo"
+     ],
+     [ "Algo de mí", "Camilo Sesto"
+     ]
+    ]
+   },
+   {
+    "title": "Porque te vas",
+    "artist": "Jeanette",
+    "year": 1974,
+    "es": true,
+    "fact": "Écrite par José Luis Perales, elle devient un tube en 1976 grâce au film Cría cuervos de Carlos Saura, et atteint la 1re place en France.",
+    "decoys": [
+     [ "Soy rebelde", "Jeanette"
+     ],
+     [ "Un ramito de violetas", "Cecilia"
+     ],
+     [ "Algo de mí", "Camilo Sesto"
+     ]
+    ]
+   },
+   {
+    "title": "Un beso y una flor",
+    "artist": "Nino Bravo",
+    "year": 1972,
+    "es": true,
+    "fact": "Le plus grand tube du chanteur valencien Nino Bravo, mort dans un accident de voiture l'année suivante.",
+    "decoys": [
+     [ "Libre", "Nino Bravo"
+     ],
+     [ "Te quiero, te quiero", "Nino Bravo"
+     ],
+     [ "América, América", "Nino Bravo"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 7,
+  "tier": 2,
+  "decadeKey": "d70",
+  "groupTitle": "Les années 70",
+  "groupBlurb": "Disco, rock FM et variété à paillettes.",
+  "decade": "1970 – 1979",
+  "instrument": "discoball",
+  "color": "#e8735a",
+  "name": "Les années 70 · Moyen",
+  "blurb": "Des succès un cran moins évidents.",
+  "tracks": [
+   {
+    "title": "Superstition",
+    "artist": "Stevie Wonder",
+    "year": 1972,
+    "fact": "Le riff est joué au clavinet. Stevie Wonder avait d'abord destiné le morceau à Jeff Beck.",
+    "decoys": [
+     [ "Sir Duke", "Stevie Wonder"
+     ],
+     [ "Isn't She Lovely", "Stevie Wonder"
+     ],
+     [ "Let's Stay Together", "Al Green"
+     ]
+    ]
+   },
+   {
+    "title": "Le Freak",
+    "artist": "Chic",
+    "year": 1978,
+    "fact": "Né d'un refus : Nile Rodgers et Bernard Edwards n'avaient pas pu entrer au Studio 54 un soir de Nouvel An.",
+    "decoys": [
+     [ "Good Times", "Chic"
+     ],
+     [ "We Are Family", "Sister Sledge"
+     ],
+     [ "Born to Be Alive", "Patrick Hernandez"
+     ]
+    ]
+   },
+   {
+    "title": "J'ai encore rêvé d'elle",
+    "artist": "Il était une fois",
+    "year": 1975,
+    "fact": "Un duo entre les deux voix du groupe, Joëlle Mogensen et Richard Dewitte.",
+    "decoys": [
+     [ "Les Mots bleus", "Christophe"
+     ],
+     [ "Le Sud", "Nino Ferrer"
+     ],
+     [ "Je vais t'aimer", "Michel Sardou"
+     ]
+    ]
+   },
+   {
+    "title": "L'Été indien",
+    "artist": "Joe Dassin",
+    "year": 1975,
+    "fact": "C'est l'adaptation française de Africa, un titre du groupe italien Albatros mené par Toto Cutugno.",
+    "decoys": [
+     [ "Salut les amoureux", "Joe Dassin"
+     ],
+     [ "Et si tu n'existais pas", "Joe Dassin"
+     ],
+     [ "Le Lundi au soleil", "Claude François"
+     ]
+    ]
+   },
+   {
+    "title": "September",
+    "artist": "Earth, Wind & Fire",
+    "year": 1978,
+    "fact": "Coautrice du titre, Allee Willis voulait changer le « ba-dee-ya » du refrain, mais Maurice White a gardé ces syllabes sans signification.",
+    "decoys": [
+     [ "Boogie Wonderland", "Earth, Wind & Fire"
+     ],
+     [ "Shining Star", "Earth, Wind & Fire"
+     ],
+     [ "Got to Be Real", "Cheryl Lynn"
+     ]
+    ]
+   },
+   {
+    "title": "Wish You Were Here",
+    "artist": "Pink Floyd",
+    "year": 1975,
+    "fact": "L'album est hanté par Syd Barrett, fondateur du groupe, qui est apparu par surprise au studio Abbey Road pendant les séances.",
+    "decoys": [
+     [ "Comfortably Numb", "Pink Floyd"
+     ],
+     [ "Time", "Pink Floyd"
+     ],
+     [ "Have a Cigar", "Pink Floyd"
+     ]
+    ]
+   },
+   {
+    "title": "Heart of Glass",
+    "artist": "Blondie",
+    "year": 1978,
+    "fact": "Le morceau existait depuis le milieu des années 70 sous le titre Once I Had a Love. En version disco, il a été n°1 aux États-Unis et au Royaume-Uni.",
+    "decoys": [
+     [ "Call Me", "Blondie"
+     ],
+     [ "Atomic", "Blondie"
+     ],
+     [ "One Way or Another", "Blondie"
+     ]
+    ]
+   },
+   {
+    "title": "Gavilán o paloma",
+    "artist": "José José",
+    "year": 1977,
+    "es": true,
+    "fact": "Signée par le compositeur espagnol Rafael Pérez Botija, elle figure sur l'album Reencuentro du « Prince de la chanson » mexicain.",
+    "decoys": [
+     [ "El triste", "José José"
+     ],
+     [ "Amar y querer", "José José"
+     ],
+     [ "Se me olvidó otra vez", "Juan Gabriel"
+     ]
+    ]
+   },
+   {
+    "title": "Mediterráneo",
+    "artist": "Joan Manuel Serrat",
+    "year": 1971,
+    "es": true,
+    "fact": "Le Barcelonais Serrat y chante la mer de son enfance. C'est la chanson-titre de son album de 1971, l'un des plus célèbres de la chanson espagnole.",
+    "decoys": [
+     [ "Lucía", "Joan Manuel Serrat"
+     ],
+     [ "Aquellas pequeñas cosas", "Joan Manuel Serrat"
+     ],
+     [ "Libertad sin ira", "Jarcha"
+     ]
+    ]
+   },
+   {
+    "title": "Plástico",
+    "artist": "Willie Colón & Rubén Blades",
+    "year": 1978,
+    "es": true,
+    "fact": "Titre d'ouverture de l'album Siembra, l'un des disques de salsa les plus vendus, il critique une société superficielle et matérialiste.",
+    "decoys": [
+     [ "Ojos", "Willie Colón & Rubén Blades"
+     ],
+     [ "Buscando guayaba", "Willie Colón & Rubén Blades"
+     ],
+     [ "Periódico de ayer", "Héctor Lavoe"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 12,
+  "tier": 3,
+  "decadeKey": "d70",
+  "groupTitle": "Les années 70",
+  "groupBlurb": "Disco, rock FM et variété à paillettes.",
+  "decade": "1970 – 1979",
+  "instrument": "discoball",
+  "color": "#e8735a",
+  "name": "Les années 70 · Difficile",
+  "blurb": "Pour les fouilleurs de bacs à disques.",
+  "tracks": [
+   {
+    "title": "Life on Mars?",
+    "artist": "David Bowie",
+    "year": 1971,
+    "fact": "Bowie l'a écrite en réponse à My Way : il avait proposé des paroles anglaises pour Comme d'habitude, refusées au profit de Paul Anka.",
+    "decoys": [
+     [ "Changes", "David Bowie"
+     ],
+     [ "Starman", "David Bowie"
+     ],
+     [ "Rocket Man", "Elton John"
+     ]
+    ]
+   },
+   {
+    "title": "Ain't No Sunshine",
+    "artist": "Bill Withers",
+    "year": 1971,
+    "fact": "Bill Withers y répète « I know » 26 fois de suite : il comptait écrire d'autres paroles, mais ses musiciens lui ont conseillé de garder ça.",
+    "decoys": [
+     [ "Lean on Me", "Bill Withers"
+     ],
+     [ "Lovely Day", "Bill Withers"
+     ],
+     [ "Use Me", "Bill Withers"
+     ]
+    ]
+   },
+   {
+    "title": "Psycho Killer",
+    "artist": "Talking Heads",
+    "year": 1977,
+    "fact": "Le passage en français a été écrit par la bassiste Tina Weymouth, dont la mère était française.",
+    "decoys": [
+     [ "Once in a Lifetime", "Talking Heads"
+     ],
+     [ "Take Me to the River", "Talking Heads"
+     ],
+     [ "Blitzkrieg Bop", "Ramones"
+     ]
+    ]
+   },
+   {
+    "title": "Rapper's Delight",
+    "artist": "The Sugarhill Gang",
+    "year": 1979,
+    "fact": "Premier single de rap à entrer dans le top 40 américain, il repose sur la ligne de basse de Good Times de Chic, rejouée en studio.",
+    "decoys": [
+     [ "Good Times", "Chic"
+     ],
+     [ "Christmas Rappin'", "Kurtis Blow"
+     ],
+     [ "Ring My Bell", "Anita Ward"
+     ]
+    ]
+   },
+   {
+    "title": "Roxanne",
+    "artist": "The Police",
+    "year": 1978,
+    "fact": "Sting a imaginé cette chanson en voyant des prostituées près de l'hôtel où logeait le groupe à Paris.",
+    "decoys": [
+     [ "Message in a Bottle", "The Police"
+     ],
+     [ "Walking on the Moon", "The Police"
+     ],
+     [ "Can't Stand Losing You", "The Police"
+     ]
+    ]
+   },
+   {
+    "title": "Le Sud",
+    "artist": "Nino Ferrer",
+    "year": 1975,
+    "fact": "D'abord enregistrée en anglais (South), elle évoque les premières années de Nino Ferrer en Nouvelle-Calédonie, pas l'Italie.",
+    "decoys": [
+     [ "La Maison près de la fontaine", "Nino Ferrer"
+     ],
+     [ "Le Téléfon", "Nino Ferrer"
+     ],
+     [ "La Ballade des gens heureux", "Gérard Lenorman"
+     ]
+    ]
+   },
+   {
+    "title": "Rock Collection",
+    "artist": "Laurent Voulzy",
+    "year": 1977,
+    "fact": "Coécrite avec Alain Souchon, elle raconte l'adolescence de Voulzy en citant des tubes anglo-saxons des années 60.",
+    "decoys": [
+     [ "Le Cœur grenadine", "Laurent Voulzy"
+     ],
+     [ "J'ai dix ans", "Alain Souchon"
+     ],
+     [ "Allô Maman bobo", "Alain Souchon"
+     ]
+    ]
+   },
+   {
+    "title": "Ojalá",
+    "artist": "Silvio Rodríguez",
+    "year": 1978,
+    "es": true,
+    "fact": "Composée à la fin des années 60, cette chanson du Cubain n'est parue sur disque qu'en 1978, sur l'album Al final de este viaje.",
+    "decoys": [
+     [ "Te doy una canción", "Silvio Rodríguez"
+     ],
+     [ "Unicornio", "Silvio Rodríguez"
+     ],
+     [ "Yolanda", "Pablo Milanés"
+     ]
+    ]
+   },
+   {
+    "title": "El preso",
+    "artist": "Fruko y sus Tesos",
+    "year": 1975,
+    "es": true,
+    "fact": "Chanté par Wilson Saoko, ce classique de la salsa colombienne raconte un homme condamné à 30 ans de prison pour une affaire de drogue.",
+    "decoys": [
+     [ "Aguanile", "Willie Colón & Héctor Lavoe"
+     ],
+     [ "Sonido bestial", "Richie Ray & Bobby Cruz"
+     ],
+     [ "Periódico de ayer", "Héctor Lavoe"
+     ]
+    ]
+   },
+   {
+    "title": "Y volveré",
+    "artist": "Los Ángeles Negros",
+    "year": 1970,
+    "es": true,
+    "fact": "Ce tube du groupe chilien est une version espagnole de Emporte-moi, du chanteur français Alain Barrière.",
+    "decoys": [
+     [ "Murió la flor", "Los Ángeles Negros"
+     ],
+     [ "Como quisiera decirte", "Los Ángeles Negros"
+     ],
+     [ "Te quiero, te quiero", "Nino Bravo"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 3,
+  "tier": 1,
+  "decadeKey": "d80",
+  "groupTitle": "Les années 80",
+  "groupBlurb": "Synthés, Top 50 et clips en boucle sur MTV.",
+  "decade": "1980 – 1989",
+  "instrument": "cassette",
+  "color": "#e85fa8",
+  "name": "Les années 80 · Facile",
+  "blurb": "Les tubes que tout le monde connaît.",
+  "tracks": [
+   {
+    "title": "Billie Jean",
+    "artist": "Michael Jackson",
+    "year": 1982,
+    "fact": "C'est sur ce titre que Michael Jackson a dévoilé le moonwalk à la télévision, en 1983.",
+    "decoys": [
+     [ "Beat It", "Michael Jackson"
+     ],
+     [ "Thriller", "Michael Jackson"
+     ],
+     [ "Rock with You", "Michael Jackson"
+     ]
+    ]
+   },
+   {
+    "title": "Sweet Dreams (Are Made of This)",
+    "artist": "Eurythmics",
+    "year": 1983,
+    "fact": "Le clip, avec Annie Lennox en costume et cheveux orange coupés court, a tourné en boucle sur MTV.",
+    "decoys": [
+     [ "Here Comes the Rain Again", "Eurythmics"
+     ],
+     [ "Tainted Love", "Soft Cell"
+     ],
+     [ "Don't You Want Me", "The Human League"
+     ]
+    ]
+   },
+   {
+    "title": "Take On Me",
+    "artist": "a-ha",
+    "year": 1985,
+    "fact": "Il a fallu un nouvel enregistrement et un clip mi-dessin, mi-film pour qu'il devienne un tube.",
+    "decoys": [
+     [ "The Sun Always Shines on T.V.", "a-ha"
+     ],
+     [ "Never Gonna Give You Up", "Rick Astley"
+     ],
+     [ "Everybody Wants to Rule the World", "Tears for Fears"
+     ]
+    ]
+   },
+   {
+    "title": "Like a Prayer",
+    "artist": "Madonna",
+    "year": 1989,
+    "fact": "Pepsi a retiré sa publicité avec Madonna après la sortie du clip, jugé blasphématoire.",
+    "decoys": [
+     [ "Like a Virgin", "Madonna"
+     ],
+     [ "Papa Don't Preach", "Madonna"
+     ],
+     [ "Girls Just Want to Have Fun", "Cyndi Lauper"
+     ]
+    ]
+   },
+   {
+    "title": "Livin' on a Prayer",
+    "artist": "Bon Jovi",
+    "year": 1986,
+    "fact": "Le son « parlant » de la guitare de Richie Sambora vient d'une talk box.",
+    "decoys": [
+     [ "You Give Love a Bad Name", "Bon Jovi"
+     ],
+     [ "The Final Countdown", "Europe"
+     ],
+     [ "Here I Go Again", "Whitesnake"
+     ]
+    ]
+   },
+   {
+    "title": "Les Démons de minuit",
+    "artist": "Images",
+    "year": 1986,
+    "fact": "Le plus grand tube du groupe toulousain Images.",
+    "decoys": [
+     [ "Nuit de folie", "Début de Soirée"
+     ],
+     [ "Toute première fois", "Jeanne Mas"
+     ],
+     [ "Cendrillon", "Téléphone"
+     ]
+    ]
+   },
+   {
+    "title": "Joe le taxi",
+    "artist": "Vanessa Paradis",
+    "year": 1987,
+    "fact": "Vanessa Paradis avait 14 ans. Les paroles sont d'Étienne Roda-Gil.",
+    "decoys": [
+     [ "Marcia Baïla", "Les Rita Mitsouko"
+     ],
+     [ "Tombé pour la France", "Étienne Daho"
+     ],
+     [ "Voyage, voyage", "Desireless"
+     ]
+    ]
+   },
+   {
+    "title": "La Bamba",
+    "artist": "Los Lobos",
+    "year": 1987,
+    "es": true,
+    "fact": "Enregistrée pour le film sur Ritchie Valens, cette reprise d'un air traditionnel mexicain a été n°1 aux États-Unis et au Royaume-Uni.",
+    "decoys": [
+     [ "La Pistola y el Corazón", "Los Lobos"
+     ],
+     [ "Djobi Djoba", "Gipsy Kings"
+     ],
+     [ "Ahora te puedes marchar", "Luis Miguel"
+     ]
+    ]
+   },
+   {
+    "title": "Hijo de la Luna",
+    "artist": "Mecano",
+    "year": 1986,
+    "es": true,
+    "fact": "Écrite par José María Cano, elle raconte la légende d'une gitane qui promet son premier enfant à la Lune.",
+    "decoys": [
+     [ "Cruz de navajas", "Mecano"
+     ],
+     [ "Me cuesta tanto olvidarte", "Mecano"
+     ],
+     [ "La fuerza del destino", "Mecano"
+     ]
+    ]
+   },
+   {
+    "title": "Bamboléo",
+    "artist": "Gipsy Kings",
+    "year": 1987,
+    "es": true,
+    "fact": "Les Gipsy Kings, gitans d'Arles et de Montpellier, chantent en espagnol. Ce titre de leur album de 1987 les a révélés dans le monde entier.",
+    "decoys": [
+     [ "Djobi Djoba", "Gipsy Kings"
+     ],
+     [ "Un Amor", "Gipsy Kings"
+     ],
+     [ "Bem, Bem, Maria", "Gipsy Kings"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 8,
+  "tier": 2,
+  "decadeKey": "d80",
+  "groupTitle": "Les années 80",
+  "groupBlurb": "Synthés, Top 50 et clips en boucle sur MTV.",
+  "decade": "1980 – 1989",
+  "instrument": "cassette",
+  "color": "#e85fa8",
+  "name": "Les années 80 · Moyen",
+  "blurb": "Des succès un cran moins évidents.",
+  "tracks": [
+   {
+    "title": "Ella, elle l'a",
+    "artist": "France Gall",
+    "year": 1987,
+    "fact": "Un hommage à Ella Fitzgerald, écrit et composé par Michel Berger.",
+    "decoys": [
+     [ "Résiste", "France Gall"
+     ],
+     [ "Évidemment", "France Gall"
+     ],
+     [ "Babacar", "France Gall"
+     ]
+    ]
+   },
+   {
+    "title": "Don't You (Forget About Me)",
+    "artist": "Simple Minds",
+    "year": 1985,
+    "fact": "Écrit pour le film Breakfast Club. Simple Minds avait d'abord refusé de l'enregistrer.",
+    "decoys": [
+     [ "Alive and Kicking", "Simple Minds"
+     ],
+     [ "Just Can't Get Enough", "Depeche Mode"
+     ],
+     [ "Forever Young", "Alphaville"
+     ]
+    ]
+   },
+   {
+    "title": "Africa",
+    "artist": "Toto",
+    "year": 1982,
+    "fact": "Le claviériste David Paich en a écrit les paroles sans être jamais allé en Afrique.",
+    "decoys": [
+     [ "Rosanna", "Toto"
+     ],
+     [ "Eye of the Tiger", "Survivor"
+     ],
+     [ "Don't Stop Believin'", "Journey"
+     ]
+    ]
+   },
+   {
+    "title": "Every Breath You Take",
+    "artist": "The Police",
+    "year": 1983,
+    "fact": "Sting l'a écrite en Jamaïque, à GoldenEye, la propriété où Ian Fleming avait écrit les romans de James Bond.",
+    "decoys": [
+     [ "King of Pain", "The Police"
+     ],
+     [ "Wrapped Around Your Finger", "The Police"
+     ],
+     [ "Don't Stand So Close to Me", "The Police"
+     ]
+    ]
+   },
+   {
+    "title": "Girls Just Want to Have Fun",
+    "artist": "Cyndi Lauper",
+    "year": 1983,
+    "fact": "Écrite à l'origine par Robert Hazard du point de vue d'un homme, Cyndi Lauper en a réécrit les paroles pour en faire un hymne féminin.",
+    "decoys": [
+     [ "Time After Time", "Cyndi Lauper"
+     ],
+     [ "She Bop", "Cyndi Lauper"
+     ],
+     [ "Material Girl", "Madonna"
+     ]
+    ]
+   },
+   {
+    "title": "Tainted Love",
+    "artist": "Soft Cell",
+    "year": 1981,
+    "fact": "C'est la reprise d'un titre soul enregistré par Gloria Jones en 1964, passé inaperçu à sa sortie.",
+    "decoys": [
+     [ "Say Hello, Wave Goodbye", "Soft Cell"
+     ],
+     [ "Don't You Want Me", "The Human League"
+     ],
+     [ "Fade to Grey", "Visage"
+     ]
+    ]
+   },
+   {
+    "title": "L'Aventurier",
+    "artist": "Indochine",
+    "year": 1982,
+    "fact": "La chanson rend hommage à Bob Morane, le héros des romans d'aventure d'Henri Vernes.",
+    "decoys": [
+     [ "3e sexe", "Indochine"
+     ],
+     [ "Canary Bay", "Indochine"
+     ],
+     [ "Trois nuits par semaine", "Indochine"
+     ]
+    ]
+   },
+   {
+    "title": "Ojalá Que Llueva Café",
+    "artist": "Juan Luis Guerra 4.40",
+    "year": 1989,
+    "es": true,
+    "fact": "Chanson-titre de l'album de 1989 du Dominicain Juan Luis Guerra, elle souhaite une pluie de café pour les paysans pauvres.",
+    "decoys": [
+     [ "Visa para un sueño", "Juan Luis Guerra 4.40"
+     ],
+     [ "Burbujas de amor", "Juan Luis Guerra 4.40"
+     ],
+     [ "La Bilirrubina", "Juan Luis Guerra 4.40"
+     ]
+    ]
+   },
+   {
+    "title": "Devuélveme a mi chica",
+    "artist": "Hombres G",
+    "year": 1985,
+    "es": true,
+    "fact": "Premier grand tube du groupe madrilène, on la surnomme souvent « Sufre mamón », d'après son refrain.",
+    "decoys": [
+     [ "Venezia", "Hombres G"
+     ],
+     [ "Marta tiene un marcapasos", "Hombres G"
+     ],
+     [ "Visite nuestro bar", "Hombres G"
+     ]
+    ]
+   },
+   {
+    "title": "Persiana Americana",
+    "artist": "Soda Stereo",
+    "year": 1986,
+    "es": true,
+    "fact": "Extrait de l'album Signos, ce titre du trio de Gustavo Cerati est un classique du rock argentin.",
+    "decoys": [
+     [ "Nada personal", "Soda Stereo"
+     ],
+     [ "Cuando pase el temblor", "Soda Stereo"
+     ],
+     [ "Signos", "Soda Stereo"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 13,
+  "tier": 3,
+  "decadeKey": "d80",
+  "groupTitle": "Les années 80",
+  "groupBlurb": "Synthés, Top 50 et clips en boucle sur MTV.",
+  "decade": "1980 – 1989",
+  "instrument": "cassette",
+  "color": "#e85fa8",
+  "name": "Les années 80 · Difficile",
+  "blurb": "Pour les fouilleurs de bacs à disques.",
+  "tracks": [
+   {
+    "title": "Blue Monday",
+    "artist": "New Order",
+    "year": 1983,
+    "fact": "Sa pochette, imitant une disquette, coûtait si cher à fabriquer que Factory Records perdait de l'argent sur chaque exemplaire vendu.",
+    "decoys": [
+     [ "Bizarre Love Triangle", "New Order"
+     ],
+     [ "True Faith", "New Order"
+     ],
+     [ "Just Can't Get Enough", "Depeche Mode"
+     ]
+    ]
+   },
+   {
+    "title": "Love Will Tear Us Apart",
+    "artist": "Joy Division",
+    "year": 1980,
+    "fact": "Sorti en juin 1980, un mois après la mort du chanteur Ian Curtis, c'est le plus grand succès de Joy Division.",
+    "decoys": [
+     [ "Transmission", "Joy Division"
+     ],
+     [ "Atmosphere", "Joy Division"
+     ],
+     [ "Disorder", "Joy Division"
+     ]
+    ]
+   },
+   {
+    "title": "There Is a Light That Never Goes Out",
+    "artist": "The Smiths",
+    "year": 1986,
+    "fact": "Tirée de l'album The Queen Is Dead, elle n'est sortie en single qu'en 1992, après la séparation du groupe.",
+    "decoys": [
+     [ "How Soon Is Now?", "The Smiths"
+     ],
+     [ "This Charming Man", "The Smiths"
+     ],
+     [ "Bigmouth Strikes Again", "The Smiths"
+     ]
+    ]
+   },
+   {
+    "title": "The Message",
+    "artist": "Grandmaster Flash & The Furious Five",
+    "year": 1982,
+    "fact": "Premier rap à décrire la dureté du ghetto, c'est aussi le premier morceau hip-hop entré au registre des enregistrements de la Bibliothèque du Congrès.",
+    "decoys": [
+     [ "Planet Rock", "Afrika Bambaataa & The Soulsonic Force"
+     ],
+     [ "Rapper's Delight", "The Sugarhill Gang"
+     ],
+     [ "It's Like That", "Run-DMC"
+     ]
+    ]
+   },
+   {
+    "title": "Enola Gay",
+    "artist": "Orchestral Manoeuvres In The Dark",
+    "year": 1980,
+    "fact": "Le titre reprend le nom du bombardier B-29 qui a largué la bombe atomique sur Hiroshima en 1945.",
+    "decoys": [
+     [ "Souvenir", "Orchestral Manoeuvres In The Dark"
+     ],
+     [ "Joan of Arc", "Orchestral Manoeuvres In The Dark"
+     ],
+     [ "Electricity", "Orchestral Manoeuvres In The Dark"
+     ]
+    ]
+   },
+   {
+    "title": "Marcia Baila",
+    "artist": "Les Rita Mitsouko",
+    "year": 1984,
+    "fact": "Catherine Ringer y rend hommage à Marcia Moretto, danseuse et chorégraphe argentine morte d'un cancer en 1983.",
+    "decoys": [
+     [ "C'est comme ça", "Les Rita Mitsouko"
+     ],
+     [ "Andy", "Les Rita Mitsouko"
+     ],
+     [ "Le Petit Train", "Les Rita Mitsouko"
+     ]
+    ]
+   },
+   {
+    "title": "Week-end à Rome",
+    "artist": "Étienne Daho",
+    "year": 1984,
+    "fact": "Saint Etienne en a tiré une version anglaise, qui a donné en 1995 le tube He's on the Phone.",
+    "decoys": [
+     [ "Tombé pour la France", "Étienne Daho"
+     ],
+     [ "Épaule tattoo", "Étienne Daho"
+     ],
+     [ "Le Grand Sommeil", "Étienne Daho"
+     ]
+    ]
+   },
+   {
+    "title": "El baile de los que sobran",
+    "artist": "Los Prisioneros",
+    "year": 1986,
+    "es": true,
+    "fact": "Sorti en 1986 sous la dictature de Pinochet, ce titre chilien est redevenu un hymne lors des manifestations de 2019.",
+    "decoys": [
+     [ "We Are Sudamerican Rockers", "Los Prisioneros"
+     ],
+     [ "¿Por qué no se van?", "Los Prisioneros"
+     ],
+     [ "Sexo", "Los Prisioneros"
+     ]
+    ]
+   },
+   {
+    "title": "La Rebelión",
+    "artist": "Joe Arroyo",
+    "year": 1986,
+    "es": true,
+    "fact": "Joe Arroyo y raconte la révolte d'un esclave africain contre son maître espagnol, à Carthagène des Indes au XVIIe siècle.",
+    "decoys": [
+     [ "En Barranquilla me quedo", "Joe Arroyo"
+     ],
+     [ "Cali pachanguero", "Grupo Niche"
+     ],
+     [ "Una aventura", "Grupo Niche"
+     ]
+    ]
+   },
+   {
+    "title": "Mátenme porque me muero",
+    "artist": "Caifanes",
+    "year": 1988,
+    "es": true,
+    "fact": "Premier single de Caifanes, sorti en 1988, il a lancé l'un des groupes phares du rock mexicain.",
+    "decoys": [
+     [ "Viento", "Caifanes"
+     ],
+     [ "La negra Tomasa", "Caifanes"
+     ],
+     [ "Perdí mi ojo de venado", "Caifanes"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 4,
+  "tier": 1,
+  "decadeKey": "d90",
+  "groupTitle": "Les années 90",
+  "groupBlurb": "Grunge, britpop, boys bands et rap français.",
+  "decade": "1990 – 1999",
+  "instrument": "cd",
+  "color": "#45b7c4",
+  "name": "Les années 90 · Facile",
+  "blurb": "Les tubes que tout le monde connaît.",
+  "tracks": [
+   {
+    "title": "Smells Like Teen Spirit",
+    "artist": "Nirvana",
+    "year": 1991,
+    "fact": "Le titre vient d'un graffiti de Kathleen Hanna. Teen Spirit était une marque de déodorant.",
+    "decoys": [
+     [ "Come as You Are", "Nirvana"
+     ],
+     [ "Alive", "Pearl Jam"
+     ],
+     [ "Black Hole Sun", "Soundgarden"
+     ]
+    ]
+   },
+   {
+    "title": "Wonderwall",
+    "artist": "Oasis",
+    "year": 1995,
+    "fact": "Le titre vient de Wonderwall Music, un album solo de George Harrison.",
+    "decoys": [
+     [ "Don't Look Back in Anger", "Oasis"
+     ],
+     [ "Song 2", "Blur"
+     ],
+     [ "Bitter Sweet Symphony", "The Verve"
+     ]
+    ]
+   },
+   {
+    "title": "...Baby One More Time",
+    "artist": "Britney Spears",
+    "year": 1998,
+    "fact": "Écrit par le Suédois Max Martin, et d'abord proposé au groupe TLC.",
+    "decoys": [
+     [ "Genie in a Bottle", "Christina Aguilera"
+     ],
+     [ "Believe", "Cher"
+     ],
+     [ "Barbie Girl", "Aqua"
+     ]
+    ]
+   },
+   {
+    "title": "Wannabe",
+    "artist": "Spice Girls",
+    "year": 1996,
+    "fact": "Le tout premier single des Spice Girls, numéro 1 dans plus de trente pays.",
+    "decoys": [
+     [ "Say You'll Be There", "Spice Girls"
+     ],
+     [ "2 Become 1", "Spice Girls"
+     ],
+     [ "MMMBop", "Hanson"
+     ]
+    ]
+   },
+   {
+    "title": "Pour que tu m'aimes encore",
+    "artist": "Céline Dion",
+    "year": 1995,
+    "fact": "Écrite par Jean-Jacques Goldman pour D'eux, l'album le plus vendu en langue française.",
+    "decoys": [
+     [ "Je sais pas", "Céline Dion"
+     ],
+     [ "S'il suffisait d'aimer", "Céline Dion"
+     ],
+     [ "My Heart Will Go On", "Céline Dion"
+     ]
+    ]
+   },
+   {
+    "title": "La Tribu de Dana",
+    "artist": "Manau",
+    "year": 1998,
+    "fact": "La mélodie reprend « Tri Martolod », un air traditionnel breton.",
+    "decoys": [
+     [ "Mais qui est la belette ?", "Manau"
+     ],
+     [ "Ma Benz", "Suprême NTM"
+     ],
+     [ "Petit frère", "IAM"
+     ]
+    ]
+   },
+   {
+    "title": "I Want It That Way",
+    "artist": "Backstreet Boys",
+    "year": 1999,
+    "fact": "Écrit par les Suédois Max Martin et Andreas Carlsson, qui ont privilégié le son des mots à leur sens.",
+    "decoys": [
+     [ "Quit Playing Games (With My Heart)", "Backstreet Boys"
+     ],
+     [ "Tearin' Up My Heart", "*NSYNC"
+     ],
+     [ "Back for Good", "Take That"
+     ]
+    ]
+   },
+   {
+    "title": "Macarena",
+    "artist": "Los del Río",
+    "year": 1993,
+    "es": true,
+    "fact": "Le remix des Bayside Boys a fait du titre du duo sévillan un phénomène mondial, resté 14 semaines numéro 1 aux États-Unis en 1996.",
+    "decoys": [
+     [ "Bailando", "Paradisio"
+     ],
+     [ "La Bomba", "King Africa"
+     ],
+     [ "El Venao", "Los Locos"
+     ]
+    ]
+   },
+   {
+    "title": "María",
+    "artist": "Ricky Martin",
+    "year": 1995,
+    "es": true,
+    "fact": "Extrait de l'album A medio vivir, ce titre est le premier grand succès international de l'ancien membre du groupe portoricain Menudo.",
+    "decoys": [
+     [ "La Copa de la Vida", "Ricky Martin"
+     ],
+     [ "Vuelve", "Ricky Martin"
+     ],
+     [ "Experiencia Religiosa", "Enrique Iglesias"
+     ]
+    ]
+   },
+   {
+    "title": "Estoy Aquí",
+    "artist": "Shakira",
+    "year": 1995,
+    "es": true,
+    "fact": "Premier single de l'album Pies descalzos, il a révélé la chanteuse colombienne dans toute l'Amérique latine.",
+    "decoys": [
+     [ "¿Dónde Estás Corazón?", "Shakira"
+     ],
+     [ "Pies Descalzos, Sueños Blancos", "Shakira"
+     ],
+     [ "Ciega, Sordomuda", "Shakira"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 9,
+  "tier": 2,
+  "decadeKey": "d90",
+  "groupTitle": "Les années 90",
+  "groupBlurb": "Grunge, britpop, boys bands et rap français.",
+  "decade": "1990 – 1999",
+  "instrument": "cd",
+  "color": "#45b7c4",
+  "name": "Les années 90 · Moyen",
+  "blurb": "Des succès un cran moins évidents.",
+  "tracks": [
+   {
+    "title": "Around the World",
+    "artist": "Daft Punk",
+    "year": 1997,
+    "fact": "Les paroles se résument à « around the world », répété 144 fois dans la version de l'album.",
+    "decoys": [
+     [ "Da Funk", "Daft Punk"
+     ],
+     [ "Music Sounds Better with You", "Stardust"
+     ],
+     [ "Sing It Back", "Moloko"
+     ]
+    ]
+   },
+   {
+    "title": "Foule sentimentale",
+    "artist": "Alain Souchon",
+    "year": 1993,
+    "fact": "Élue chanson de l'année aux Victoires de la musique 1994.",
+    "decoys": [
+     [ "Sensualité", "Axelle Red"
+     ],
+     [ "Je danse le Mia", "IAM"
+     ],
+     [ "Savoir aimer", "Florent Pagny"
+     ]
+    ]
+   },
+   {
+    "title": "Losing My Religion",
+    "artist": "R.E.M.",
+    "year": 1991,
+    "fact": "Une expression du sud des États-Unis qui veut dire « être à bout ».",
+    "decoys": [
+     [ "Everybody Hurts", "R.E.M."
+     ],
+     [ "Shiny Happy People", "R.E.M."
+     ],
+     [ "Disarm", "The Smashing Pumpkins"
+     ]
+    ]
+   },
+   {
+    "title": "Creep",
+    "artist": "Radiohead",
+    "year": 1992,
+    "fact": "Premier single du groupe d'Oxford, il a d'abord fait un flop au Royaume-Uni avant d'entrer dans le top 10 lors de sa réédition en 1993.",
+    "decoys": [
+     [ "High and Dry", "Radiohead"
+     ],
+     [ "Karma Police", "Radiohead"
+     ],
+     [ "Today", "The Smashing Pumpkins"
+     ]
+    ]
+   },
+   {
+    "title": "Zombie",
+    "artist": "The Cranberries",
+    "year": 1994,
+    "fact": "Dolores O'Riordan l'a écrite après l'attentat de l'IRA à Warrington en 1993, qui avait coûté la vie à deux enfants.",
+    "decoys": [
+     [ "Linger", "The Cranberries"
+     ],
+     [ "Ode to My Family", "The Cranberries"
+     ],
+     [ "Dreams", "The Cranberries"
+     ]
+    ]
+   },
+   {
+    "title": "Gangsta's Paradise",
+    "artist": "Coolio",
+    "year": 1995,
+    "fact": "Il reprend la mélodie de Pastime Paradise de Stevie Wonder et figure sur la bande originale du film Esprits rebelles.",
+    "decoys": [
+     [ "Regulate", "Warren G"
+     ],
+     [ "California Love", "2Pac"
+     ],
+     [ "Fantastic Voyage", "Coolio"
+     ]
+    ]
+   },
+   {
+    "title": "Désenchantée",
+    "artist": "Mylène Farmer",
+    "year": 1991,
+    "fact": "Premier extrait de l'album L'autre..., elle est restée neuf semaines consécutives numéro 1 des ventes de singles en France.",
+    "decoys": [
+     [ "Je t'aime mélancolie", "Mylène Farmer"
+     ],
+     [ "XXL", "Mylène Farmer"
+     ],
+     [ "Beyond My Control", "Mylène Farmer"
+     ]
+    ]
+   },
+   {
+    "title": "Corazón partío",
+    "artist": "Alejandro Sanz",
+    "year": 1997,
+    "es": true,
+    "fact": "Extrait de Más, l'album le plus vendu de tous les temps en Espagne, avec plus de deux millions d'exemplaires.",
+    "decoys": [
+     [ "Y, ¿si fuera ella?", "Alejandro Sanz"
+     ],
+     [ "Amiga mía", "Alejandro Sanz"
+     ],
+     [ "Si tú me miras", "Alejandro Sanz"
+     ]
+    ]
+   },
+   {
+    "title": "Clavado en un bar",
+    "artist": "Maná",
+    "year": 1997,
+    "es": true,
+    "fact": "Premier single de Sueños líquidos, l'album qui a valu au groupe mexicain son premier Grammy.",
+    "decoys": [
+     [ "En el muelle de San Blas", "Maná"
+     ],
+     [ "Vivir sin aire", "Maná"
+     ],
+     [ "Oye mi amor", "Maná"
+     ]
+    ]
+   },
+   {
+    "title": "Burbujas de amor",
+    "artist": "Juan Luis Guerra 4.40",
+    "year": 1990,
+    "es": true,
+    "fact": "Dans ce tube de l'album Bachata Rosa, le chanteur dominicain rêve d'être un poisson pour frotter son nez contre l'aquarium de sa belle.",
+    "decoys": [
+     [ "La Bilirrubina", "Juan Luis Guerra 4.40"
+     ],
+     [ "Frío, Frío", "Juan Luis Guerra 4.40"
+     ],
+     [ "Ojalá Que Llueva Café", "Juan Luis Guerra 4.40"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 14,
+  "tier": 3,
+  "decadeKey": "d90",
+  "groupTitle": "Les années 90",
+  "groupBlurb": "Grunge, britpop, boys bands et rap français.",
+  "decade": "1990 – 1999",
+  "instrument": "cd",
+  "color": "#45b7c4",
+  "name": "Les années 90 · Difficile",
+  "blurb": "Pour les fouilleurs de bacs à disques.",
+  "tracks": [
+   {
+    "title": "Unfinished Sympathy",
+    "artist": "Massive Attack",
+    "year": 1991,
+    "fact": "Sorti pendant la guerre du Golfe, le single a été crédité au seul nom de Massive pour éviter le mot « Attack ».",
+    "decoys": [
+     [ "Teardrop", "Massive Attack"
+     ],
+     [ "Protection", "Massive Attack"
+     ],
+     [ "Hell Is Round the Corner", "Tricky"
+     ]
+    ]
+   },
+   {
+    "title": "Glory Box",
+    "artist": "Portishead",
+    "year": 1994,
+    "fact": "Elle échantillonne Ike's Rap II d'Isaac Hayes, le même extrait que Tricky utilise dans Hell Is Round the Corner.",
+    "decoys": [
+     [ "Sour Times", "Portishead"
+     ],
+     [ "Roads", "Portishead"
+     ],
+     [ "Karmacoma", "Massive Attack"
+     ]
+    ]
+   },
+   {
+    "title": "Black Hole Sun",
+    "artist": "Soundgarden",
+    "year": 1994,
+    "fact": "Extrait de l'album Superunknown, ce titre a remporté en 1995 le Grammy de la meilleure performance hard rock.",
+    "decoys": [
+     [ "Spoonman", "Soundgarden"
+     ],
+     [ "Fell on Black Days", "Soundgarden"
+     ],
+     [ "Man in the Box", "Alice in Chains"
+     ]
+    ]
+   },
+   {
+    "title": "Common People",
+    "artist": "Pulp",
+    "year": 1995,
+    "fact": "Jarvis Cocker s'est inspiré d'une étudiante grecque fortunée rencontrée à la Saint Martins School of Art de Londres.",
+    "decoys": [
+     [ "Disco 2000", "Pulp"
+     ],
+     [ "Parklife", "Blur"
+     ],
+     [ "Girls & Boys", "Blur"
+     ]
+    ]
+   },
+   {
+    "title": "C.R.E.A.M.",
+    "artist": "Wu-Tang Clan",
+    "year": 1993,
+    "fact": "Le titre signifie « Cash Rules Everything Around Me ». Le morceau échantillonne As Long as I've Got You des Charmels.",
+    "decoys": [
+     [ "Protect Ya Neck", "Wu-Tang Clan"
+     ],
+     [ "Method Man", "Wu-Tang Clan"
+     ],
+     [ "Shook Ones, Pt. II", "Mobb Deep"
+     ]
+    ]
+   },
+   {
+    "title": "Je danse le Mia",
+    "artist": "IAM",
+    "year": 1994,
+    "fact": "Premier single de l'album Ombre est lumière, il échantillonne Give Me the Night de George Benson.",
+    "decoys": [
+     [ "Nés sous la même étoile", "IAM"
+     ],
+     [ "Bouge de là", "MC Solaar"
+     ],
+     [ "Qui sème le vent récolte le tempo", "MC Solaar"
+     ]
+    ]
+   },
+   {
+    "title": "L'homme pressé",
+    "artist": "Noir Désir",
+    "year": 1996,
+    "fact": "Extrait de 666.667 Club, album du groupe bordelais certifié double disque de platine en France dès 1997.",
+    "decoys": [
+     [ "Un jour en France", "Noir Désir"
+     ],
+     [ "À ton étoile", "Noir Désir"
+     ],
+     [ "Tostaky (Le continent)", "Noir Désir"
+     ]
+    ]
+   },
+   {
+    "title": "De música ligera",
+    "artist": "Soda Stereo",
+    "year": 1990,
+    "es": true,
+    "fact": "Dernier morceau du concert d'adieu du groupe argentin en 1997, où Gustavo Cerati a lancé son célèbre « Gracias totales ».",
+    "decoys": [
+     [ "Persiana americana", "Soda Stereo"
+     ],
+     [ "En la ciudad de la furia", "Soda Stereo"
+     ],
+     [ "Té para tres", "Soda Stereo"
+     ]
+    ]
+   },
+   {
+    "title": "Tren al sur",
+    "artist": "Los Prisioneros",
+    "year": 1990,
+    "es": true,
+    "fact": "Sur ce titre du groupe chilien produit par Gustavo Santaolalla, c'est le producteur lui-même qui joue du charango.",
+    "decoys": [
+     [ "El baile de los que sobran", "Los Prisioneros"
+     ],
+     [ "Estrechez de corazón", "Los Prisioneros"
+     ],
+     [ "We Are Sudamerican Rockers", "Los Prisioneros"
+     ]
+    ]
+   },
+   {
+    "title": "El Cuarto de Tula",
+    "artist": "Buena Vista Social Club",
+    "year": 1997,
+    "es": true,
+    "fact": "Ce son cubain raconte la chambre de Tula qui prend feu parce qu'elle s'est endormie sans souffler sa bougie.",
+    "decoys": [
+     [ "Dos Gardenias", "Buena Vista Social Club"
+     ],
+     [ "Candela", "Buena Vista Social Club"
+     ],
+     [ "De Camino a la Vereda", "Buena Vista Social Club"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 5,
+  "tier": 1,
+  "decadeKey": "d00",
+  "groupTitle": "Les années 2000",
+  "groupBlurb": "R'n'B, rock garage et French touch.",
+  "decade": "2000 – 2009",
+  "instrument": "headphones",
+  "color": "#8f8cf0",
+  "name": "Les années 2000 · Facile",
+  "blurb": "Les tubes que tout le monde connaît.",
+  "tracks": [
+   {
+    "title": "Crazy in Love",
+    "artist": "Beyoncé",
+    "year": 2003,
+    "fact": "Les cuivres sont un sample des Chi-Lites, « Are You My Woman (Tell Me So) », sorti en 1970.",
+    "decoys": [
+     [ "Single Ladies (Put a Ring on It)", "Beyoncé"
+     ],
+     [ "Survivor", "Destiny's Child"
+     ],
+     [ "Get Ur Freak On", "Missy Elliott"
+     ]
+    ]
+   },
+   {
+    "title": "Seven Nation Army",
+    "artist": "The White Stripes",
+    "year": 2003,
+    "fact": "Le riff sonne comme une basse, mais c'est une guitare passée dans une pédale qui la baisse d'une octave.",
+    "decoys": [
+     [ "Fell in Love with a Girl", "The White Stripes"
+     ],
+     [ "Take Me Out", "Franz Ferdinand"
+     ],
+     [ "Last Nite", "The Strokes"
+     ]
+    ]
+   },
+   {
+    "title": "Hey Ya!",
+    "artist": "OutKast",
+    "year": 2003,
+    "fact": "Écrit et produit par André 3000, la moitié d'OutKast.",
+    "decoys": [
+     [ "Ms. Jackson", "OutKast"
+     ],
+     [ "Yeah!", "Usher"
+     ],
+     [ "Hips Don't Lie", "Shakira"
+     ]
+    ]
+   },
+   {
+    "title": "Toxic",
+    "artist": "Britney Spears",
+    "year": 2003,
+    "fact": "Les violons viennent d'un sample tiré d'un film indien de 1981, Ek Duuje Ke Liye.",
+    "decoys": [
+     [ "Oops!... I Did It Again", "Britney Spears"
+     ],
+     [ "Can't Get You Out of My Head", "Kylie Minogue"
+     ],
+     [ "Complicated", "Avril Lavigne"
+     ]
+    ]
+   },
+   {
+    "title": "Umbrella",
+    "artist": "Rihanna",
+    "year": 2007,
+    "fact": "La chanson avait d'abord été proposée à Britney Spears, dont la maison de disques n'en a pas voulu.",
+    "decoys": [
+     [ "Don't Stop the Music", "Rihanna"
+     ],
+     [ "Irreplaceable", "Beyoncé"
+     ],
+     [ "Bleeding Love", "Leona Lewis"
+     ]
+    ]
+   },
+   {
+    "title": "Alors on danse",
+    "artist": "Stromae",
+    "year": 2009,
+    "fact": "Le premier tube du Bruxellois Stromae.",
+    "decoys": [
+     [ "Femme Like U", "K-Maro"
+     ],
+     [ "Dragostea Din Tei", "O-Zone"
+     ],
+     [ "Le Dîner", "Bénabar"
+     ]
+    ]
+   },
+   {
+    "title": "One More Time",
+    "artist": "Daft Punk",
+    "year": 2000,
+    "fact": "La voix, passée à l'Auto-Tune, est celle du chanteur américain Romanthony.",
+    "decoys": [
+     [ "Harder, Better, Faster, Stronger", "Daft Punk"
+     ],
+     [ "Lady (Hear Me Tonight)", "Modjo"
+     ],
+     [ "Call on Me", "Eric Prydz"
+     ]
+    ]
+   },
+   {
+    "title": "Gasolina",
+    "artist": "Daddy Yankee",
+    "year": 2004,
+    "es": true,
+    "fact": "Extrait de l'album Barrio Fino, ce tube du Portoricain a largement contribué à faire connaître le reggaeton dans le monde entier.",
+    "decoys": [
+     [ "Lo que pasó, pasó", "Daddy Yankee"
+     ],
+     [ "Dale Don Dale", "Don Omar"
+     ],
+     [ "Rakata", "Wisin & Yandel"
+     ]
+    ]
+   },
+   {
+    "title": "Aserejé",
+    "artist": "Las Ketchup",
+    "year": 2002,
+    "es": true,
+    "fact": "Les chanteuses sont les filles du guitariste flamenco El Tomate, d'où le nom Las Ketchup. Le refrain imite phonétiquement Rapper's Delight.",
+    "decoys": [
+     [ "Ave María", "David Bisbal"
+     ],
+     [ "Antes muerta que sencilla", "María Isabel"
+     ],
+     [ "Dime", "Beth"
+     ]
+    ]
+   },
+   {
+    "title": "La Camisa Negra",
+    "artist": "Juanes",
+    "year": 2004,
+    "es": true,
+    "fact": "Extraite de l'album Mi sangre, elle a été numéro 1 en France, en Allemagne et en Italie, et le tube de l'été 2005 en Espagne.",
+    "decoys": [
+     [ "A Dios le pido", "Juanes"
+     ],
+     [ "Fotografía", "Juanes"
+     ],
+     [ "Volverte a ver", "Juanes"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 10,
+  "tier": 2,
+  "decadeKey": "d00",
+  "groupTitle": "Les années 2000",
+  "groupBlurb": "R'n'B, rock garage et French touch.",
+  "decade": "2000 – 2009",
+  "instrument": "headphones",
+  "color": "#8f8cf0",
+  "name": "Les années 2000 · Moyen",
+  "blurb": "Des succès un cran moins évidents.",
+  "tracks": [
+   {
+    "title": "Crazy",
+    "artist": "Gnarls Barkley",
+    "year": 2006,
+    "fact": "Le premier numéro 1 britannique obtenu grâce aux seuls téléchargements.",
+    "decoys": [
+     [ "Valerie", "Mark Ronson & Amy Winehouse"
+     ],
+     [ "Clint Eastwood", "Gorillaz"
+     ],
+     [ "SexyBack", "Justin Timberlake"
+     ]
+    ]
+   },
+   {
+    "title": "Mr. Brightside",
+    "artist": "The Killers",
+    "year": 2003,
+    "fact": "Le premier single des Killers, un groupe de Las Vegas.",
+    "decoys": [
+     [ "Somebody Told Me", "The Killers"
+     ],
+     [ "Chelsea Dagger", "The Fratellis"
+     ],
+     [ "I Bet You Look Good on the Dancefloor", "Arctic Monkeys"
+     ]
+    ]
+   },
+   {
+    "title": "Moi... Lolita",
+    "artist": "Alizée",
+    "year": 2000,
+    "fact": "Écrite par Mylène Farmer et composée par Laurent Boutonnat. Alizée avait 15 ans.",
+    "decoys": [
+     [ "J'en ai marre !", "Alizée"
+     ],
+     [ "Désenchantée", "Kate Ryan"
+     ],
+     [ "Ces soirées-là", "Yannick"
+     ]
+    ]
+   },
+   {
+    "title": "Feel Good Inc.",
+    "artist": "Gorillaz",
+    "year": 2005,
+    "fact": "Le couplet rappé est assuré par De La Soul. Le titre a valu au groupe virtuel un Grammy Award en 2006.",
+    "decoys": [
+     [ "Dare", "Gorillaz"
+     ],
+     [ "Clint Eastwood", "Gorillaz"
+     ],
+     [ "Dirty Harry", "Gorillaz"
+     ]
+    ]
+   },
+   {
+    "title": "Rehab",
+    "artist": "Amy Winehouse",
+    "year": 2006,
+    "fact": "Amy Winehouse y chante son refus d'entrer en cure de désintoxication. La chanson a remporté trois Grammy Awards en 2008.",
+    "decoys": [
+     [ "Back to Black", "Amy Winehouse"
+     ],
+     [ "You Know I'm No Good", "Amy Winehouse"
+     ],
+     [ "Mercy", "Duffy"
+     ]
+    ]
+   },
+   {
+    "title": "Le vent nous portera",
+    "artist": "Noir Désir",
+    "year": 2001,
+    "fact": "Premier single de l'album Des visages des figures, avec Manu Chao à la guitare. Il a été numéro 1 en Italie.",
+    "decoys": [
+     [ "L'Homme pressé", "Noir Désir"
+     ],
+     [ "Un jour en France", "Noir Désir"
+     ],
+     [ "Jeune et con", "Saez"
+     ]
+    ]
+   },
+   {
+    "title": "Ma philosophie",
+    "artist": "Amel Bent",
+    "year": 2004,
+    "fact": "Extrait de son premier album Un jour d'été, ce titre a été numéro 1 en France début 2005 et a lancé la carrière d'Amel Bent.",
+    "decoys": [
+     [ "Ne retiens pas tes larmes", "Amel Bent"
+     ],
+     [ "La Boulette", "Diam's"
+     ],
+     [ "Parce qu'on vient de loin", "Corneille"
+     ]
+    ]
+   },
+   {
+    "title": "La Tortura",
+    "artist": "Shakira feat. Alejandro Sanz",
+    "year": 2005,
+    "es": true,
+    "fact": "Premier single de l'album Fijación oral vol. 1, en duo avec l'Espagnol Alejandro Sanz. Ce fut le plus gros succès latino de 2005 aux États-Unis.",
+    "decoys": [
+     [ "No", "Shakira"
+     ],
+     [ "Que me quedes tú", "Shakira"
+     ],
+     [ "El alma al aire", "Alejandro Sanz"
+     ]
+    ]
+   },
+   {
+    "title": "Me gustas tú",
+    "artist": "Manu Chao",
+    "year": 2001,
+    "es": true,
+    "fact": "Extrait de Próxima Estación: Esperanza, le morceau énumère ce que Manu Chao aime : les avions, voyager, le matin... et toi.",
+    "decoys": [
+     [ "Clandestino", "Manu Chao"
+     ],
+     [ "Desaparecido", "Manu Chao"
+     ],
+     [ "Me llaman calle", "Manu Chao"
+     ]
+    ]
+   },
+   {
+    "title": "Me voy",
+    "artist": "Julieta Venegas",
+    "year": 2006,
+    "es": true,
+    "fact": "Premier single de l'album Limón y sal de la Mexicaine Julieta Venegas, nommé au Latin Grammy de l'enregistrement de l'année.",
+    "decoys": [
+     [ "Lento", "Julieta Venegas"
+     ],
+     [ "Andar conmigo", "Julieta Venegas"
+     ],
+     [ "Eres para mí", "Julieta Venegas"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 15,
+  "tier": 3,
+  "decadeKey": "d00",
+  "groupTitle": "Les années 2000",
+  "groupBlurb": "R'n'B, rock garage et French touch.",
+  "decade": "2000 – 2009",
+  "instrument": "headphones",
+  "color": "#8f8cf0",
+  "name": "Les années 2000 · Difficile",
+  "blurb": "Pour les fouilleurs de bacs à disques.",
+  "tracks": [
+   {
+    "title": "Last Nite",
+    "artist": "The Strokes",
+    "year": 2001,
+    "fact": "Extrait du premier album Is This It. Tom Petty a relevé sa ressemblance avec son American Girl, sans attaquer le groupe en justice.",
+    "decoys": [
+     [ "Someday", "The Strokes"
+     ],
+     [ "Reptilia", "The Strokes"
+     ],
+     [ "Hard to Explain", "The Strokes"
+     ]
+    ]
+   },
+   {
+    "title": "Maps",
+    "artist": "Yeah Yeah Yeahs",
+    "year": 2003,
+    "fact": "Karen O s'est inspirée de sa relation tumultueuse avec son petit ami d'alors, Angus Andrew, chanteur du groupe Liars.",
+    "decoys": [
+     [ "Y Control", "Yeah Yeah Yeahs"
+     ],
+     [ "Date with the Night", "Yeah Yeah Yeahs"
+     ],
+     [ "Heads Will Roll", "Yeah Yeah Yeahs"
+     ]
+    ]
+   },
+   {
+    "title": "Rebellion (Lies)",
+    "artist": "Arcade Fire",
+    "year": 2004,
+    "fact": "Extrait de Funeral, premier album du groupe montréalais, ainsi nommé car plusieurs membres ont perdu des proches pendant sa conception.",
+    "decoys": [
+     [ "Wake Up", "Arcade Fire"
+     ],
+     [ "Neighborhood #1 (Tunnels)", "Arcade Fire"
+     ],
+     [ "No Cars Go", "Arcade Fire"
+     ]
+    ]
+   },
+   {
+    "title": "Paper Planes",
+    "artist": "M.I.A.",
+    "year": 2007,
+    "fact": "Le morceau échantillonne Straight to Hell de The Clash, et son refrain est ponctué de coups de feu et d'un bruit de caisse enregistreuse.",
+    "decoys": [
+     [ "Bird Flu", "M.I.A."
+     ],
+     [ "Galang", "M.I.A."
+     ],
+     [ "Boyz", "M.I.A."
+     ]
+    ]
+   },
+   {
+    "title": "D.A.N.C.E.",
+    "artist": "Justice",
+    "year": 2007,
+    "fact": "Le duo français y rend hommage à Michael Jackson : les paroles, chantées par une chorale d'enfants, citent plusieurs de ses titres.",
+    "decoys": [
+     [ "Genesis", "Justice"
+     ],
+     [ "Phantom Pt. II", "Justice"
+     ],
+     [ "Waters of Nazareth", "Justice"
+     ]
+    ]
+   },
+   {
+    "title": "Respire",
+    "artist": "Mickey 3D",
+    "year": 2003,
+    "fact": "Ce cri d'alarme écologiste du groupe stéphanois a remporté en 2004 les Victoires de la musique de la chanson et du clip de l'année.",
+    "decoys": [
+     [ "Les Gens raisonnables", "Mickey 3D"
+     ],
+     [ "Tout le bonheur du monde", "Sinsemilia"
+     ],
+     [ "Jeune et con", "Saez"
+     ]
+    ]
+   },
+   {
+    "title": "Le Dîner",
+    "artist": "Bénabar",
+    "year": 2005,
+    "fact": "Extrait de l'album Reprise des négociations, le chanteur y invente mille prétextes pour échapper à un dîner chez des amis.",
+    "decoys": [
+     [ "Dis-lui oui", "Bénabar"
+     ],
+     [ "L'Effet papillon", "Bénabar"
+     ],
+     [ "La Lettre", "Renan Luce"
+     ]
+    ]
+   },
+   {
+    "title": "Ella",
+    "artist": "Bebe",
+    "year": 2004,
+    "es": true,
+    "fact": "Extrait de Pafuera telarañas, premier album de l'Espagnole Bebe, qui lui a valu le Latin Grammy de la meilleure révélation en 2005.",
+    "decoys": [
+     [ "Malo", "Bebe"
+     ],
+     [ "Siempre me quedará", "Bebe"
+     ],
+     [ "Rosas", "La Oreja de Van Gogh"
+     ]
+    ]
+   },
+   {
+    "title": "Eres",
+    "artist": "Café Tacvba",
+    "year": 2003,
+    "es": true,
+    "fact": "Cette ballade du groupe mexicain, extraite de l'album Cuatro caminos, a remporté le Latin Grammy de la meilleure chanson rock.",
+    "decoys": [
+     [ "Déjate caer", "Café Tacvba"
+     ],
+     [ "Volver a comenzar", "Café Tacvba"
+     ],
+     [ "Labios compartidos", "Maná"
+     ]
+    ]
+   },
+   {
+    "title": "Crimen",
+    "artist": "Gustavo Cerati",
+    "year": 2006,
+    "es": true,
+    "fact": "Extrait de l'album Ahí vamos de l'Argentin Gustavo Cerati, ancien chanteur et guitariste de Soda Stereo.",
+    "decoys": [
+     [ "Adiós", "Gustavo Cerati"
+     ],
+     [ "La excepción", "Gustavo Cerati"
+     ],
+     [ "Puente", "Gustavo Cerati"
+     ]
+    ]
+   }
+  ]
+ }
+];
+
+/* ===================== API Deezer =====================
+   1. Sur Netlify : /api/deezer/* est redirigé vers api.deezer.com (voir netlify.toml), donc fetch classique.
+   2. Ailleurs (fichier ouvert en local) : repli en JSONP, que Deezer accepte avec output=jsonp.
+   Les liens d'extraits expirent : on les cherche au moment de jouer, jamais stockés. */
+const PREVIEW_CACHE = new Map();
+const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+
+function jsonp(url, ms = 6000) {
+  return new Promise((resolve, reject) => {
+    const cb = "dz_cb_" + Math.random().toString(36).slice(2);
+    const s = document.createElement("script");
+    const done = () => { delete window[cb]; s.remove(); clearTimeout(t); };
+    const t = setTimeout(() => { done(); reject(new Error("timeout")); }, ms);
+    window[cb] = data => { done(); resolve(data); };
+    s.onerror = () => { done(); reject(new Error("jsonp")); };
+    s.src = url + (url.includes("?") ? "&" : "?") + "output=jsonp&callback=" + cb;
+    document.head.appendChild(s);
+  });
+}
+async function deezer(path) {
+  try {
+    const r = await fetch("/api/deezer" + path, { headers: { Accept: "application/json" } });
+    const type = r.headers.get("content-type") || "";
+    if (r.ok && type.includes("json")) return await r.json();
+  } catch (e) {}
+  return jsonp("https://api.deezer.com" + path);
+}
+function pickBest(list, track) {
+  const want = norm(track.title).split(" ").sort((a, b) => b.length - a.length)[0];
+  const art = norm(track.artist).split(" ").filter(w => w.length > 2);
+  const withPrev = (list || []).filter(x => x.preview);
+  return withPrev.find(x => norm(x.title).includes(want) && art.some(w => norm(x.artist.name).includes(w)))
+      || withPrev.find(x => norm(x.title).includes(want))
+      || null;
+}
+async function getPreview(track) {
+  const key = track.artist + "|" + track.title;
+  if (PREVIEW_CACHE.has(key)) return PREVIEW_CACHE.get(key);
+  let hit = null;
+  try {
+    const a = await deezer("/search?limit=10&q=" + encodeURIComponent(track.q));
+    hit = pickBest(a.data, track);
+    if (!hit) {
+      const b = await deezer("/search?limit=15&q=" + encodeURIComponent(track.artist.split(" & ")[0] + " " + track.title));
+      hit = pickBest(b.data, track);
+    }
+  } catch (e) { hit = null; }
+  const res = hit ? { url: hit.preview, cover: hit.album && hit.album.cover_medium, link: hit.link, album: hit.album && hit.album.title } : null;
+  PREVIEW_CACHE.set(key, res);
+  return res;
+}
+
+const player = new Audio();
+player.preload = "auto";
+let fadeT = 0;
+function playClip(url) {
+  clearInterval(fadeT);
+  player.src = url; player.currentTime = 0; player.volume = 1;
+  return player.play();
+}
+function stopClip() {
+  if (player.paused) return;
+  clearInterval(fadeT);
+  fadeT = setInterval(() => {
+    player.volume = Math.max(0, player.volume - 0.15);
+    if (player.volume <= 0.01) { clearInterval(fadeT); player.pause(); }
+  }, 40);
+}
+
+/* ===================== Illustrations ===================== */
+const ART = {
+  trumpet: c => `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="${c}" opacity=".22"/>
+    <g transform="rotate(-16 60 60)">
+      <rect x="14" y="56" width="66" height="8" rx="4" fill="#e0b04f"/>
+      <path d="M76 60 L106 36 Q114 60 106 84 Z" fill="#e0b04f"/>
+      <ellipse cx="106" cy="60" rx="5" ry="23" fill="#9c7228"/>
+      <rect x="35" y="38" width="7" height="20" rx="2" fill="#f3e6c8"/>
+      <rect x="46" y="38" width="7" height="20" rx="2" fill="#f3e6c8"/>
+      <rect x="57" y="38" width="7" height="20" rx="2" fill="#f3e6c8"/>
+      <rect x="32" y="62" width="34" height="16" rx="8" fill="none" stroke="#e0b04f" stroke-width="5"/>
+      <rect x="7" y="54" width="9" height="12" rx="3" fill="#9c7228"/>
+    </g>
+    <circle cx="24" cy="26" r="4" fill="${c}"/><rect x="27" y="10" width="2.5" height="17" fill="${c}"/></svg>`,
+  sax: c => `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="${c}" opacity=".22"/>
+    <path d="M66 18 L66 76 Q66 100 48 100 Q32 100 32 84 L32 74" fill="none" stroke="#e0b04f" stroke-width="14" stroke-linecap="round"/>
+    <path d="M18 60 L46 60 L40 76 L24 76 Z" fill="#e0b04f"/>
+    <ellipse cx="32" cy="60" rx="14" ry="4.5" fill="#9c7228"/>
+    <path d="M66 20 Q66 10 78 10 L92 14" fill="none" stroke="#9c7228" stroke-width="5" stroke-linecap="round"/>
+    <rect x="90" y="10" width="11" height="7" rx="2" fill="#15131e" transform="rotate(16 95 13)"/>
+    <circle cx="66" cy="32" r="4" fill="#f3e6c8"/><circle cx="66" cy="45" r="4" fill="#f3e6c8"/>
+    <circle cx="66" cy="58" r="4" fill="#f3e6c8"/><circle cx="66" cy="71" r="4" fill="#f3e6c8"/>
+    <circle cx="96" cy="74" r="4" fill="${c}"/><rect x="99" y="58" width="2.5" height="17" fill="${c}"/></svg>`,
+  bass: c => `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="${c}" opacity=".22"/>
+    <ellipse cx="60" cy="86" rx="25" ry="22" fill="#b5652e"/>
+    <ellipse cx="60" cy="58" rx="18" ry="16" fill="#b5652e"/>
+    <circle cx="60" cy="10" r="6" fill="#b5652e"/>
+    <rect x="57" y="12" width="6" height="72" rx="2" fill="#15131e"/>
+    <path d="M45 78 q-3 6 0 12" fill="none" stroke="#15131e" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M75 78 q3 6 0 12" fill="none" stroke="#15131e" stroke-width="2.4" stroke-linecap="round"/>
+    <rect x="50" y="88" width="20" height="4" rx="1" fill="#f3e6c8"/>
+    <g stroke="#f3e6c8" stroke-width=".7"><line x1="58.2" y1="14" x2="57.5" y2="100"/><line x1="59.4" y1="14" x2="59.2" y2="100"/><line x1="60.6" y1="14" x2="60.8" y2="100"/><line x1="61.8" y1="14" x2="62.5" y2="100"/></g>
+    <line x1="60" y1="108" x2="60" y2="116" stroke="#f3e6c8" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="94" cy="36" r="4" fill="${c}"/><rect x="97" y="20" width="2.5" height="17" fill="${c}"/></svg>`,
+  piano: c => `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="${c}" opacity=".22"/>
+    <path d="M16 50 L104 50 L104 40 Q104 28 92 28 L28 28 Q16 28 16 40 Z" fill="#0d0c14"/>
+    <rect x="16" y="50" width="88" height="32" fill="#f3e6c8"/>
+    <g stroke="#15131e" stroke-width="1.2">${[1,2,3,4,5,6].map(k => `<line x1="${16 + k*88/7}" y1="50" x2="${16 + k*88/7}" y2="82"/>`).join("")}</g>
+    <g fill="#15131e">${[1,2,4,5,6].map(k => `<rect x="${16 + k*88/7 - 3.5}" y="50" width="7" height="19" rx="1"/>`).join("")}</g>
+    <rect x="16" y="82" width="88" height="6" fill="#0d0c14"/>
+    <rect x="22" y="88" width="6" height="18" fill="#0d0c14"/><rect x="92" y="88" width="6" height="18" fill="#0d0c14"/>
+    <circle cx="40" cy="40" r="3.4" fill="${c}"/><circle cx="52" cy="40" r="3.4" fill="#e0b04f"/></svg>`,
+  drums: c => `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="${c}" opacity=".22"/>
+    <line x1="32" y1="40" x2="32" y2="104" stroke="#8a8296" stroke-width="2.5"/>
+    <ellipse cx="32" cy="38" rx="22" ry="5" fill="#e0b04f"/>
+    <circle cx="64" cy="80" r="26" fill="#f3e6c8" stroke="#d2475c" stroke-width="6"/>
+    <circle cx="64" cy="80" r="9" fill="${c}"/>
+    <rect x="78" y="48" width="30" height="16" rx="3" fill="#d2475c"/>
+    <ellipse cx="93" cy="48" rx="15" ry="4" fill="#f3e6c8"/>
+    <line x1="80" y1="22" x2="96" y2="42" stroke="#e8c99a" stroke-width="3.2" stroke-linecap="round"/>
+    <line x1="106" y1="20" x2="92" y2="42" stroke="#e8c99a" stroke-width="3.2" stroke-linecap="round"/></svg>`
+};
+function vinyl(c) {
+  const grooves = [88, 80, 73, 66, 59, 52, 45].map(r => `<circle cx="100" cy="100" r="${r}" fill="none" stroke="#2a2638" stroke-width="1"/>`).join("");
+  return `<svg viewBox="0 0 200 200" aria-hidden="true">
+    <circle cx="100" cy="100" r="97" fill="#0b0a10"/>${grooves}
+    <path d="M100 100 L170 30 A99 99 0 0 1 192 72 Z" fill="#ffffff" opacity=".06"/>
+    <path d="M100 100 L30 170 A99 99 0 0 1 8 128 Z" fill="#ffffff" opacity=".05"/>
+    <circle cx="100" cy="100" r="34" fill="${c}"/>
+    <circle cx="100" cy="100" r="26" fill="none" stroke="#15131e" stroke-opacity=".35" stroke-width="1"/>
+    <rect x="80" y="86" width="40" height="3" rx="1.5" fill="#15131e" opacity=".45"/>
+    <rect x="86" y="111" width="28" height="3" rx="1.5" fill="#15131e" opacity=".45"/>
+    <circle cx="100" cy="100" r="3.5" fill="#15131e"/></svg>`;
+}
+const ARM = `<svg viewBox="0 0 90 120" aria-hidden="true">
+  <circle cx="70" cy="14" r="12" fill="#3a3150"/><circle cx="70" cy="14" r="5" fill="#e0b04f"/>
+  <path d="M70 14 L64 84 L44 104" fill="none" stroke="#cfc6dc" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="32" y="98" width="20" height="12" rx="3" fill="#e0b04f" transform="rotate(42 42 104)"/></svg>`;
+
+Object.assign(ART, {
+  manouche: c => `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="${c}" opacity=".22"/>
+    <g transform="rotate(-28 60 64)">
+      <rect x="56.5" y="10" width="7" height="58" rx="2" fill="#6b3b2a"/>
+      <rect x="53" y="4" width="14" height="11" rx="3" fill="#3a2418"/>
+      <path d="M60 52 C44 50 38 62 44 72 C34 80 36 112 60 112 C84 112 86 80 76 72 C82 62 76 50 60 52 Z" fill="#c98a4b"/>
+      <ellipse cx="60" cy="74" rx="5" ry="8" fill="#2a1a12"/>
+      <rect x="51" y="94" width="18" height="4" rx="1" fill="#3a2418"/>
+      <g stroke="#f3e6c8" stroke-width=".6"><line x1="58.4" y1="14" x2="58.4" y2="96"/><line x1="59.6" y1="14" x2="59.6" y2="96"/><line x1="60.8" y1="14" x2="60.8" y2="96"/><line x1="62" y1="14" x2="62" y2="96"/></g>
+    </g>
+    <circle cx="96" cy="30" r="4" fill="${c}"/><rect x="99" y="14" width="2.5" height="17" fill="${c}"/></svg>`,
+  congas: c => `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="${c}" opacity=".22"/>
+    <path d="M24 40 L50 40 L46 76 L50 108 L24 108 L28 76 Z" fill="#b5652e"/>
+    <path d="M58 30 L86 30 L82 70 L86 108 L58 108 L62 70 Z" fill="${c}"/>
+    <ellipse cx="37" cy="40" rx="13" ry="4" fill="#f3e6c8"/><ellipse cx="72" cy="30" rx="14" ry="4" fill="#f3e6c8"/>
+    <g stroke="#e0b04f" stroke-width="2"><line x1="25" y1="48" x2="49" y2="48"/><line x1="25" y1="100" x2="49" y2="100"/><line x1="59" y1="38" x2="85" y2="38"/><line x1="59" y1="100" x2="85" y2="100"/></g>
+    <path d="M94 50 l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2 Z" fill="#f3e6c8"/></svg>`,
+  maracas: c => `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="${c}" opacity=".22"/>
+    <g transform="rotate(-24 44 62)"><ellipse cx="44" cy="40" rx="16" ry="20" fill="${c}"/><rect x="41" y="58" width="6" height="44" rx="3" fill="#c98a4b"/>
+      <path d="M30 36 q14 8 28 0" fill="none" stroke="#f3e6c8" stroke-width="3"/></g>
+    <g transform="rotate(24 76 62)"><ellipse cx="76" cy="40" rx="16" ry="20" fill="#e0b04f"/><rect x="73" y="58" width="6" height="44" rx="3" fill="#c98a4b"/>
+      <path d="M62 36 q14 8 28 0" fill="none" stroke="#15131e" stroke-width="3" opacity=".5"/></g>
+    <g fill="#f3e6c8"><circle cx="60" cy="14" r="2"/><circle cx="52" cy="20" r="1.5"/><circle cx="68" cy="20" r="1.5"/></g></svg>`,
+  guitar: c => `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="${c}" opacity=".22"/>
+    <g transform="rotate(32 60 64)">
+      <rect x="56.5" y="14" width="7" height="56" rx="2" fill="#b5652e"/>
+      <rect x="53" y="6" width="14" height="12" rx="3" fill="#15131e"/>
+      <circle cx="52" cy="9" r="2" fill="#e0b04f"/><circle cx="52" cy="15" r="2" fill="#e0b04f"/><circle cx="68" cy="9" r="2" fill="#e0b04f"/><circle cx="68" cy="15" r="2" fill="#e0b04f"/>
+      <path d="M60 62 C40 58 32 74 42 84 C32 94 40 114 60 112 C80 114 88 94 78 84 C88 74 80 58 60 62 Z" fill="${c}"/>
+      <path d="M50 76 L70 76 L70 100 L50 100 Z" fill="#f3e6c8" opacity=".85"/>
+      <rect x="51" y="80" width="18" height="4" rx="1" fill="#15131e"/><rect x="51" y="91" width="18" height="4" rx="1" fill="#15131e"/>
+      <g stroke="#f3e6c8" stroke-width=".7"><line x1="58.4" y1="18" x2="58.4" y2="104"/><line x1="59.6" y1="18" x2="59.6" y2="104"/><line x1="60.8" y1="18" x2="60.8" y2="104"/><line x1="62" y1="18" x2="62" y2="104"/></g>
+    </g></svg>`,
+  discoball: c => `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="${c}" opacity=".22"/>
+    <line x1="60" y1="4" x2="60" y2="28" stroke="#cfc6dc" stroke-width="2"/>
+    <circle cx="60" cy="64" r="36" fill="#cfc6dc"/>
+    <g fill="none" stroke="#6f6880" stroke-width="1.2">
+      <ellipse cx="60" cy="64" rx="36" ry="11"/><ellipse cx="60" cy="64" rx="36" ry="24"/><line x1="24" y1="64" x2="96" y2="64"/>
+      <ellipse cx="60" cy="64" rx="12" ry="36"/><ellipse cx="60" cy="64" rx="25" ry="36"/><line x1="60" y1="28" x2="60" y2="100"/>
+    </g>
+    <rect x="42" y="44" width="9" height="8" fill="#ffffff"/><rect x="63" y="54" width="9" height="8" fill="${c}"/>
+    <rect x="48" y="70" width="9" height="8" fill="${c}"/><rect x="70" y="76" width="7" height="6" fill="#ffffff" opacity=".8"/>
+    <path d="M100 26 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3 Z" fill="${c}"/>
+    <path d="M18 92 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2 Z" fill="#f3e6c8"/></svg>`,
+  cassette: c => `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="${c}" opacity=".22"/>
+    <rect x="12" y="30" width="96" height="62" rx="7" fill="${c}"/>
+    <rect x="22" y="38" width="76" height="20" rx="3" fill="#f3e6c8"/>
+    <rect x="28" y="44" width="40" height="3" rx="1.5" fill="${c}"/><rect x="28" y="50" width="26" height="3" rx="1.5" fill="#a8a0ba"/>
+    <rect x="32" y="62" width="56" height="20" rx="10" fill="#15131e"/>
+    <circle cx="45" cy="72" r="7" fill="#f3e6c8"/><circle cx="75" cy="72" r="7" fill="#f3e6c8"/>
+    <circle cx="45" cy="72" r="2.5" fill="#15131e"/><circle cx="75" cy="72" r="2.5" fill="#15131e"/>
+    <rect x="54" y="68" width="12" height="8" rx="1" fill="#6b3b2a"/>
+    <path d="M30 92 L38 84 L82 84 L90 92 Z" fill="#15131e" opacity=".35"/>
+    <circle cx="20" cy="38" r="2" fill="#15131e" opacity=".4"/><circle cx="100" cy="38" r="2" fill="#15131e" opacity=".4"/></svg>`,
+  cd: c => `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="${c}" opacity=".22"/>
+    <circle cx="60" cy="60" r="42" fill="#d6dbe8"/>
+    <path d="M60 60 L60 18 A42 42 0 0 1 96 39 Z" fill="${c}" opacity=".55"/>
+    <path d="M60 60 L24 81 A42 42 0 0 1 18 60 Z" fill="#e0b04f" opacity=".5"/>
+    <path d="M60 60 L96 39 A42 42 0 0 1 102 60 Z" fill="#9d8be0" opacity=".45"/>
+    <circle cx="60" cy="60" r="34" fill="none" stroke="#ffffff" stroke-opacity=".5" stroke-width="1"/>
+    <circle cx="60" cy="60" r="15" fill="#f3e6c8"/><circle cx="60" cy="60" r="13" fill="none" stroke="#a8a0ba" stroke-width="1"/>
+    <circle cx="60" cy="60" r="6" fill="#221c30"/></svg>`,
+  headphones: c => `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="${c}" opacity=".22"/>
+    <path d="M24 72 C24 36 40 20 60 20 C80 20 96 36 96 72" fill="none" stroke="#f3e6c8" stroke-width="8" stroke-linecap="round"/>
+    <rect x="14" y="64" width="22" height="34" rx="9" fill="${c}"/><rect x="84" y="64" width="22" height="34" rx="9" fill="${c}"/>
+    <rect x="30" y="68" width="8" height="26" rx="3" fill="#15131e"/><rect x="82" y="68" width="8" height="26" rx="3" fill="#15131e"/>
+    <path d="M42 46 q4 -6 8 0 t8 0 t8 0 t8 0" fill="none" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/></svg>`
+});
+
+/* ===================== Audio simulé (craquement de vinyle) ===================== */
+let actx = null, crackleSrc = null, crackleGain = null;
+function startCrackle() {
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === "suspended") actx.resume();
+    const len = actx.sampleRate * 2, buf = actx.createBuffer(1, len, actx.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) { d[i] = (Math.random() * 2 - 1) * 0.015; if (Math.random() < 0.0007) d[i] = (Math.random() * 2 - 1) * 0.6; }
+    crackleSrc = actx.createBufferSource(); crackleSrc.buffer = buf; crackleSrc.loop = true;
+    const f = actx.createBiquadFilter(); f.type = "highpass"; f.frequency.value = 800;
+    crackleGain = actx.createGain(); crackleGain.gain.value = 0.45;
+    crackleSrc.connect(f).connect(crackleGain).connect(actx.destination); crackleSrc.start();
+  } catch (e) {}
+}
+function stopCrackle() {
+  try { if (crackleGain) crackleGain.gain.setTargetAtTime(0, actx.currentTime, 0.08); const s = crackleSrc; setTimeout(() => { try { s && s.stop(); } catch (e) {} }, 400); } catch (e) {}
+  crackleSrc = null;
+}
+
+/* ===================== Thèmes ===================== */
+const THEMES = [
+  { id: "jazz", name: "Jazz Club", eyebrow: "Swing, bebop & free", hero: "trumpet", color: "#e0b04f",
+    tagline: "Cinq sets de difficulté croissante, de Benny Goodman à Albert Ayler, et des sets par style : manouche, salsa, bossa nova.",
+    yearLabel: "enregistré en", difficulty: true, levels: JAZZ },
+  { id: "retro", name: "Rétro Club", eyebrow: "1960 – 2009", hero: "cassette", color: "#e85fa8",
+    tagline: "Pop, rock, disco, variété et latino : trois niveaux par décennie, des Rolling Stones à Daft Punk.",
+    yearLabel: "sorti en", difficulty: false, levels: RETRO }
+];
+THEMES.forEach(th => th.levels.forEach(l => l.tracks.forEach(t => { t.q = `artist:"${t.artist}" track:"${t.title}"`; })));
+
+const ROUND_SECONDS = 20;
+const BASE_POINTS = 100;
+const BONUS_PER_SEC = 5;
+
+const PLAY_ICO = `<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1 L11 6 L2 11 Z" fill="#e0b04f"/></svg>`;
+const PAUSE_ICO = `<svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="1" width="3" height="10" rx="1" fill="#e0b04f"/><rect x="7" y="1" width="3" height="10" rx="1" fill="#e0b04f"/></svg>`;
+
+/* ===================== État & stockage ===================== */
+const KEY = "blindtest-best-v2";
+function loadBest() {
+  let b = {};
+  try { b = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) {}
+  try { // reprise des records de la première version (jazz seul)
+    const old = JSON.parse(localStorage.getItem("blindtest-jazz-best") || "null");
+    if (old) Object.keys(old).forEach(k => { if (!b["jazz-" + k]) b["jazz-" + k] = old[k]; });
+  } catch (e) {}
+  return b;
+}
+function saveBest(b) { try { localStorage.setItem(KEY, JSON.stringify(b)); } catch (e) {} }
+let best = loadBest();
+const bkey = (th, l) => th.id + "-" + l.id;
+
+const S = { screen: "home", theme: null, level: null, order: [], qi: 0, score: 0, results: [], phase: "idle",
+  choices: [], t0: 0, elapsed: 0, raf: 0, picked: null, clip: undefined, token: 0, simulated: false, simMsg: "" };
+
+const $app = document.getElementById("app");
+const $live = document.getElementById("live");
+const say = m => { $live.textContent = ""; setTimeout(() => { $live.textContent = m; }, 30); };
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const starsFor = (n, total = 5) => { const r = n / total; return r >= .9 ? 3 : r >= .7 ? 2 : r >= .5 ? 1 : 0; };
+const starStr = n => `<span class="stars" aria-label="${n} étoile${n > 1 ? "s" : ""} sur 3">${"★".repeat(n)}<span class="off">${"★".repeat(3 - n)}</span></span>`;
+const pad2 = n => String(n).padStart(2, "0");
+
+/* Débloque l'audio pendant un clic, pour que l'extrait suivant puisse démarrer seul (Safari, Chrome mobile). */
+const SILENT = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
+function unlockAudio() {
+  try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === "suspended") actx.resume(); } catch (e) {}
+  if (player.paused) { try { player.src = SILENT; const p = player.play(); if (p) p.catch(() => {}); } catch (e) {} }
+}
+
+/* ===================== Mode Duo (un seul appareil, chacun son tour) ===================== */
+const DUO_KEY = "blindtest-duo-names";
+let DUO = null; // { names: ["Louis", "Marion"] } quand le mode Duo est actif
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+function loadDuoNames() { try { const n = JSON.parse(localStorage.getItem(DUO_KEY)); if (Array.isArray(n) && n.length === 2) return n; } catch (e) {} return ["", ""]; }
+function saveDuoNames(n) { try { localStorage.setItem(DUO_KEY, JSON.stringify(n)); } catch (e) {} }
+const turnOf = qi => S.players ? qi % S.players.length : 0;
+
+function renderDuoSetup() {
+  S.screen = "duo";
+  const names = DUO ? DUO.names : loadDuoNames();
+  $app.style.setProperty("--lvl", "#e0b04f");
+  $app.innerHTML = `
+    <div class="topbar"><button class="back" id="back">← Accueil</button><span class="eyebrow">Mode Duo</span></div>
+    <header class="room-head">
+      <div><p class="eyebrow">Blind Test</p><h1 class="room-title">Duo</h1>
+        <p class="tag">Un seul téléphone, deux joueurs. Chacun son tour : on se passe l'appareil à chaque morceau, cinq morceaux chacun par set.</p></div>
+      <div class="room-art lg">${ART.headphones("#e0b04f")}</div>
+    </header>
+    <form class="duo-form" id="duo-form" novalidate>
+      <div class="field"><label for="p1">Joueur 1</label><input id="p1" name="p1" maxlength="20" autocomplete="off" value="${esc(names[0])}" placeholder="Prénom"></div>
+      <div class="field"><label for="p2">Joueur 2</label><input id="p2" name="p2" maxlength="20" autocomplete="off" value="${esc(names[1])}" placeholder="Prénom"></div>
+      <p class="err" id="duo-err" role="alert" hidden></p>
+      <div class="actions">
+        <button class="btn primary" type="submit">Choisir la salle →</button>
+        ${DUO ? `<button class="btn" type="button" id="duo-off">Revenir en solo</button>` : ""}
+      </div>
+    </form>`;
+  $app.querySelector("#back").addEventListener("click", renderHome);
+  const off = $app.querySelector("#duo-off");
+  if (off) off.addEventListener("click", () => { DUO = null; renderHome(); });
+  $app.querySelector("#duo-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const n = ["p1", "p2"].map(id => document.getElementById(id).value.trim());
+    const err = document.getElementById("duo-err");
+    const bad = !n[0] ? "p1" : !n[1] ? "p2" : n[0].toLowerCase() === n[1].toLowerCase() ? "p2" : null;
+    if (bad) {
+      err.textContent = !n[0] || !n[1] ? "Donne un prénom à chaque joueur." : "Choisis deux prénoms différents.";
+      err.hidden = false;
+      document.getElementById(bad).setAttribute("aria-invalid", "true");
+      document.getElementById(bad).focus();
+      return;
+    }
+    DUO = { names: n }; saveDuoNames(n);
+    renderHome();
+    const rooms = document.getElementById("rooms-h"); rooms && rooms.scrollIntoView({ block: "start" });
+  });
+  const first = document.getElementById(names[0] ? "p2" : "p1"); first.focus();
+}
+
+/* ===================== Écrans ===================== */
+function renderHome() {
+  S.screen = "home";
+  $app.innerHTML = `
+    <header class="marquee">
+      <div class="bulbs"></div>
+      <div>
+        <p class="eyebrow">Ce soir sur scène</p>
+        <h1>Blind <em>Test</em></h1>
+        <p class="tag">Un extrait, quatre titres, vingt secondes. Plus tu trouves vite, plus tu marques.</p>
+      </div>
+      <div class="hero-vinyl">${vinyl("#5e1a26")}</div>
+    </header>
+    <section class="modes" aria-label="Mode de jeu">
+      <div class="seg" role="group" aria-label="Mode de jeu">
+        <button class="seg-b ${DUO ? "" : "on"}" id="m-solo" aria-pressed="${!DUO}">Solo</button>
+        <button class="seg-b ${DUO ? "on" : ""}" id="m-duo" aria-pressed="${!!DUO}">Duo</button>
+      </div>
+      <p class="mode-line">${DUO
+        ? `<strong>${esc(DUO.names[0])}</strong> contre <strong>${esc(DUO.names[1])}</strong>, chacun son tour sur cet appareil. <button class="linkish" id="m-edit">Modifier les joueurs</button>`
+        : "Tu joues seul et tes records sont gardés. En Duo, deux joueurs se passent le téléphone."}</p>
+    </section>
+    <section aria-labelledby="rooms-h" class="stack">
+      <div class="section-head">
+        <h2 id="rooms-h">Choisis ta salle</h2>
+        <span class="eyebrow">${THEMES.length} thèmes</span>
+      </div>
+      <ul class="rooms">
+        ${THEMES.map(th => {
+          const nTracks = th.levels.reduce((s, l) => s + l.tracks.length, 0);
+          const played = th.levels.filter(l => best[bkey(th, l)]);
+          const stars = played.reduce((s, l) => { const b = best[bkey(th, l)]; return s + starsFor(b.correct, b.total || 5); }, 0);
+          return `<li><button class="room" style="--lvl:${th.color}" data-theme="${th.id}">
+            <span class="room-art">${ART[th.hero](th.color)}</span>
+            <span class="room-txt">
+              <span class="num">${th.eyebrow}</span>
+              <h3>${th.name}</h3>
+              <span class="blurb">${th.tagline}</span>
+              <span class="room-meta">
+                <span class="chip">${th.levels.length} sets · ${nTracks} titres</span>
+                <span class="best mono">${played.length ? `★ ${stars} / ${th.levels.length * 3}` : "Pas encore joué"}</span>
+              </span>
+            </span>
+          </button></li>`;
+        }).join("")}
+      </ul>
+    </section>
+    <p class="foot-note"><span class="chip">Deezer</span><span>Extraits de 30 secondes fournis par Deezer. Si un morceau est introuvable, la platine tourne quand même et grésille.</span></p>`;
+  $app.querySelectorAll(".room").forEach(b => b.addEventListener("click", () => { unlockAudio(); renderTheme(THEMES.find(t => t.id === b.dataset.theme)); }));
+  $app.querySelector("#m-solo").addEventListener("click", () => { DUO = null; renderHome(); });
+  $app.querySelector("#m-duo").addEventListener("click", renderDuoSetup);
+  const ed = $app.querySelector("#m-edit"); if (ed) ed.addEventListener("click", renderDuoSetup);
+}
+
+function groupsOf(th) {
+  if (th.levels.some(l => l.tier)) { // Rétro : une section par décennie, niveaux 1 à 3
+    const keys = [...new Set(th.levels.map(l => l.decadeKey))];
+    return keys.map(k => {
+      const levels = th.levels.filter(l => l.decadeKey === k).sort((a, b) => a.tier - b.tier);
+      return { title: levels[0].groupTitle, sub: levels[0].decade, blurb: levels[0].groupBlurb, art: levels[0].instrument, color: levels[0].color, tiered: true, levels };
+    });
+  }
+  const byLevel = th.levels.filter(l => l.group !== "style"), byStyle = th.levels.filter(l => l.group === "style");
+  if (!byStyle.length) return [{ title: "Le programme", levels: th.levels }];
+  return [{ title: "Par niveau", levels: byLevel }, { title: "Par style", levels: byStyle }];
+}
+const playOrder = th => groupsOf(th).flatMap(g => g.levels);
+const TIER_NAMES = ["", "Facile", "Moyen", "Difficile"];
+function renderTheme(th) {
+  S.screen = "theme"; S.theme = th;
+  $app.style.setProperty("--lvl", th.color);
+  const n = th.levels[0].tracks.length;
+  $app.innerHTML = `
+    <div class="topbar"><button class="back" id="back">← Salles</button><span class="eyebrow">${DUO ? `Duo · ${esc(DUO.names[0])} contre ${esc(DUO.names[1])}` : th.eyebrow}</span></div>
+    <header class="room-head" style="--lvl:${th.color}">
+      <div><p class="eyebrow">Blind Test</p><h1 class="room-title">${th.name}</h1><p class="tag">${th.tagline}</p></div>
+      <div class="room-art lg">${ART[th.hero](th.color)}</div>
+    </header>
+    ${groupsOf(th).map((g, gi) => g.tiered ? `<section aria-labelledby="sets-h${gi}" class="stack decade-group" style="--lvl:${g.color}">
+      <div class="decade-head">
+        <span class="decade-art">${ART[g.art](g.color)}</span>
+        <div><h2 id="sets-h${gi}">${g.title}</h2><span class="eyebrow">${g.sub} · 3 niveaux</span><p class="blurb">${g.blurb || ""}</p></div>
+      </div>
+      <ol class="sets tiers">
+        ${g.levels.map(l => {
+          const b = best[bkey(th, l)];
+          return `<li><button class="set tier" style="--lvl:${l.color}" data-level="${l.id}">
+            <span class="txt"><span class="num">NIVEAU ${l.tier}</span><h3>${TIER_NAMES[l.tier]}</h3><span class="blurb">${l.blurb}</span></span>
+            <span class="meta">
+              <span class="diff" aria-label="Difficulté ${l.tier} sur 3">${[1,2,3].map(i => `<i class="${i <= l.tier ? "on" : ""}"></i>`).join("")}</span>
+              ${b ? `${starStr(starsFor(b.correct, b.total || 5))}<span class="best mono">${b.points} pts</span>` : `<span class="best">Pas encore joué</span>`}
+            </span>
+          </button></li>`;
+        }).join("")}
+      </ol>
+    </section>` : `<section aria-labelledby="sets-h${gi}" class="stack">
+      <div class="section-head">
+        <h2 id="sets-h${gi}">${g.title}</h2>
+        <span class="eyebrow">${g.levels.length} sets · ${n} morceaux chacun</span>
+      </div>
+      <ol class="sets">
+        ${g.levels.map(l => {
+          const b = best[bkey(th, l)];
+          return `<li><button class="set" style="--lvl:${l.color}" data-level="${l.id}">
+            <span class="art">${ART[l.instrument](l.color)}</span>
+            <span class="txt"><span class="num">SET ${pad2(l.id)}</span><h3>${l.name}</h3><span class="blurb">${l.blurb}</span></span>
+            <span class="meta">
+              ${l.group === "style" ? `<span class="decade mono">Style</span>`
+                : `<span class="diff" aria-label="Difficulté ${l.id} sur 5">${[1,2,3,4,5].map(i => `<i class="${i <= l.id ? "on" : ""}"></i>`).join("")}</span>`}
+              ${b ? `${starStr(starsFor(b.correct, b.total || 5))}<span class="best mono">${b.points} pts</span>` : `<span class="best">Pas encore joué</span>`}
+            </span>
+          </button></li>`;
+        }).join("")}
+      </ol>
+    </section>`).join("")}`;
+  $app.querySelector("#back").addEventListener("click", renderHome);
+  $app.querySelectorAll(".set").forEach(b => b.addEventListener("click", () => { unlockAudio(); startLevel(+b.dataset.level); }));
+  window.scrollTo({ top: 0 });
+}
+
+function startLevel(id) {
+  S.level = S.theme.levels.find(l => l.id === id);
+  S.order = shuffle(S.level.tracks);
+  S.qi = 0; S.score = 0; S.results = [];
+  S.players = DUO ? DUO.names.map(name => ({ name, score: 0, correct: 0 })) : null;
+  window.scrollTo({ top: 0 });
+  newQuestion();
+}
+
+/* Cycle d'une question : loading → (lecture auto) playing ⇄ paused → answered.
+   Si le navigateur bloque la lecture auto : idle, en attente du bouton. */
+function newQuestion() {
+  const t = S.order[S.qi];
+  S.choices = shuffle([{ title: t.title, artist: t.artist, ok: true }, ...t.decoys.map(([title, artist]) => ({ title, artist, ok: false }))]);
+  S.phase = S.players ? "handoff" : "loading"; S.picked = null; S.clip = undefined; S.elapsed = 0; S.simulated = false;
+  S.simMsg = "Recherche de l'extrait sur Deezer…";
+  const token = ++S.token;
+  renderGame();
+  getPreview(t).then(c => { if (token === S.token) { S.clip = c; autoStart(token); } });
+  if (S.phase === "handoff") { const go = document.getElementById("go"); go && go.focus(); }
+}
+function startTurn() { // clic « C'est parti » : débloque l'audio puis lance l'extrait
+  if (S.phase !== "handoff") return;
+  unlockAudio();
+  S.phase = "loading"; renderGame();
+  if (S.clip !== undefined) autoStart(S.token);
+}
+
+async function autoStart(token) {
+  if (S.phase !== "loading") return;
+  if (!S.clip) { startCrackle(); beginTimer("Extrait introuvable sur Deezer · simulé", true); return; }
+  try {
+    await playClip(S.clip.url);
+    if (token !== S.token || S.phase !== "loading") { stopClip(); return; }
+    beginTimer("Extrait Deezer · 30 secondes", false);
+  } catch (e) {
+    if (token !== S.token) return;
+    S.phase = "idle"; S.simMsg = "Le navigateur a bloqué la lecture automatique : appuie sur Lancer.";
+    renderGame(); focusPlay();
+  }
+}
+
+function beginTimer(msg, simulated) {
+  S.phase = "playing"; S.simMsg = msg; S.simulated = simulated; S.t0 = performance.now();
+  renderGame(); focusPlay();
+  say("Extrait lancé. Quatre réponses disponibles.");
+  tick();
+}
+
+function onPlayButton() {
+  if (S.phase === "idle") {
+    if (S.clip) playClip(S.clip.url).then(() => beginTimer("Extrait Deezer · 30 secondes", false)).catch(() => { startCrackle(); beginTimer("Lecture impossible · extrait simulé", true); });
+    else { startCrackle(); beginTimer("Extrait introuvable sur Deezer · simulé", true); }
+  } else if (S.phase === "playing") pauseRound();
+  else if (S.phase === "paused") resumeRound();
+}
+function pauseRound() {
+  cancelAnimationFrame(S.raf);
+  S.elapsed += (performance.now() - S.t0) / 1000;
+  if (S.simulated) stopCrackle(); else player.pause();
+  S.phase = "paused"; renderGame(); focusPlay(); say("Pause.");
+}
+function resumeRound() {
+  if (S.simulated) startCrackle(); else { const p = player.play(); if (p) p.catch(() => {}); }
+  S.phase = "playing"; S.t0 = performance.now();
+  renderGame(); focusPlay(); tick();
+}
+const leftNow = () => Math.max(0, ROUND_SECONDS - S.elapsed - (S.phase === "playing" ? (performance.now() - S.t0) / 1000 : 0));
+function tick() {
+  const left = leftNow();
+  const clock = document.getElementById("clock"), bar = document.getElementById("bar");
+  if (clock) clock.textContent = "00:" + pad2(Math.ceil(left));
+  if (bar) bar.style.transform = `scaleX(${left / ROUND_SECONDS})`;
+  if (left <= 0) { answer(null); return; }
+  S.raf = requestAnimationFrame(tick);
+}
+function stopRound() { cancelAnimationFrame(S.raf); stopCrackle(); stopClip(); }
+function focusPlay() { const p = document.getElementById("play"); if (p && !p.disabled) p.focus(); }
+
+function renderGame() {
+  S.screen = "game";
+  const th = S.theme, l = S.level, t = S.order[S.qi], n = S.order.length;
+  const ph = S.phase, answered = ph === "answered", live = ph === "playing" || ph === "paused";
+  const res = S.results[S.qi];
+  const left = answered ? 0 : leftNow();
+  const btn = {
+    loading: ["Chargement…", PLAY_ICO, true], idle: ["Lancer l'extrait", PLAY_ICO, false],
+    playing: ["Pause", PAUSE_ICO, false], paused: ["Reprendre", PLAY_ICO, false], answered: ["Extrait terminé", PLAY_ICO, true]
+  }[ph];
+  $app.style.setProperty("--lvl", l.color);
+  $app.innerHTML = `
+    <div class="topbar">
+      <button class="back" id="back">← ${th.name}</button>
+      ${S.players
+        ? `<div class="duo-score" aria-label="Scores">${S.players.map((p, i) => `<span class="pl ${i === turnOf(S.qi) ? "on" : ""}"><span class="nm">${esc(p.name)}</span><span class="val mono">${p.score}</span></span>`).join("")}</div>`
+        : `<div class="scorebox"><span class="eyebrow">Score</span><div class="val mono">${S.score}</div></div>`}
+    </div>
+    <div class="level-title">
+      <span class="eyebrow">${l.tier ? `Niveau ${l.tier}` : `Set ${pad2(l.id)}`} · Morceau ${S.qi + 1} sur ${n}</span>
+      <h2>${l.name}</h2>
+      <div class="dots" aria-hidden="true">${S.order.map((_, i) => `<span class="${i < S.results.length ? (S.results[i].ok ? "ok" : "ko") : i === S.qi ? "cur" : ""}"></span>`).join("")}</div>
+    </div>
+    ${ph === "handoff" ? `
+    <section class="handoff">
+      <span class="eyebrow">Morceau ${S.qi + 1} sur ${n} · ${esc(S.players[turnOf(S.qi)].name)} joue</span>
+      <h2 id="ho-h">À toi, ${esc(S.players[turnOf(S.qi)].name)} !</h2>
+      <p class="tag">Prends le téléphone. L'extrait démarre dès que tu appuies.</p>
+      <button class="play" id="go"><span class="ico">${PLAY_ICO}</span>C'est parti</button>
+    </section>` : `
+    <section class="stage" aria-label="Platine">
+      <div class="deck">
+        <div class="disc ${ph === "playing" ? "spinning" : ""}">${vinyl(l.color)}</div>
+        <div class="arm ${live ? "down" : ""}">${ARM}</div>
+      </div>
+      <div class="controls">
+        <button class="play ${ph === "playing" ? "is-pause" : ""}" id="play" ${btn[2] ? "disabled" : ""} aria-label="${btn[0]}">
+          <span class="ico">${btn[1]}</span>${btn[0]}
+        </button>
+        <div class="timer">
+          <div class="row"><span>${ph === "paused" ? "En pause" : "Temps restant"}</span><span class="clock mono" id="clock">00:${pad2(Math.ceil(left))}</span></div>
+          <div class="bar"><i id="bar" style="transform:scaleX(${left / ROUND_SECONDS})"></i></div>
+        </div>
+        <p class="sim" id="sim">${S.simMsg}</p>
+      </div>
+    </section>`}
+    ${!live && !answered && ph !== "handoff" ? `<p class="hint">${ph === "loading" ? "L'extrait démarre tout seul." : "Lance l'extrait pour débloquer les réponses."} Raccourcis : 1 à 4 pour répondre, P pour la pause.</p>` : ""}
+    ${ph === "handoff" ? "" : `<ol class="choices ${!live && !answered ? "locked" : ""}" aria-label="Quel est ce morceau ?">
+      ${S.choices.map((c, i) => {
+        let cls = "";
+        if (answered && c.ok) cls = "is-ok";
+        else if (answered && S.picked === i && !c.ok) cls = "is-ko";
+        return `<li><button class="choice ${cls}" data-i="${i}" ${!live ? "disabled" : ""}>
+          <span class="k">${i + 1}</span><span class="t"><span class="title">${c.title}</span><span class="artist">${c.artist}</span></span>
+        </button></li>`;
+      }).join("")}
+    </ol>`}
+    ${answered ? `
+      <section class="feedback ${res.ok ? "ok" : "ko"}">
+        <h3 tabindex="-1" id="fb-h">${S.players ? (res.ok ? `Bien joué, ${esc(S.players[res.player].name)} !` : res.timeout ? `Temps écoulé pour ${esc(S.players[res.player].name)}` : `Raté, ${esc(S.players[res.player].name)}`) : res.ok ? "Bien joué !" : res.timeout ? "Temps écoulé" : "Raté"}</h3>
+        <div class="reveal">
+          ${S.clip && S.clip.cover ? `<img src="${S.clip.cover}" alt="Pochette de l'album ${S.clip.album || ""}" width="72" height="72">` : ""}
+          <div class="reveal-t">
+            <p class="answer">${t.title} <span>· ${t.artist}${t.year ? ` · ${th.yearLabel} ${t.year}` : ""}</span></p>
+            ${S.clip && S.clip.link ? `<a class="dz" href="${S.clip.link}" target="_blank" rel="noopener">Écouter en entier sur Deezer ↗</a>` : ""}
+          </div>
+        </div>
+        <p class="fact">${t.fact}</p>
+        <p class="pts mono">${res.ok ? `+${res.points} pts (dont ${res.points - BASE_POINTS} de bonus vitesse)` : "+0 pt"}</p>
+        <button class="next" id="next">${S.qi + 1 < n ? (S.players ? `Au tour de ${esc(S.players[turnOf(S.qi + 1)].name)} →` : "Morceau suivant →") : "Voir le résultat →"}</button>
+      </section>` : ""}`;
+
+  $app.querySelector("#back").addEventListener("click", () => { stopRound(); S.token++; S.phase = "idle"; renderTheme(th); });
+  const play = $app.querySelector("#play"); if (play) play.addEventListener("click", onPlayButton);
+  const go = $app.querySelector("#go"); if (go) go.addEventListener("click", startTurn);
+  $app.querySelectorAll(".choice").forEach(b => b.addEventListener("click", () => answer(+b.dataset.i)));
+  const next = $app.querySelector("#next");
+  if (next) next.addEventListener("click", () => { unlockAudio(); goNext(); });
+}
+
+function answer(i) {
+  if (S.phase !== "playing" && S.phase !== "paused") return;
+  const left = leftNow();
+  stopRound();
+  const ok = i !== null && S.choices[i].ok;
+  const points = ok ? BASE_POINTS + Math.round(left) * BONUS_PER_SEC : 0;
+  S.score += points; S.picked = i; S.phase = "answered";
+  const player = turnOf(S.qi);
+  if (S.players) { S.players[player].score += points; if (ok) S.players[player].correct++; }
+  S.results.push({ ok, points, timeout: i === null, player });
+  renderGame();
+  const t = S.order[S.qi];
+  say(`${ok ? "Bonne réponse" : "Mauvaise réponse"}. C'était ${t.title}, de ${t.artist}.`);
+  const h = document.getElementById("fb-h"); h && h.focus();
+}
+function goNext() {
+  if (S.qi + 1 < S.order.length) { S.qi++; newQuestion(); }
+  else renderResult();
+}
+
+function renderResult() {
+  if (S.players) return renderDuoResult();
+  S.screen = "result";
+  const th = S.theme, l = S.level, total = S.order.length, correct = S.results.filter(r => r.ok).length, stars = starsFor(correct, total);
+  const k = bkey(th, l), prev = best[k];
+  const isRecord = !prev || S.score > prev.points;
+  if (isRecord) { best[k] = { points: S.score, correct, total }; saveBest(best); }
+  const vi = correct === total ? 5 : Math.min(4, Math.floor(correct / total * 5));
+  const verdict = ["Le DJ a fait une pause.", "Encore quelques disques à écouter.", "Pas mal du tout.", "Belle oreille.", "Presque parfait.", "Un sans-faute. Le club t'offre un verre."][vi];
+  const order = playOrder(th), nextLevel = order[order.indexOf(l) + 1];
+  $app.innerHTML = `
+    <div class="topbar"><button class="back" id="back">← ${th.name}</button><span class="eyebrow">Fin du ${l.tier ? `niveau ${l.tier}` : `set ${pad2(l.id)}`}</span></div>
+    <section class="result-card" style="--lvl:${l.color}">
+      <div class="stack" style="gap:8px">
+        <span class="eyebrow">${th.name} · ${l.name}</span>
+        <div class="big mono" style="font-family:var(--f-display)">${S.score}<span style="font-size:.4em;color:var(--smoke)"> pts</span></div>
+        <div>${starStr(stars)}</div>
+        <p class="verdict" tabindex="-1" id="verdict">${correct} sur ${total} trouvés. ${verdict}</p>
+        ${isRecord ? `<span class="chip" style="align-self:flex-start">Nouveau record</span>` : `<span class="best">Record : ${prev.points} pts</span>`}
+      </div>
+      <div class="art">${ART[l.instrument](l.color)}</div>
+    </section>
+    <section class="stack" style="gap:10px">
+      <h2 style="font-size:24px">La setlist</h2>
+      <ol class="recap">
+        ${S.order.map((t, i) => { const r = S.results[i]; return `<li>
+          <span class="mark ${r.ok ? "ok" : "ko"}" aria-label="${r.ok ? "Trouvé" : "Raté"}">${r.ok ? "✓" : "✕"}</span>
+          <span class="t">${t.title} <span>· ${t.artist}${t.year ? ` (${t.year})` : ""}</span></span>
+          <span class="p mono">${r.points}</span></li>`; }).join("")}
+      </ol>
+    </section>
+    <div class="actions">
+      <button class="btn primary" id="again">Rejouer ce set</button>
+      ${nextLevel ? `<button class="btn" id="nextlvl">Set suivant : ${nextLevel.name}</button>` : ""}
+    </div>`;
+  $app.querySelector("#back").addEventListener("click", () => renderTheme(th));
+  $app.querySelector("#again").addEventListener("click", () => { unlockAudio(); startLevel(l.id); });
+  const nl = $app.querySelector("#nextlvl"); nl && nl.addEventListener("click", () => { unlockAudio(); startLevel(nextLevel.id); });
+  window.scrollTo({ top: 0 });
+  document.getElementById("verdict").focus();
+}
+
+function renderDuoResult() {
+  S.screen = "result";
+  const th = S.theme, l = S.level, P = S.players;
+  const per = P.map((_, i) => S.results.filter(r => r.player === i).length);
+  const ranked = P.map((p, i) => ({ ...p, i })).sort((a, b) => b.score - a.score);
+  const tie = ranked[0].score === ranked[1].score;
+  const head = tie ? "Égalité !" : `${esc(ranked[0].name)} gagne !`;
+  const sub = tie ? `${ranked[0].score} points chacun. Il va falloir une revanche.` : `${ranked[0].score} points contre ${ranked[1].score}.`;
+  const order = playOrder(th), nextLevel = order[order.indexOf(l) + 1];
+  $app.innerHTML = `
+    <div class="topbar"><button class="back" id="back">← ${th.name}</button><span class="eyebrow">Duo · fin du ${l.tier ? `niveau ${l.tier}` : `set ${pad2(l.id)}`}</span></div>
+    <section class="result-card" style="--lvl:${l.color}">
+      <div class="stack" style="gap:8px">
+        <span class="eyebrow">${th.name} · ${l.name}</span>
+        <div class="big" style="font-family:var(--f-display)" tabindex="-1" id="verdict">${head}</div>
+        <p class="verdict">${sub}</p>
+        <ol class="podium">${ranked.map((p, k) => `<li class="${!tie && k === 0 ? "win" : ""}">
+          <span class="nm">${esc(p.name)}</span><span class="mono">${p.correct} / ${per[p.i]} trouvés</span><span class="mono pts">${p.score} pts</span></li>`).join("")}</ol>
+      </div>
+      <div class="art">${ART[l.instrument](l.color)}</div>
+    </section>
+    <section class="stack" style="gap:10px">
+      <h2 style="font-size:24px">La setlist</h2>
+      <ol class="recap duo">
+        ${S.order.map((t, i) => { const r = S.results[i]; return `<li>
+          <span class="mark ${r.ok ? "ok" : "ko"}" aria-label="${r.ok ? "Trouvé" : "Raté"}">${r.ok ? "✓" : "✕"}</span>
+          <span class="t">${t.title} <span>· ${t.artist}${t.year ? ` (${t.year})` : ""}</span><span class="who">${esc(P[r.player].name)}</span></span>
+          <span class="p mono">${r.points}</span></li>`; }).join("")}
+      </ol>
+    </section>
+    <div class="actions">
+      <button class="btn primary" id="again">Revanche sur ce set</button>
+      ${nextLevel ? `<button class="btn" id="nextlvl">Set suivant : ${nextLevel.name}</button>` : ""}
+    </div>
+    <p class="best">En Duo, les scores ne comptent pas dans tes records solo.</p>`;
+  $app.querySelector("#back").addEventListener("click", () => renderTheme(th));
+  $app.querySelector("#again").addEventListener("click", () => { unlockAudio(); startLevel(l.id); });
+  const nl = $app.querySelector("#nextlvl"); nl && nl.addEventListener("click", () => { unlockAudio(); startLevel(nextLevel.id); });
+  window.scrollTo({ top: 0 });
+  document.getElementById("verdict").focus();
+}
+
+document.addEventListener("keydown", e => {
+  if (S.screen !== "game" || e.altKey || e.ctrlKey || e.metaKey) return;
+  if ((e.key === "p" || e.key === "P") && (S.phase === "playing" || S.phase === "paused")) { e.preventDefault(); onPlayButton(); return; }
+  if (S.phase !== "playing" && S.phase !== "paused") return;
+  const n = parseInt(e.key, 10);
+  if (n >= 1 && n <= 4) { e.preventDefault(); answer(n - 1); }
+});
+
+renderHome();
+</script>
+</body>
+</html>

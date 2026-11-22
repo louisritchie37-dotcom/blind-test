@@ -1,0 +1,9 @@
+[build]
+  publish = "."
+
+# Proxy vers l'API Deezer : évite le blocage CORS du navigateur.
+[[redirects]]
+  from = "/api/deezer/*"
+  to = "https://api.deezer.com/:splat"
+  status = 200
+  force = true
