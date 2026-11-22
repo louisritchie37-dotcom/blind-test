@@ -176,7 +176,8 @@ p { margin: 0; }
 .choice.is-ko .k { background: var(--ko); color: #2c0d10; border-color: var(--ko); }
 .hint { text-align: center; color: var(--smoke); font-size: 14px; }
 
-.feedback {
+.feedback { scroll-margin-bottom: 16px;
+
   border-radius: 18px; padding: 18px 20px; border: 1px solid var(--line);
   background: var(--velvet); display: flex; flex-direction: column; gap: 10px;
 }
@@ -3426,6 +3427,7 @@ function startTurn() { // clic « C'est parti » : débloque l'audio puis lance 
 
 async function autoStart(token) {
   if (S.phase !== "loading") return;
+  if (document.hidden) { S.phase = "idle"; S.simMsg = "Extrait prêt : appuie sur Lancer."; renderGame(); return; }
   if (!S.clip) { startCrackle(); beginTimer("Extrait introuvable sur Deezer · simulé", true); return; }
   try {
     await playClip(S.clip.url);
@@ -3568,7 +3570,10 @@ function answer(i) {
   renderGame();
   const t = S.order[S.qi];
   say(`${ok ? "Bonne réponse" : "Mauvaise réponse"}. C'était ${t.title}, de ${t.artist}.`);
-  const h = document.getElementById("fb-h"); h && h.focus();
+  const fb = document.querySelector(".feedback"), nx = document.getElementById("next");
+  const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (nx) nx.focus({ preventScroll: true });
+  if (fb) requestAnimationFrame(() => fb.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "end" }));
 }
 function goNext() {
   if (S.qi + 1 < S.order.length) { S.qi++; newQuestion(); }
@@ -3658,6 +3663,15 @@ function renderDuoResult() {
   window.scrollTo({ top: 0 });
   document.getElementById("verdict").focus();
 }
+
+/* Téléphone verrouillé, onglet changé ou page fermée : on coupe le son et on met le chrono en pause. */
+function pauseForBackground() {
+  if (S.phase === "playing") pauseRound();
+  else { stopCrackle(); if (!player.paused) player.pause(); }
+}
+document.addEventListener("visibilitychange", () => { if (document.hidden) pauseForBackground(); });
+window.addEventListener("pagehide", pauseForBackground);
+window.addEventListener("blur", () => { if (document.hidden) pauseForBackground(); });
 
 document.addEventListener("keydown", e => {
   if (S.screen !== "game" || e.altKey || e.ctrlKey || e.metaKey) return;
