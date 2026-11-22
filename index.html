@@ -3030,9 +3030,9 @@ function getImage(wiki) {
     try {
       const sum = await fetch("https://fr.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(wiki.replace(/ /g, "_"))).then(r => r.ok ? r.json() : null);
       const im = sum && (sum.originalimage || sum.thumbnail);
-      if (!im || !im.source.includes("/wikipedia/commons/")) return null;
-      const parts = im.source.split("/");
-      const file = decodeURIComponent(im.source.includes("/thumb/") ? parts[parts.length - 2] : parts[parts.length - 1]);
+      if (!im || !im.source.split("?")[0].includes("/wikipedia/commons/")) return null;
+      const clean = im.source.split("?")[0], parts = clean.split("/");
+      const file = decodeURIComponent(clean.includes("/thumb/") ? parts[parts.length - 2] : parts[parts.length - 1]);
       const api = "https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&prop=imageinfo&iiprop=url%7Cextmetadata&iiurlwidth=720&titles=" + encodeURIComponent("File:" + file);
       const j = await fetch(api).then(r => r.json());
       const page = Object.values(j.query.pages)[0], ii = page && page.imageinfo && page.imageinfo[0];
@@ -3283,7 +3283,7 @@ const MIX = [
         fact: "Le clip a été tourné en caméra cachée : Stromae y joue un homme ivre à un carrefour de Bruxelles.",
         decoys: [["Papaoutai","Stromae"],["Tous les mêmes","Stromae"],["Ta fête","Stromae"]] },
       { kind: "quiz", q: "Qui a peint ce tableau ?", answer: "Vincent van Gogh", decoys: ["Claude Monet","Paul Gauguin","Paul Cézanne"],
-        img: { wiki: "La Nuit étoilée", clue: "Ciel nocturne tourbillonnant au-dessus d'un village, avec un cyprès au premier plan." },
+        img: { wiki: "La Nuit étoilée (1889)", clue: "Ciel nocturne tourbillonnant au-dessus d'un village, avec un cyprès au premier plan." },
         fact: "La Nuit étoilée a été peinte en 1889, depuis sa chambre de l'asile de Saint-Rémy-de-Provence." },
       { kind: "quiz", q: "Dans quel pays se trouve ce site ?", answer: "Pérou", decoys: ["Bolivie","Chili","Mexique"],
         img: { wiki: "Machu Picchu", clue: "Cité inca du XVe siècle perchée dans les Andes." },
