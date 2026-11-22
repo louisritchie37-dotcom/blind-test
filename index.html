@@ -290,17 +290,34 @@ p { margin: 0; }
 .duo-score .nm { font-size: 12px; color: var(--smoke); max-width: 10ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .duo-score .pl.on .nm { color: var(--cream); font-weight: 700; }
 .duo-score .val { font-size: 18px; color: var(--brass); }
-.handoff { border: 2px solid var(--lvl); border-radius: 22px; padding: 28px 22px; text-align: center;
-  background: linear-gradient(160deg, #2b2340, #1a1626); display: flex; flex-direction: column; align-items: center; gap: 12px; }
-.handoff h2 { font-size: clamp(32px, 9vw, 46px); color: var(--lvl); }
-.handoff .tag { color: var(--smoke); }
-.handoff .play { align-self: center; }
+.turn { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 12px 16px; border-radius: 16px;
+  background: color-mix(in srgb, var(--pc) 18%, var(--velvet)); border: 2px solid var(--pc); }
+.turn-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--pc); box-shadow: 0 0 0 4px color-mix(in srgb, var(--pc) 30%, transparent); animation: pulse 1.6s ease-in-out infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 8px transparent; } }
+.turn-lbl { color: var(--smoke); font-size: 15px; }
+.turn strong { font-family: var(--f-display); font-weight: 400; font-size: clamp(26px, 7vw, 34px); line-height: 1; color: var(--pc); }
+.stage.duo, .quiz-card.duo { border: 2px solid var(--pc); }
+.duo-score .pl.on { background: var(--pc); border-color: var(--pc); }
+.duo-score .pl.on .nm, .duo-score .pl.on .val { color: #15131e; }
+.quiz-card { border-radius: 22px; padding: 20px; background: linear-gradient(160deg, #2b2340, #1a1626); border: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 14px; }
+.quiz-card h3 { font-size: clamp(22px, 5.5vw, 28px); line-height: 1.2; }
+.qimg { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.qimg img { display: block; width: 100%; max-height: 340px; object-fit: contain; border-radius: 14px; background: #0d0c14; }
+.qimg.wait { min-height: 180px; border-radius: 14px; background: #0d0c14; display: grid; place-items: center; color: var(--smoke); }
+.qimg figcaption { font-size: 12px; color: var(--smoke); overflow-wrap: anywhere; }
+.qimg figcaption a, .feedback a { color: var(--brass); }
+.clue { color: var(--cream); background: var(--velvet); border-radius: 12px; padding: 12px 14px; }
+.qbar { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; }
+@media (max-width: 560px) { .qbar { grid-template-columns: 1fr; } .qbar .play { justify-self: center; } }
+.rooms { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 640px) { .rooms { grid-template-columns: 1fr; } }
 .podium { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .podium li { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: baseline; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line); }
 .podium li.win { border-color: var(--lvl); }
 .podium .nm { font-weight: 700; min-width: 0; overflow-wrap: anywhere; }
 .podium .pts { color: var(--brass); }
-.recap .who { display: block; font-size: 12px; color: var(--smoke); }
+.recap .who { display: block; font-size: 12px; color: var(--smoke); font-weight: 700; }
 .play.is-pause .ico { background: #231a08; }
 .reveal { display: flex; gap: 14px; align-items: center; }
 @media (max-width: 560px) {
@@ -3002,6 +3019,36 @@ async function getPreview(track) {
   return res;
 }
 
+/* Images des questions : image principale de l'article Wikipédia, gardée seulement si elle vient de
+   Wikimedia Commons (licences libres). On récupère auteur, licence et page source pour le crédit. */
+const IMG_CACHE = new Map(), IMG_PENDING = new Map();
+const stripHtml = h => { const d = document.createElement("div"); d.innerHTML = h || ""; return d.textContent.replace(/\s+/g, " ").trim(); };
+function getImage(wiki) {
+  if (IMG_CACHE.has(wiki)) return Promise.resolve(IMG_CACHE.get(wiki));
+  if (IMG_PENDING.has(wiki)) return IMG_PENDING.get(wiki);
+  const p = (async () => {
+    try {
+      const sum = await fetch("https://fr.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(wiki.replace(/ /g, "_"))).then(r => r.ok ? r.json() : null);
+      const im = sum && (sum.originalimage || sum.thumbnail);
+      if (!im || !im.source.includes("/wikipedia/commons/")) return null;
+      const parts = im.source.split("/");
+      const file = decodeURIComponent(im.source.includes("/thumb/") ? parts[parts.length - 2] : parts[parts.length - 1]);
+      const api = "https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&prop=imageinfo&iiprop=url%7Cextmetadata&iiurlwidth=720&titles=" + encodeURIComponent("File:" + file);
+      const j = await fetch(api).then(r => r.json());
+      const page = Object.values(j.query.pages)[0], ii = page && page.imageinfo && page.imageinfo[0];
+      if (!ii) return null;
+      const md = ii.extmetadata || {};
+      return { src: ii.thumburl || ii.url, page: ii.descriptionurl,
+        article: sum.content_urls && sum.content_urls.desktop && sum.content_urls.desktop.page,
+        author: stripHtml(md.Artist && md.Artist.value) || "auteur inconnu",
+        license: (md.LicenseShortName && md.LicenseShortName.value) || "licence libre" };
+    } catch (e) { return null; }
+  })().then(v => { IMG_CACHE.set(wiki, v); IMG_PENDING.delete(wiki); return v; });
+  IMG_PENDING.set(wiki, p);
+  return p;
+}
+function prefetch(t) { if (!t) return; if (t.kind === "quiz") { if (t.img) getImage(t.img.wiki); } else getPreview(t); }
+
 const player = new Audio();
 player.preload = "auto";
 let fadeT = 0;
@@ -3089,6 +3136,11 @@ const ARM = `<svg viewBox="0 0 90 120" aria-hidden="true">
   <rect x="32" y="98" width="20" height="12" rx="3" fill="#e0b04f" transform="rotate(42 42 104)"/></svg>`;
 
 Object.assign(ART, {
+  lightbulb: c => `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="${c}" opacity=".22"/>
+    <g stroke="${c}" stroke-width="3" stroke-linecap="round"><line x1="60" y1="4" x2="60" y2="12"/><line x1="20" y1="22" x2="26" y2="28"/><line x1="100" y1="22" x2="94" y2="28"/><line x1="10" y1="54" x2="18" y2="54"/><line x1="110" y1="54" x2="102" y2="54"/></g>
+    <path d="M60 18 C40 18 28 33 28 50 C28 63 36 70 41 78 L41 88 L79 88 L79 78 C84 70 92 63 92 50 C92 33 80 18 60 18 Z" fill="#f3e6c8"/>
+    <rect x="43" y="90" width="34" height="7" rx="3" fill="#a8a0ba"/><rect x="46" y="99" width="28" height="7" rx="3" fill="#a8a0ba"/><rect x="52" y="108" width="16" height="5" rx="2.5" fill="#6f6880"/>
+    <circle cx="53" cy="64" r="7" fill="${c}"/><rect x="57.5" y="34" width="4" height="30" fill="${c}"/><path d="M61.5 34 q12 3 12 14 q-4 -7 -12 -7 Z" fill="${c}"/></svg>`,
   manouche: c => `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="${c}" opacity=".22"/>
     <g transform="rotate(-28 60 64)">
       <rect x="56.5" y="10" width="7" height="58" rx="2" fill="#6b3b2a"/>
@@ -3176,16 +3228,153 @@ function stopCrackle() {
   crackleSrc = null;
 }
 
+/* ===================== Données : Le Mix (chansons + culture générale) =====================
+   kind: "quiz" = question de culture générale. img.wiki = titre de l'article Wikipédia (fr) dont
+   l'image principale est affichée, seulement si elle vient de Wikimedia Commons (licence libre),
+   avec auteur, licence et lien source. img.clue = indice texte si l'image ne charge pas. */
+const MIX = [
+  { id: 1, name: "Échauffement", instrument: "lightbulb", color: "#f2b134",
+    blurb: "Des tubes connus de tous et des questions pour se mettre en jambes.",
+    tracks: [
+      { title: "Imagine", artist: "John Lennon", year: 1971,
+        fact: "La chanson-titre de son deuxième album solo, sorti en 1971.",
+        decoys: [["Jealous Guy","John Lennon"],["Woman","John Lennon"],["Let It Be","The Beatles"]] },
+      { title: "La Bohème", artist: "Charles Aznavour", year: 1965,
+        fact: "Aznavour y raconte la vie d'artiste à Montmartre, quand on avait vingt ans.",
+        decoys: [["Emmenez-moi","Charles Aznavour"],["Hier encore","Charles Aznavour"],["Ne me quitte pas","Jacques Brel"]] },
+      { title: "Rolling in the Deep", artist: "Adele", year: 2010,
+        fact: "Écrit avec Paul Epworth après une rupture, il ouvre l'album 21.",
+        decoys: [["Someone Like You","Adele"],["Set Fire to the Rain","Adele"],["Chasing Pavements","Adele"]] },
+      { title: "Happy", artist: "Pharrell Williams", year: 2013,
+        fact: "Écrit pour la bande originale de Moi, moche et méchant 2.",
+        decoys: [["Get Lucky","Daft Punk"],["Uptown Funk","Mark Ronson"],["Blurred Lines","Robin Thicke"]] },
+      { title: "La Vie en rose", artist: "Édith Piaf", year: 1947,
+        fact: "Piaf en a écrit les paroles. C'est devenu sa chanson signature dans le monde entier.",
+        decoys: [["Non, je ne regrette rien","Édith Piaf"],["Milord","Édith Piaf"],["L'Hymne à l'amour","Édith Piaf"]] },
+      { kind: "quiz", q: "Dans quelle ville se trouve ce monument ?", answer: "Paris", decoys: ["Lyon","Las Vegas","Tokyo"],
+        img: { wiki: "Tour Eiffel", clue: "Tour de fer de plus de 300 mètres, construite pour l'Exposition universelle de 1889." },
+        fact: "La tour Eiffel a été construite pour l'Exposition universelle de 1889. Elle mesure aujourd'hui 330 mètres." },
+      { kind: "quiz", q: "Qui a peint ce tableau ?", answer: "Léonard de Vinci", decoys: ["Raphaël","Michel-Ange","Sandro Botticelli"],
+        img: { wiki: "La Joconde", clue: "Portrait d'une femme au sourire énigmatique, exposé au Louvre." },
+        fact: "La Joconde a été volée au Louvre en 1911 et retrouvée deux ans plus tard, à Florence." },
+      { kind: "quiz", q: "Combien de joueurs une équipe de football aligne-t-elle sur le terrain ?", answer: "11", decoys: ["9","10","12"],
+        fact: "Dix joueurs de champ et un gardien de but." },
+      { kind: "quiz", q: "Quelle est la capitale de l'Australie ?", answer: "Canberra", decoys: ["Sydney","Melbourne","Perth"],
+        fact: "Canberra a été choisie comme compromis entre les deux grandes rivales, Sydney et Melbourne." },
+      { kind: "quiz", q: "Quelle planète surnomme-t-on la planète rouge ?", answer: "Mars", decoys: ["Vénus","Jupiter","Mercure"],
+        fact: "Sa couleur vient de l'oxyde de fer qui recouvre son sol." }
+    ] },
+  { id: 2, name: "Bon public", instrument: "lightbulb", color: "#e8735a",
+    blurb: "Un peu plus de répertoire, un peu plus de culture.",
+    tracks: [
+      { title: "Smooth Operator", artist: "Sade", year: 1984,
+        fact: "Sade est le nom du groupe, et aussi le prénom de sa chanteuse, Sade Adu.",
+        decoys: [["Your Love Is King","Sade"],["The Sweetest Taboo","Sade"],["Careless Whisper","George Michael"]] },
+      { title: "Ne me quitte pas", artist: "Jacques Brel", year: 1959,
+        fact: "Brel l'a écrite après sa rupture avec Suzanne Gabriello.",
+        decoys: [["Amsterdam","Jacques Brel"],["Quand on n'a que l'amour","Jacques Brel"],["Le Plat Pays","Jacques Brel"]] },
+      { title: "Sweet Child o' Mine", artist: "Guns N' Roses", year: 1987,
+        fact: "Le célèbre riff d'introduction est né d'un exercice d'échauffement que Slash jouait pour s'amuser.",
+        decoys: [["Paradise City","Guns N' Roses"],["November Rain","Guns N' Roses"],["Welcome to the Jungle","Guns N' Roses"]] },
+      { title: "Despacito", artist: "Luis Fonsi", year: 2017,
+        fact: "Avec Daddy Yankee. Son clip a été la première vidéo YouTube à dépasser les 5 milliards de vues.",
+        decoys: [["Mi gente","J Balvin"],["Échame la culpa","Luis Fonsi"],["Bailando","Enrique Iglesias"]] },
+      { title: "Formidable", artist: "Stromae", year: 2013,
+        fact: "Le clip a été tourné en caméra cachée : Stromae y joue un homme ivre à un carrefour de Bruxelles.",
+        decoys: [["Papaoutai","Stromae"],["Tous les mêmes","Stromae"],["Ta fête","Stromae"]] },
+      { kind: "quiz", q: "Qui a peint ce tableau ?", answer: "Vincent van Gogh", decoys: ["Claude Monet","Paul Gauguin","Paul Cézanne"],
+        img: { wiki: "La Nuit étoilée", clue: "Ciel nocturne tourbillonnant au-dessus d'un village, avec un cyprès au premier plan." },
+        fact: "La Nuit étoilée a été peinte en 1889, depuis sa chambre de l'asile de Saint-Rémy-de-Provence." },
+      { kind: "quiz", q: "Dans quel pays se trouve ce site ?", answer: "Pérou", decoys: ["Bolivie","Chili","Mexique"],
+        img: { wiki: "Machu Picchu", clue: "Cité inca du XVe siècle perchée dans les Andes." },
+        fact: "Le Machu Picchu, cité inca du XVe siècle, est perché à environ 2 430 mètres d'altitude." },
+      { kind: "quiz", q: "Combien de cordes compte une guitare classique ?", answer: "6", decoys: ["4","5","7"],
+        fact: "Elles sont le plus souvent accordées mi, la, ré, sol, si, mi." },
+      { kind: "quiz", q: "Quel est le plus long fleuve de France ?", answer: "La Loire", decoys: ["La Seine","Le Rhône","La Garonne"],
+        fact: "Environ 1 000 kilomètres, du mont Gerbier de Jonc jusqu'à l'Atlantique." },
+      { kind: "quiz", q: "En quelle année l'homme a-t-il marché sur la Lune pour la première fois ?", answer: "1969", decoys: ["1959","1965","1972"],
+        fact: "Neil Armstrong puis Buzz Aldrin ont foulé le sol lunaire lors de la mission Apollo 11." }
+    ] },
+  { id: 3, name: "Fins connaisseurs", instrument: "lightbulb", color: "#45b7c4",
+    blurb: "Des morceaux moins évidents et des questions qui piquent.",
+    tracks: [
+      { title: "Wicked Game", artist: "Chris Isaak", year: 1989,
+        fact: "Il est devenu un tube après son passage dans Sailor et Lula, de David Lynch.",
+        decoys: [["Blue Hotel","Chris Isaak"],["Baby Did a Bad Bad Thing","Chris Isaak"],["Crazy","Seal"]] },
+      { title: "La Javanaise", artist: "Serge Gainsbourg", year: 1963,
+        fact: "Écrite pour Juliette Gréco, qui l'a enregistrée la même année.",
+        decoys: [["Le Poinçonneur des Lilas","Serge Gainsbourg"],["Couleur café","Serge Gainsbourg"],["Elisa","Serge Gainsbourg"]] },
+      { title: "Jolene", artist: "Dolly Parton", year: 1973,
+        fact: "Le prénom lui a été inspiré par une petite fille venue lui demander un autographe.",
+        decoys: [["9 to 5","Dolly Parton"],["I Will Always Love You","Dolly Parton"],["Stand by Your Man","Tammy Wynette"]] },
+      { title: "Hallelujah", artist: "Jeff Buckley", year: 1994,
+        fact: "Une reprise de Leonard Cohen, sur Grace, le seul album studio de Jeff Buckley.",
+        decoys: [["Last Goodbye","Jeff Buckley"],["Lover, You Should've Come Over","Jeff Buckley"],["Suzanne","Leonard Cohen"]] },
+      { title: "Dernière danse", artist: "Indila", year: 2013,
+        fact: "Le premier single de la chanteuse parisienne, extrait de l'album Mini World.",
+        decoys: [["Tourner dans le vide","Indila"],["S.O.S","Indila"],["Je veux","Zaz"]] },
+      { kind: "quiz", q: "Quel est cet animal ?", answer: "Okapi", decoys: ["Zèbre de Grévy","Bongo","Tapir"],
+        img: { wiki: "Okapi", clue: "Mammifère d'Afrique centrale au pelage brun, aux pattes rayées de blanc." },
+        fact: "Malgré ses rayures de zèbre, l'okapi est le plus proche parent vivant de la girafe." },
+      { kind: "quiz", q: "Quel architecte a conçu cette basilique ?", answer: "Antoni Gaudí", decoys: ["Le Corbusier","Frank Gehry","Oscar Niemeyer"],
+        img: { wiki: "Sagrada Família", clue: "Basilique de Barcelone aux tours effilées, en chantier depuis 1882." },
+        fact: "Le chantier de la Sagrada Família, à Barcelone, a commencé en 1882." },
+      { kind: "quiz", q: "Qui a peint ce tableau ?", answer: "Edvard Munch", decoys: ["Egon Schiele","Gustav Klimt","Ernst Ludwig Kirchner"],
+        img: { wiki: "Le Cri", clue: "Une silhouette se tient la tête sous un ciel rouge orangé." },
+        fact: "Munch a réalisé plusieurs versions du Cri. La première peinture date de 1893." },
+      { kind: "quiz", q: "Quel élément chimique a pour symbole Fe ?", answer: "Le fer", decoys: ["Le fluor","Le francium","Le plomb"],
+        fact: "Fe vient du latin ferrum." },
+      { kind: "quiz", q: "Qui a écrit Les Misérables ?", answer: "Victor Hugo", decoys: ["Émile Zola","Honoré de Balzac","Alexandre Dumas"],
+        fact: "Le roman est paru en 1862, pendant l'exil de Victor Hugo à Guernesey." }
+    ] },
+  { id: 4, name: "Encyclopédie vivante", instrument: "lightbulb", color: "#8f8cf0",
+    blurb: "Pour celles et ceux qui connaissent les faces B et les notes de bas de page.",
+    tracks: [
+      { title: "Avec le temps", artist: "Léo Ferré", year: 1970,
+        fact: "Dalida l'a reprise dès 1971. Elle est devenue l'une des chansons les plus reprises de Ferré.",
+        decoys: [["C'est extra","Léo Ferré"],["La Mémoire et la Mer","Léo Ferré"],["Jolie môme","Léo Ferré"]] },
+      { title: "Be My Baby", artist: "The Ronettes", year: 1963,
+        fact: "Produit par Phil Spector et son « mur du son ». L'intro de batterie est de Hal Blaine.",
+        decoys: [["Then He Kissed Me","The Crystals"],["Da Doo Ron Ron","The Crystals"],["Baby, I Love You","The Ronettes"]] },
+      { title: "Teardrop", artist: "Massive Attack", year: 1998,
+        fact: "Chanté par Elizabeth Fraser, des Cocteau Twins. Il sert de générique à la série Dr House.",
+        decoys: [["Angel","Massive Attack"],["Inertia Creeps","Massive Attack"],["Roads","Portishead"]] },
+      { title: "Volver", artist: "Carlos Gardel", year: 1935,
+        fact: "Ce tango de Gardel et Alfredo Le Pera a donné son titre au film de Pedro Almodóvar, en 2006.",
+        decoys: [["Por una cabeza","Carlos Gardel"],["Mi Buenos Aires querido","Carlos Gardel"],["La cumparsita","Carlos Gardel"]] },
+      { title: "Pata Pata", artist: "Miriam Makeba", year: 1967,
+        fact: "Chantée en xhosa, elle est devenue un tube mondial. Makeba était surnommée « Mama Africa ».",
+        decoys: [["Malaika","Miriam Makeba"],["Soul Makossa","Manu Dibango"],["Grazing in the Grass","Hugh Masekela"]] },
+      { kind: "quiz", q: "Qui a peint ce tableau ?", answer: "Johannes Vermeer", decoys: ["Rembrandt","Frans Hals","Pieter de Hooch"],
+        img: { wiki: "La Jeune Fille à la perle", clue: "Jeune femme au turban bleu et jaune, une perle à l'oreille, sur fond sombre." },
+        fact: "Peint vers 1665, ce tableau est conservé au Mauritshuis, à La Haye." },
+      { kind: "quiz", q: "Quel est cet animal ?", answer: "Ornithorynque", decoys: ["Castor","Loutre de mer","Échidné"],
+        img: { wiki: "Ornithorynque", clue: "Mammifère australien au bec de canard et à la queue de castor." },
+        fact: "Ce mammifère pond des œufs, et le mâle possède un ergot venimeux sur les pattes arrière." },
+      { kind: "quiz", q: "Que représente le globe bleu étoilé de ce drapeau ?", answer: "Le ciel de Rio le 15 novembre 1889", decoys: ["L'océan Atlantique de nuit","La Terre vue de l'espace","L'Amazonie sous les étoiles"],
+        img: { wiki: "Drapeau du Brésil", clue: "Drapeau vert et jaune, avec un globe bleu étoilé en son centre." },
+        fact: "Ses 27 étoiles, une par État et une pour le district fédéral, reprennent le ciel de Rio le jour de la proclamation de la République." },
+      { kind: "quiz", q: "Quel compositeur a continué à composer en devenant sourd ?", answer: "Ludwig van Beethoven", decoys: ["Wolfgang Amadeus Mozart","Jean-Sébastien Bach","Frédéric Chopin"],
+        fact: "Sa Neuvième Symphonie a été créée en 1824, alors qu'il était presque totalement sourd." },
+      { kind: "quiz", q: "Combien d'os compte le squelette d'un adulte ?", answer: "206", decoys: ["186","226","256"],
+        fact: "Un nouveau-né en a davantage : certains os se soudent pendant la croissance." }
+    ] }
+];
+
 /* ===================== Thèmes ===================== */
 const THEMES = [
   { id: "jazz", name: "Jazz Club", eyebrow: "Swing, bebop & free", hero: "trumpet", color: "#e0b04f",
     tagline: "Cinq sets de difficulté croissante, de Benny Goodman à Albert Ayler, et des sets par style : manouche, salsa, bossa nova.",
-    yearLabel: "enregistré en", difficulty: true, levels: JAZZ },
+    yearLabel: "enregistré en", difficulty: true, bars: 5, levels: JAZZ },
   { id: "retro", name: "Rétro Club", eyebrow: "1960 – 2009", hero: "cassette", color: "#e85fa8",
     tagline: "Pop, rock, disco, variété et latino : trois niveaux par décennie, des Rolling Stones à Daft Punk.",
-    yearLabel: "sorti en", difficulty: false, levels: RETRO }
+    yearLabel: "sorti en", difficulty: false, levels: RETRO },
+  { id: "mix", name: "Le Mix", eyebrow: "Musique & culture générale", hero: "lightbulb", color: "#45b7c4",
+    tagline: "Des extraits et des questions de culture générale, certaines en images. Quatre niveaux de 10 manches.",
+    yearLabel: "sorti en", difficulty: true, bars: 4, chip: "4 niveaux · 40 manches", levels: MIX }
 ];
-THEMES.forEach(th => th.levels.forEach(l => l.tracks.forEach(t => { t.q = `${t.artist.split(" & ")[0]} ${t.title}`; })));
+THEMES.forEach(th => th.levels.forEach(l => l.tracks.forEach(t => { if (t.kind !== "quiz") t.q = `${t.artist.split(" & ")[0]} ${t.title}`; })));
+const PCOLORS = ["#e0b04f", "#5fc4d6"]; // couleur de chaque joueur en Duo
 
 const ROUND_SECONDS = 20;
 const BASE_POINTS = 100;
@@ -3316,7 +3505,7 @@ function renderHome() {
               <h3>${th.name}</h3>
               <span class="blurb">${th.tagline}</span>
               <span class="room-meta">
-                <span class="chip">${th.levels.length} sets · ${nTracks} titres</span>
+                <span class="chip">${th.chip || `${th.levels.length} sets · ${nTracks} titres`}</span>
                 <span class="best mono">${played.length ? `★ ${stars} / ${th.levels.length * 3}` : "Pas encore joué"}</span>
               </span>
             </span>
@@ -3385,7 +3574,7 @@ function renderTheme(th) {
             <span class="txt"><span class="num">SET ${pad2(l.id)}</span><h3>${l.name}</h3><span class="blurb">${l.blurb}</span></span>
             <span class="meta">
               ${l.group === "style" ? `<span class="decade mono">Style</span>`
-                : `<span class="diff" aria-label="Difficulté ${l.id} sur 5">${[1,2,3,4,5].map(i => `<i class="${i <= l.id ? "on" : ""}"></i>`).join("")}</span>`}
+                : `<span class="diff" aria-label="Difficulté ${l.id} sur ${th.bars || 5}">${Array.from({ length: th.bars || 5 }, (_, k) => k + 1).map(i => `<i class="${i <= l.id ? "on" : ""}"></i>`).join("")}</span>`}
               ${b ? `${starStr(starsFor(b.correct, b.total || 5))}<span class="best mono">${b.points} pts</span>` : `<span class="best">Pas encore joué</span>`}
             </span>
           </button></li>`;
@@ -3395,34 +3584,48 @@ function renderTheme(th) {
   $app.querySelector("#back").addEventListener("click", renderHome);
   $app.querySelectorAll(".set").forEach(b => b.addEventListener("click", () => { unlockAudio(); startLevel(+b.dataset.level); }));
   window.scrollTo({ top: 0 });
+  prepareOrders(th.levels);
 }
 
 function startLevel(id) {
   S.level = S.theme.levels.find(l => l.id === id);
-  S.order = shuffle(S.level.tracks);
+  S.order = (S.pre && S.pre[id]) || shuffle(S.level.tracks);
+  if (S.pre) S.pre[id] = null;
   S.qi = 0; S.score = 0; S.results = [];
   S.players = DUO ? DUO.names.map(name => ({ name, score: 0, correct: 0 })) : null;
   window.scrollTo({ top: 0 });
   newQuestion();
 }
 
-/* Cycle d'une question : loading → (lecture auto) playing ⇄ paused → answered.
-   Si le navigateur bloque la lecture auto : idle, en attente du bouton. */
+/* Cycle d'une question : loading → playing ⇄ paused → answered.
+   L'élément suivant est préchargé pendant la manche en cours : au clic sur « Suivant », l'extrait
+   démarre dans le même geste, sans second clic (indispensable sur téléphone). */
 function newQuestion() {
-  const t = S.order[S.qi];
-  S.choices = shuffle([{ title: t.title, artist: t.artist, ok: true }, ...t.decoys.map(([title, artist]) => ({ title, artist, ok: false }))]);
-  S.phase = S.players ? "handoff" : "loading"; S.picked = null; S.clip = undefined; S.elapsed = 0; S.simulated = false;
-  S.simMsg = "Recherche de l'extrait sur Deezer…";
+  const t = S.order[S.qi], quiz = t.kind === "quiz";
+  S.choices = quiz
+    ? shuffle([{ title: t.answer, ok: true }, ...t.decoys.map(d => ({ title: d, ok: false }))])
+    : shuffle([{ title: t.title, artist: t.artist, ok: true }, ...t.decoys.map(([title, artist]) => ({ title, artist, ok: false }))]);
+  S.phase = "loading"; S.picked = null; S.clip = undefined; S.img = undefined; S.elapsed = 0; S.simulated = false; S.silent = quiz;
+  S.simMsg = quiz ? "" : "Recherche de l'extrait sur Deezer…";
   const token = ++S.token;
   renderGame();
+  prefetch(S.order[S.qi + 1]);
+  if (quiz) {
+    if (!t.img) { beginTimer("", true); return; }
+    const done = info => { if (token !== S.token || S.phase !== "loading") return; S.img = info; beginTimer("", true); };
+    if (IMG_CACHE.has(t.img.wiki)) { done(IMG_CACHE.get(t.img.wiki)); return; }
+    getImage(t.img.wiki).then(done);
+    setTimeout(() => done(null), 7000);
+    return;
+  }
+  const key = t.artist + "|" + t.title;
+  if (PREVIEW_CACHE.has(key)) { S.clip = PREVIEW_CACHE.get(key); autoStart(token); return; }
   getPreview(t).then(c => { if (token === S.token) { S.clip = c; autoStart(token); } });
-  if (S.phase === "handoff") { const go = document.getElementById("go"); go && go.focus(); }
 }
-function startTurn() { // clic « C'est parti » : débloque l'audio puis lance l'extrait
-  if (S.phase !== "handoff") return;
-  unlockAudio();
-  S.phase = "loading"; renderGame();
-  if (S.clip !== undefined) autoStart(S.token);
+/* Ordres de jeu tirés à l'avance, pour précharger le premier élément de chaque set. */
+function prepareOrders(levels) {
+  S.pre = S.pre || {};
+  levels.forEach(l => { if (!l) return; const o = shuffle(l.tracks); S.pre[l.id] = o; prefetch(o[0]); });
 }
 
 async function autoStart(token) {
@@ -3443,7 +3646,8 @@ async function autoStart(token) {
 function beginTimer(msg, simulated) {
   S.phase = "playing"; S.simMsg = msg; S.simulated = simulated; S.t0 = performance.now();
   renderGame(); focusPlay();
-  say("Extrait lancé. Quatre réponses disponibles.");
+  const who = S.players ? `Au tour de ${S.players[turnOf(S.qi)].name}. ` : "";
+  say(who + (S.silent ? "Question affichée. Quatre réponses disponibles." : "Extrait lancé. Quatre réponses disponibles."));
   tick();
 }
 
@@ -3457,11 +3661,11 @@ function onPlayButton() {
 function pauseRound() {
   cancelAnimationFrame(S.raf);
   S.elapsed += (performance.now() - S.t0) / 1000;
-  if (S.simulated) stopCrackle(); else player.pause();
+  if (S.silent) {} else if (S.simulated) stopCrackle(); else player.pause();
   S.phase = "paused"; renderGame(); focusPlay(); say("Pause.");
 }
 function resumeRound() {
-  if (S.simulated) startCrackle(); else { const p = player.play(); if (p) p.catch(() => {}); }
+  if (S.silent) {} else if (S.simulated) startCrackle(); else { const p = player.play(); if (p) p.catch(() => {}); }
   S.phase = "playing"; S.t0 = performance.now();
   renderGame(); focusPlay(); tick();
 }
@@ -3477,81 +3681,94 @@ function tick() {
 function stopRound() { cancelAnimationFrame(S.raf); stopCrackle(); stopClip(); }
 function focusPlay() { const p = document.getElementById("play"); if (p && !p.disabled) p.focus(); }
 
+const imgCredit = im => `Image : ${esc(im.author)} · ${esc(im.license)} · <a href="${im.page}" target="_blank" rel="noopener">Wikimedia Commons</a>${im.article ? ` · <a href="${im.article}" target="_blank" rel="noopener">article Wikipédia</a>` : ""}`;
+const itemLine = t => t.kind === "quiz" ? `${t.q} <span>· ${t.answer}</span>` : `${t.title} <span>· ${t.artist}${t.year ? ` (${t.year})` : ""}</span>`;
+
 function renderGame() {
   S.screen = "game";
-  const th = S.theme, l = S.level, t = S.order[S.qi], n = S.order.length;
+  const th = S.theme, l = S.level, t = S.order[S.qi], n = S.order.length, quiz = t.kind === "quiz";
   const ph = S.phase, answered = ph === "answered", live = ph === "playing" || ph === "paused";
   const res = S.results[S.qi];
   const left = answered ? 0 : leftNow();
   const btn = {
     loading: ["Chargement…", PLAY_ICO, true], idle: ["Lancer l'extrait", PLAY_ICO, false],
-    playing: ["Pause", PAUSE_ICO, false], paused: ["Reprendre", PLAY_ICO, false], answered: ["Extrait terminé", PLAY_ICO, true]
+    playing: ["Pause", PAUSE_ICO, false], paused: ["Reprendre", PLAY_ICO, false], answered: [quiz ? "Question terminée" : "Extrait terminé", PLAY_ICO, true]
   }[ph];
+  const turn = S.players ? turnOf(S.qi) : -1;
   $app.style.setProperty("--lvl", l.color);
+  $app.style.setProperty("--pc", S.players ? PCOLORS[turn] : l.color);
+  const playBtn = `<button class="play ${ph === "playing" ? "is-pause" : ""}" id="play" ${btn[2] ? "disabled" : ""} aria-label="${btn[0]}"><span class="ico">${btn[1]}</span>${btn[0]}</button>`;
+  const timer = `<div class="timer">
+          <div class="row"><span>${ph === "paused" ? "En pause" : "Temps restant"}</span><span class="clock mono" id="clock">00:${pad2(Math.ceil(left))}</span></div>
+          <div class="bar"><i id="bar" style="transform:scaleX(${left / ROUND_SECONDS})"></i></div>
+        </div>`;
+  const nt = S.order[S.qi + 1];
+  const nextLabel = !nt ? "Voir le résultat →"
+    : S.players ? `Au tour de ${esc(S.players[turnOf(S.qi + 1)].name)} →`
+    : nt.kind === "quiz" ? "Question suivante →" : "Morceau suivant →";
   $app.innerHTML = `
     <div class="topbar">
       <button class="back" id="back">← ${th.name}</button>
       ${S.players
-        ? `<div class="duo-score" aria-label="Scores">${S.players.map((p, i) => `<span class="pl ${i === turnOf(S.qi) ? "on" : ""}"><span class="nm">${esc(p.name)}</span><span class="val mono">${p.score}</span></span>`).join("")}</div>`
+        ? `<div class="duo-score" aria-label="Scores">${S.players.map((p, i) => `<span class="pl ${i === turn && !answered ? "on" : ""}" style="--pc:${PCOLORS[i]}"><span class="nm">${esc(p.name)}</span><span class="val mono">${p.score}</span></span>`).join("")}</div>`
         : `<div class="scorebox"><span class="eyebrow">Score</span><div class="val mono">${S.score}</div></div>`}
     </div>
     <div class="level-title">
-      <span class="eyebrow">${l.tier ? `Niveau ${l.tier}` : `Set ${pad2(l.id)}`} · Morceau ${S.qi + 1} sur ${n}</span>
+      <span class="eyebrow">${l.tier ? `Niveau ${l.tier}` : `Set ${pad2(l.id)}`} · ${quiz ? "Question" : "Morceau"} ${S.qi + 1} sur ${n}</span>
       <h2>${l.name}</h2>
       <div class="dots" aria-hidden="true">${S.order.map((_, i) => `<span class="${i < S.results.length ? (S.results[i].ok ? "ok" : "ko") : i === S.qi ? "cur" : ""}"></span>`).join("")}</div>
     </div>
-    ${ph === "handoff" ? `
-    <section class="handoff">
-      <span class="eyebrow">Morceau ${S.qi + 1} sur ${n} · ${esc(S.players[turnOf(S.qi)].name)} joue</span>
-      <h2 id="ho-h">À toi, ${esc(S.players[turnOf(S.qi)].name)} !</h2>
-      <p class="tag">Prends le téléphone. L'extrait démarre dès que tu appuies.</p>
-      <button class="play" id="go"><span class="ico">${PLAY_ICO}</span>C'est parti</button>
+    ${S.players && !answered ? `<div class="turn" role="status"><span class="turn-dot" aria-hidden="true"></span><span class="turn-lbl">C'est au tour de</span><strong>${esc(S.players[turn].name)}</strong></div>` : ""}
+    ${quiz ? `
+    <section class="quiz-card ${S.players ? "duo" : ""}" aria-labelledby="qq">
+      <span class="eyebrow">Culture générale</span>
+      <h3 id="qq">${t.q}</h3>
+      ${t.img ? (S.img
+        ? `<figure class="qimg"><img src="${S.img.src}" alt="${esc(t.img.clue)}"><figcaption>${answered ? imgCredit(S.img) : "Image : Wikimedia Commons · crédit complet après la réponse"}</figcaption></figure>`
+        : S.img === null ? `<p class="clue"><strong>Indice :</strong> ${t.img.clue}</p>`
+        : `<div class="qimg wait">Chargement de l'image…</div>`) : ""}
+      <div class="qbar">${playBtn}${timer}</div>
     </section>` : `
-    <section class="stage" aria-label="Platine">
+    <section class="stage ${S.players ? "duo" : ""}" aria-label="Platine">
       <div class="deck">
         <div class="disc ${ph === "playing" ? "spinning" : ""}">${vinyl(l.color)}</div>
         <div class="arm ${live ? "down" : ""}">${ARM}</div>
       </div>
       <div class="controls">
-        <button class="play ${ph === "playing" ? "is-pause" : ""}" id="play" ${btn[2] ? "disabled" : ""} aria-label="${btn[0]}">
-          <span class="ico">${btn[1]}</span>${btn[0]}
-        </button>
-        <div class="timer">
-          <div class="row"><span>${ph === "paused" ? "En pause" : "Temps restant"}</span><span class="clock mono" id="clock">00:${pad2(Math.ceil(left))}</span></div>
-          <div class="bar"><i id="bar" style="transform:scaleX(${left / ROUND_SECONDS})"></i></div>
-        </div>
+        ${playBtn}
+        ${timer}
         <p class="sim" id="sim">${S.simMsg}</p>
       </div>
     </section>`}
-    ${!live && !answered && ph !== "handoff" ? `<p class="hint">${ph === "loading" ? "L'extrait démarre tout seul." : "Lance l'extrait pour débloquer les réponses."} Raccourcis : 1 à 4 pour répondre, P pour la pause.</p>` : ""}
-    ${ph === "handoff" ? "" : `<ol class="choices ${!live && !answered ? "locked" : ""}" aria-label="Quel est ce morceau ?">
+    ${!quiz && !live && !answered ? `<p class="hint">${ph === "loading" ? "L'extrait démarre tout seul." : "Lance l'extrait pour débloquer les réponses."} Raccourcis : 1 à 4 pour répondre, P pour la pause.</p>` : ""}
+    <ol class="choices ${!live && !answered ? "locked" : ""}" aria-label="${quiz ? "Quelle est la bonne réponse ?" : "Quel est ce morceau ?"}">
       ${S.choices.map((c, i) => {
         let cls = "";
         if (answered && c.ok) cls = "is-ok";
         else if (answered && S.picked === i && !c.ok) cls = "is-ko";
         return `<li><button class="choice ${cls}" data-i="${i}" ${!live ? "disabled" : ""}>
-          <span class="k">${i + 1}</span><span class="t"><span class="title">${c.title}</span><span class="artist">${c.artist}</span></span>
+          <span class="k">${i + 1}</span><span class="t"><span class="title">${c.title}</span>${c.artist ? `<span class="artist">${c.artist}</span>` : ""}</span>
         </button></li>`;
       }).join("")}
-    </ol>`}
+    </ol>
     ${answered ? `
       <section class="feedback ${res.ok ? "ok" : "ko"}">
         <h3 tabindex="-1" id="fb-h">${S.players ? (res.ok ? `Bien joué, ${esc(S.players[res.player].name)} !` : res.timeout ? `Temps écoulé pour ${esc(S.players[res.player].name)}` : `Raté, ${esc(S.players[res.player].name)}`) : res.ok ? "Bien joué !" : res.timeout ? "Temps écoulé" : "Raté"}</h3>
+        ${quiz ? `<p class="answer">${t.answer}</p>` : `
         <div class="reveal">
           ${S.clip && S.clip.cover ? `<img src="${S.clip.cover}" alt="Pochette de l'album ${S.clip.album || ""}" width="72" height="72">` : ""}
           <div class="reveal-t">
             <p class="answer">${t.title} <span>· ${t.artist}${t.year ? ` · ${th.yearLabel} ${t.year}` : ""}</span></p>
             ${S.clip && S.clip.link ? `<a class="dz" href="${S.clip.link}" target="_blank" rel="noopener">Écouter en entier sur Deezer ↗</a>` : ""}
           </div>
-        </div>
+        </div>`}
         <p class="fact">${t.fact}</p>
         <p class="pts mono">${res.ok ? `+${res.points} pts (dont ${res.points - BASE_POINTS} de bonus vitesse)` : "+0 pt"}</p>
-        <button class="next" id="next">${S.qi + 1 < n ? (S.players ? `Au tour de ${esc(S.players[turnOf(S.qi + 1)].name)} →` : "Morceau suivant →") : "Voir le résultat →"}</button>
+        <button class="next" id="next">${nextLabel}</button>
       </section>` : ""}`;
 
   $app.querySelector("#back").addEventListener("click", () => { stopRound(); S.token++; S.phase = "idle"; renderTheme(th); });
   const play = $app.querySelector("#play"); if (play) play.addEventListener("click", onPlayButton);
-  const go = $app.querySelector("#go"); if (go) go.addEventListener("click", startTurn);
   $app.querySelectorAll(".choice").forEach(b => b.addEventListener("click", () => answer(+b.dataset.i)));
   const next = $app.querySelector("#next");
   if (next) next.addEventListener("click", () => { unlockAudio(); goNext(); });
@@ -3588,8 +3805,9 @@ function renderResult() {
   const isRecord = !prev || S.score > prev.points;
   if (isRecord) { best[k] = { points: S.score, correct, total }; saveBest(best); }
   const vi = correct === total ? 5 : Math.min(4, Math.floor(correct / total * 5));
-  const verdict = ["Le DJ a fait une pause.", "Encore quelques disques à écouter.", "Pas mal du tout.", "Belle oreille.", "Presque parfait.", "Un sans-faute. Le club t'offre un verre."][vi];
+  const verdict = ["Le DJ a fait une pause.", "Encore quelques disques (et quelques livres) à découvrir.", "Pas mal du tout.", "Belle oreille.", "Presque parfait.", "Un sans-faute. Le club t'offre un verre."][vi];
   const order = playOrder(th), nextLevel = order[order.indexOf(l) + 1];
+  prepareOrders([l, nextLevel]);
   $app.innerHTML = `
     <div class="topbar"><button class="back" id="back">← ${th.name}</button><span class="eyebrow">Fin du ${l.tier ? `niveau ${l.tier}` : `set ${pad2(l.id)}`}</span></div>
     <section class="result-card" style="--lvl:${l.color}">
@@ -3607,7 +3825,7 @@ function renderResult() {
       <ol class="recap">
         ${S.order.map((t, i) => { const r = S.results[i]; return `<li>
           <span class="mark ${r.ok ? "ok" : "ko"}" aria-label="${r.ok ? "Trouvé" : "Raté"}">${r.ok ? "✓" : "✕"}</span>
-          <span class="t">${t.title} <span>· ${t.artist}${t.year ? ` (${t.year})` : ""}</span></span>
+          <span class="t">${itemLine(t)}</span>
           <span class="p mono">${r.points}</span></li>`; }).join("")}
       </ol>
     </section>
@@ -3631,6 +3849,7 @@ function renderDuoResult() {
   const head = tie ? "Égalité !" : `${esc(ranked[0].name)} gagne !`;
   const sub = tie ? `${ranked[0].score} points chacun. Il va falloir une revanche.` : `${ranked[0].score} points contre ${ranked[1].score}.`;
   const order = playOrder(th), nextLevel = order[order.indexOf(l) + 1];
+  prepareOrders([l, nextLevel]);
   $app.innerHTML = `
     <div class="topbar"><button class="back" id="back">← ${th.name}</button><span class="eyebrow">Duo · fin du ${l.tier ? `niveau ${l.tier}` : `set ${pad2(l.id)}`}</span></div>
     <section class="result-card" style="--lvl:${l.color}">
@@ -3648,7 +3867,7 @@ function renderDuoResult() {
       <ol class="recap duo">
         ${S.order.map((t, i) => { const r = S.results[i]; return `<li>
           <span class="mark ${r.ok ? "ok" : "ko"}" aria-label="${r.ok ? "Trouvé" : "Raté"}">${r.ok ? "✓" : "✕"}</span>
-          <span class="t">${t.title} <span>· ${t.artist}${t.year ? ` (${t.year})` : ""}</span><span class="who">${esc(P[r.player].name)}</span></span>
+          <span class="t">${itemLine(t)}<span class="who" style="color:${PCOLORS[r.player]}">${esc(P[r.player].name)}</span></span>
           <span class="p mono">${r.points}</span></li>`; }).join("")}
       </ol>
     </section>
