@@ -2992,7 +2992,7 @@ async function getPreview(track) {
     const a = await deezer("/search?limit=10&q=" + encodeURIComponent(track.q));
     hit = pickBest(a.data, track);
     if (!hit) {
-      const b = await deezer("/search?limit=15&q=" + encodeURIComponent(track.artist.split(" & ")[0] + " " + track.title));
+      const b = await deezer("/search?limit=25&q=" + encodeURIComponent(track.title));
       hit = pickBest(b.data, track);
     }
   } catch (e) { hit = null; }
@@ -3184,7 +3184,7 @@ const THEMES = [
     tagline: "Pop, rock, disco, variété et latino : trois niveaux par décennie, des Rolling Stones à Daft Punk.",
     yearLabel: "sorti en", difficulty: false, levels: RETRO }
 ];
-THEMES.forEach(th => th.levels.forEach(l => l.tracks.forEach(t => { t.q = `artist:"${t.artist}" track:"${t.title}"`; })));
+THEMES.forEach(th => th.levels.forEach(l => l.tracks.forEach(t => { t.q = `${t.artist.split(" & ")[0]} ${t.title}`; })));
 
 const ROUND_SECONDS = 20;
 const BASE_POINTS = 100;
