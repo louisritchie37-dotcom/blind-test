@@ -8252,7 +8252,7 @@ function renderTheme(th) {
         <button class="seg-b ${MODE === "saisie" ? "on" : ""}" id="am-saisie" aria-pressed="${MODE === "saisie"}">Saisie</button>
       </div>
       <p class="mode-line">${MODE === "saisie"
-        ? `Tape le nom de l'artiste : <strong>le nom de famille suffit</strong>, ou le nom du groupe.${th.levels.some(l => l.tracks.some(t => t.kind === "quiz")) ? " Pour les questions, tape la réponse : un nombre en chiffres ou en lettres, le nom de famille pour une personne." : ""} 30 secondes, plusieurs essais permis. Records séparés du QCM.`
+        ? `Tape le nom de l'artiste : <strong>le nom de famille suffit</strong>, ou le nom du groupe. Le titre seul rapporte la moitié des points.${th.levels.some(l => l.tracks.some(t => t.kind === "quiz")) ? " Pour les questions, tape la réponse : un nombre en chiffres ou en lettres, le nom de famille pour une personne." : ""} 30 secondes, plusieurs essais permis. Records séparés du QCM.`
         : "Quatre propositions, un seul essai, 20 secondes par morceau."}</p>
     </section>
     ${groupsOf(th).map((g, gi) => g.tiered ? `<section aria-labelledby="sets-h${gi}" class="stack decade-group" style="--lvl:${g.color}">
@@ -8496,7 +8496,7 @@ function handleVoice(alts) {
   if (is("play") && S.phase === "paused") { resumeRound(); voiceUI(); return; }
   const t = S.order[S.qi];
   if (typing()) {
-    const hit = alts.find(a => typedMatch(a, t));
+    const hit = alts.find(a => typedMatch(a, t)) || (t.kind !== "quiz" && alts.find(a => titleMatch(a, t.title)));
     const inp = document.getElementById("type-in"); if (inp) inp.value = hit || said;
     V.msg = "";
     submitTyped(hit || said);
@@ -8631,7 +8631,7 @@ function renderGame() {
         ${answered ? "" : `<button class="btn primary" type="submit" ${live ? "" : "disabled"}>Valider</button>`}
       </div>
       <div class="type-foot">
-        <p class="type-msg ${S.typeMsg && !answered ? "ko" : ""}" id="type-msg">${answered ? "" : S.typeMsg || (S.tries ? "" : "Entrée pour valider. Tu peux réessayer jusqu'à la fin du temps.")}</p>
+        <p class="type-msg ${S.typeMsg && !answered ? "ko" : ""}" id="type-msg">${answered ? "" : S.typeMsg || (S.tries ? "" : quiz ? "Entrée pour valider. Tu peux réessayer jusqu'à la fin du temps." : "Entrée pour valider. Le titre seul rapporte la moitié des points.")}</p>
         ${live ? `<button type="button" class="linkish" id="give-up">Je passe</button>` : ""}
       </div>
     </form>` : `
@@ -8647,7 +8647,7 @@ function renderGame() {
     </ol>`}
     ${answered ? `
       <section class="feedback ${res.ok ? "ok" : "ko"}">
-        <h3 tabindex="-1" id="fb-h">${S.players ? (res.ok ? `Bien joué, ${esc(S.players[res.player].name)} !` : res.pass ? `${esc(S.players[res.player].name)} passe` : res.timeout ? `Temps écoulé pour ${esc(S.players[res.player].name)}` : `Raté, ${esc(S.players[res.player].name)}`) : res.ok ? "Bien joué !" : res.pass ? "Passé" : res.timeout ? "Temps écoulé" : "Raté"}</h3>
+        <h3 tabindex="-1" id="fb-h">${S.players ? (res.partial ? `Bon titre, ${esc(S.players[res.player].name)} !` : res.ok ? `Bien joué, ${esc(S.players[res.player].name)} !` : res.pass ? `${esc(S.players[res.player].name)} passe` : res.timeout ? `Temps écoulé pour ${esc(S.players[res.player].name)}` : `Raté, ${esc(S.players[res.player].name)}`) : res.partial ? "Bon titre !" : res.ok ? "Bien joué !" : res.pass ? "Passé" : res.timeout ? "Temps écoulé" : "Raté"}</h3>
         ${typeMode && res.typed ? `<p class="mode-line">Ta réponse : « ${esc(res.typed)} »</p>` : ""}
         ${quiz ? `<p class="answer">${t.answer}</p>` : `
         <div class="reveal">
@@ -8663,7 +8663,7 @@ function renderGame() {
           ${t.film ? `<div><dt>À l'écran</dt><dd>${t.film}</dd></div>` : ""}
           ${t.context ? `<div><dt>Contexte</dt><dd>${t.context}</dd></div>` : ""}
         </dl>` : ""}
-        <p class="pts mono">${res.ok ? `+${res.points} pts (dont ${res.points - BASE_POINTS} de bonus vitesse)` : "+0 pt"}</p>
+        <p class="pts mono">${res.partial ? `+${res.points} pts (titre seul : moitié des points, il manquait l'artiste)` : res.ok ? `+${res.points} pts (dont ${res.points - BASE_POINTS} de bonus vitesse)` : "+0 pt"}</p>
         <button class="next" id="next">${nextLabel}</button>
       </section>` : ""}`;
 
@@ -8689,8 +8689,9 @@ function submitTyped(v) {
   if (!v.trim()) { document.getElementById("type-in").focus(); return; }
   const t = S.order[S.qi];
   if (typedMatch(v, t)) { answer(null, { typed: v, ok: true }); return; }
+  if (t.kind !== "quiz" && titleMatch(v, t.title)) { answer(null, { typed: v, ok: true, partial: true }); return; } // le titre seul : moitié des points
   S.tries++;
-  S.typeMsg = t.kind !== "quiz" && titleMatch(v, t.title) ? "Bon titre ! Mais il faut le nom de l'artiste." : "Pas ça. Essaie encore.";
+  S.typeMsg = "Pas ça. Essaie encore.";
   const msg = document.getElementById("type-msg"), row = document.querySelector(".type-row"), inp = document.getElementById("type-in");
   if (msg) { msg.textContent = S.typeMsg; msg.classList.add("ko"); }
   if (row) { row.classList.remove("shake"); void row.offsetWidth; row.classList.add("shake"); }
@@ -8703,11 +8704,12 @@ function answer(i, o = {}) {
   cancelAnimationFrame(S.raf); stopCrackle();
   if (i === null && !o.typed && typing() && S.typed && S.typed.trim()) o.typed = S.typed.trim();
   const ok = "ok" in o ? o.ok : i !== null && S.choices[i].ok;
-  const points = ok ? BASE_POINTS + Math.round(left) * BONUS_PER_SEC : 0;
+  const full = ok ? BASE_POINTS + Math.round(left) * BONUS_PER_SEC : 0;
+  const points = o.partial ? Math.round(full / 2) : full;
   S.score += points; S.picked = i; S.phase = "answered";
   const player = turnOf(S.qi);
   if (S.players) { S.players[player].score += points; if (ok) S.players[player].correct++; }
-  S.results.push({ ok, points, timeout: i === null && !o.pass && !("ok" in o), pass: !!o.pass, typed: o.typed || "", player });
+  S.results.push({ ok, points, timeout: i === null && !o.pass && !("ok" in o), pass: !!o.pass, partial: !!o.partial, typed: o.typed || "", player });
   renderGame();
   const t = S.order[S.qi];
   say(`${ok ? "Bonne réponse" : "Mauvaise réponse"}. C'était ${t.title}, de ${t.artist}.`);
