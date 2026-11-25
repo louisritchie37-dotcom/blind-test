@@ -332,6 +332,7 @@ p { margin: 0; }
 .type-msg { min-height: 1.4em; margin: 0; font-size: 14px; color: var(--smoke); }
 .type-msg.ko { color: var(--ko); }
 .type-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.type-foot .linkish { white-space: nowrap; flex: none; }
 .type-row.shake { animation: shake .32s; }
 @keyframes shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
 @media (prefers-reduced-motion: reduce) { .type-row.shake { animation: none; } }
@@ -5167,6 +5168,7 @@ const MIX = [
     "kind": "quiz",
     "q": "Que représente le globe bleu étoilé de ce drapeau ?",
     "answer": "Le ciel de Rio le 15 novembre 1889",
+    "accept": ["ciel", "ciel de Rio", "ciel étoilé"],
     "decoys": [
      "L'océan Atlantique de nuit",
      "La Terre vue de l'espace",
@@ -8055,6 +8057,36 @@ function artistKeys(artist) {
   return keys;
 }
 const artistMatch = (input, artist) => { const t = toks(input).filter(x => !FILLER.has(x)); return t.length > 0 && artistKeys(artist).some(k => hasSeq(t, k)); };
+/* Saisie des questions de culture générale : nombre (en chiffres ou en lettres), nom de famille pour une personne,
+   mot principal sans article (« Loire » pour « La Loire »), ou réponses courtes prévues dans les données (accept). */
+const NUM_SMALL = { zero: 0, un: 1, une: 1, deux: 2, trois: 3, quatre: 4, cinq: 5, six: 6, sept: 7, huit: 8, neuf: 9, dix: 10, onze: 11, douze: 12, treize: 13, quatorze: 14, quinze: 15, seize: 16 };
+const NUM_TENS = { vingt: 20, vingts: 20, trente: 30, quarante: 40, cinquante: 50, soixante: 60 };
+function numbersIn(input) {
+  const t = toks(input), out = [];
+  let total = 0, cur = 0, any = false;
+  const flush = () => { if (any) out.push(total + cur); total = 0; cur = 0; any = false; };
+  for (const w of t) {
+    if (/^\d+$/.test(w)) { flush(); out.push(+w); continue; }
+    if (w in NUM_SMALL) { cur += NUM_SMALL[w]; any = true; }
+    else if (w in NUM_TENS) { if (w.startsWith("vingt") && cur % 100 === 4) cur += 76; else cur += NUM_TENS[w]; any = true; }
+    else if (w === "cent" || w === "cents") { cur = (cur || 1) * 100; any = true; }
+    else if (w === "mille") { total += (cur || 1) * 1000; cur = 0; any = true; }
+    else if (w === "et" && any) {}
+    else flush();
+  }
+  flush();
+  return out;
+}
+const ARTICLE = /^(le|la|les|l|un|une|des|du)\s+/i;
+function quizMatch(input, t) {
+  const ans = String(t.answer).trim();
+  if (/^\d+$/.test(ans)) return numbersIn(input).includes(+ans);
+  const inp = toks(input).filter(x => !FILLER.has(x) && !["le", "la", "les", "l", "un", "une"].includes(x));
+  if (!inp.length) return false;
+  if ((t.accept || []).some(a => hasSeq(inp, toks(a.replace(ARTICLE, ""))))) return true;
+  return artistKeys(normTxt(ans).replace(ARTICLE, "") === normTxt(ans) ? ans : ans.replace(/^(le|la|les|l'|un|une)\s*/i, "")).some(k => hasSeq(inp, k));
+}
+const typedMatch = (input, t) => t.kind === "quiz" ? quizMatch(input, t) : artistMatch(input, t.artist);
 const titleMatch = (input, title) => { const t = toks(input), k = toks(title.replace(/\(.*?\)/g, "")); return t.length > 0 && k.length > 0 && hasSeq(t, k); };
 
 const S = { screen: "home", theme: null, level: null, order: [], qi: 0, score: 0, results: [], phase: "idle",
@@ -8220,7 +8252,7 @@ function renderTheme(th) {
         <button class="seg-b ${MODE === "saisie" ? "on" : ""}" id="am-saisie" aria-pressed="${MODE === "saisie"}">Saisie</button>
       </div>
       <p class="mode-line">${MODE === "saisie"
-        ? `Tape le nom de l'artiste : <strong>le nom de famille suffit</strong>, ou le nom du groupe. 30 secondes par morceau, plusieurs essais permis.${th.levels.some(l => l.tracks.some(t => t.kind === "quiz")) ? " Les questions de culture générale restent en QCM." : ""} Records séparés du QCM.`
+        ? `Tape le nom de l'artiste : <strong>le nom de famille suffit</strong>, ou le nom du groupe.${th.levels.some(l => l.tracks.some(t => t.kind === "quiz")) ? " Pour les questions, tape la réponse : un nombre en chiffres ou en lettres, le nom de famille pour une personne." : ""} 30 secondes, plusieurs essais permis. Records séparés du QCM.`
         : "Quatre propositions, un seul essai, 20 secondes par morceau."}</p>
     </section>
     ${groupsOf(th).map((g, gi) => g.tiered ? `<section aria-labelledby="sets-h${gi}" class="stack decade-group" style="--lvl:${g.color}">
@@ -8377,7 +8409,7 @@ function voiceBar() {
   const lbl = V.on ? "J'écoute… relâche pour valider" : "Maintenir pour parler";
   return `<div class="voice">
       <button type="button" class="mic ${V.on ? "on" : ""}" id="mic" aria-pressed="${V.on}" ${voiceUsable() ? "" : "disabled"}><span class="dot">${MIC_ICO}</span><span class="mic-l">${lbl}</span></button>
-      <p class="voice-msg" id="voice-msg" aria-live="polite">${V.msg || (S.phase === "answered" ? "Dis « suivant » pour continuer." : typing() ? "Dis le nom de l'artiste." : S.order[S.qi].kind === "quiz" ? "Dis le numéro ou la réponse." : "Dis le numéro, le titre ou l'artiste.")}</p>
+      <p class="voice-msg" id="voice-msg" aria-live="polite">${V.msg || (S.phase === "answered" ? "Dis « suivant » pour continuer." : typing() ? (S.order[S.qi].kind === "quiz" ? "Dis ta réponse." : "Dis le nom de l'artiste.") : S.order[S.qi].kind === "quiz" ? "Dis le numéro ou la réponse." : "Dis le numéro, le titre ou l'artiste.")}</p>
     </div>`;
 }
 function voiceUI() {
@@ -8458,7 +8490,7 @@ function handleVoice(alts) {
   if (is("play") && S.phase === "paused") { resumeRound(); voiceUI(); return; }
   const t = S.order[S.qi];
   if (typing()) {
-    const hit = alts.find(a => artistMatch(a, t.artist));
+    const hit = alts.find(a => typedMatch(a, t));
     const inp = document.getElementById("type-in"); if (inp) inp.value = hit || said;
     V.msg = "";
     submitTyped(hit || said);
@@ -8502,7 +8534,7 @@ function resumeRound() {
   S.phase = "playing"; S.t0 = performance.now();
   renderGame(); focusPlay(); tick();
 }
-const typing = () => S.mode === "saisie" && S.order[S.qi] && S.order[S.qi].kind !== "quiz";
+const typing = () => S.mode === "saisie" && !!S.order[S.qi];
 const roundSecs = () => typing() ? TYPE_SECONDS : ROUND_SECONDS;
 const leftNow = () => Math.max(0, roundSecs() - S.elapsed - (S.phase === "playing" ? (performance.now() - S.t0) / 1000 : 0));
 function tick() {
@@ -8586,10 +8618,10 @@ function renderGame() {
     ${answered ? "" : voiceBar()}
     ${typeMode ? `
     <form class="type-ans ${answered ? (res.ok ? "is-ok" : "is-ko") : live ? "" : "locked"}" id="type-form" novalidate>
-      <label for="type-in">Quel artiste ? Le nom de famille suffit</label>
+      <label for="type-in">${quiz ? "Ta réponse" : "Quel artiste ? Le nom de famille suffit"}</label>
       <div class="type-row">
         <input id="type-in" type="text" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="go"
-          placeholder="Nom de l'artiste ou du groupe" value="${esc(S.typed || "")}" ${answered ? "disabled" : ""} aria-describedby="type-msg">
+          placeholder="${quiz ? "Pour une personne, le nom de famille suffit" : "Nom de l'artiste ou du groupe"}" value="${esc(S.typed || "")}" ${answered ? "disabled" : ""} aria-describedby="type-msg">
         ${answered ? "" : `<button class="btn primary" type="submit" ${live ? "" : "disabled"}>Valider</button>`}
       </div>
       <div class="type-foot">
@@ -8650,9 +8682,9 @@ function submitTyped(v) {
   S.typed = v;
   if (!v.trim()) { document.getElementById("type-in").focus(); return; }
   const t = S.order[S.qi];
-  if (artistMatch(v, t.artist)) { answer(null, { typed: v, ok: true }); return; }
+  if (typedMatch(v, t)) { answer(null, { typed: v, ok: true }); return; }
   S.tries++;
-  S.typeMsg = titleMatch(v, t.title) ? "Bon titre ! Mais il faut le nom de l'artiste." : "Pas ça. Essaie encore.";
+  S.typeMsg = t.kind !== "quiz" && titleMatch(v, t.title) ? "Bon titre ! Mais il faut le nom de l'artiste." : "Pas ça. Essaie encore.";
   const msg = document.getElementById("type-msg"), row = document.querySelector(".type-row"), inp = document.getElementById("type-in");
   if (msg) { msg.textContent = S.typeMsg; msg.classList.add("ko"); }
   if (row) { row.classList.remove("shake"); void row.offsetWidth; row.classList.add("shake"); }
