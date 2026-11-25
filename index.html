@@ -8405,7 +8405,7 @@ players.forEach(a => ["play", "pause", "ended"].forEach(ev => a.addEventListener
 /* ===================== Mises à jour =====================
    L'app installée peut garder une ancienne version en mémoire. Au retour sur l'app (et toutes les 10 minutes),
    on regarde si le site a changé ; si oui, un bandeau propose de recharger. */
-const APP_VERSION = "25/11/2026 à 22h36";
+const APP_VERSION = "25/11/2026 à 22h47";
 async function checkUpdate() {
   if (!/^https?:$/.test(location.protocol) || document.getElementById("update-bar")) return;
   try {
@@ -8425,7 +8425,7 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden) chec
 
 /* ===================== Commande vocale =====================
    Bouton micro : maintenu = on parle tant qu'on appuie ; tapé = l'écoute s'arrête toute seule à la fin de la phrase.
-   Pendant l'écoute, la musique baisse (ou se met en pause sur iPhone, où le volume n'est pas réglable). */
+   Pendant l'écoute, la musique est coupée (mise en pause sur iPhone, où le volume n'est pas réglable). */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 const VOL_OK = (() => { try { const a = new Audio(); a.volume = 0.5; return a.volume === 0.5; } catch (e) { return false; } })();
 const V = { rec: null, on: false, msg: "", heard: "", downAt: 0, held: false, resume: false, duckT: 0, ducked: false };
@@ -8454,7 +8454,7 @@ function duck(on) {
     else if (!on && V.resume) { V.resume = false; if (S.phase === "playing" || S.phase === "answered") { const p = player.play(); if (p) p.catch(() => {}); } }
     return;
   }
-  const el = player, target = on ? 0.12 : 1;
+  const el = player, target = on ? 0 : 1;
   V.duckT = setInterval(() => {
     const v = el.volume + (target - el.volume) * 0.35;
     el.volume = Math.abs(target - v) < 0.02 ? target : v;
@@ -8477,16 +8477,14 @@ function micStart() {
       : e.error === "network" ? "Reconnaissance vocale indisponible sans réseau."
       : e.error === "aborted" ? V.msg : "Le micro n'a pas marché. Réessaie.";
   };
-  /* Le son baisse quand le micro capte vraiment et remonte dès qu'il s'arrête : deux niveaux seulement,
-     calés sur la baisse automatique que Windows ou Android appliquent pendant l'utilisation du micro. */
-  r.onaudiostart = () => duck(true);
-  r.onaudioend = () => duck(false);
+  /* Deux niveaux seulement : la musique s'éteint dès l'appui et revient quand l'écoute est finie.
+     À zéro, la baisse automatique de Windows ou d'Android pendant l'usage du micro ne s'entend plus. */
   r.onend = () => {
     V.on = false; V.rec = null; duck(false);
     if (finals && finals.length) handleVoice(finals); else voiceUI();
   };
   try { r.start(); } catch (e) { return; }
-  V.rec = r; V.on = true; V.msg = "J'écoute…"; voiceUI();
+  V.rec = r; V.on = true; V.msg = "J'écoute…"; voiceUI(); duck(true);
 }
 function micStop() { if (V.rec) try { V.rec.stop(); } catch (e) {} }
 
