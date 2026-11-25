@@ -278,6 +278,8 @@ p { margin: 0; }
   .set.tier .meta { grid-column: auto; flex-direction: column; align-items: flex-end; }
 }
 .play.is-pause { background: var(--cream); }
+.demo-note { border: 1px solid var(--brass-deep); border-radius: 14px; padding: 12px 14px; font-size: 14px; color: var(--cream); background: var(--velvet); }
+.demo-note a { color: var(--brass); overflow-wrap: anywhere; }
 /* ——— Duo ——— */
 .modes { display: flex; flex-direction: column; gap: 10px; }
 .seg { display: inline-flex; align-self: flex-start; padding: 4px; gap: 4px; border-radius: 999px; background: var(--velvet); border: 1px solid var(--line); }
@@ -5132,6 +5134,7 @@ const PLAY_ICO = `<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1 L11 
 const PAUSE_ICO = `<svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="1" width="3" height="10" rx="1" fill="#e0b04f"/><rect x="7" y="1" width="3" height="10" rx="1" fill="#e0b04f"/></svg>`;
 
 /* ===================== État & stockage ===================== */
+const ONLINE = /netlify\.app$/.test(location.hostname); // version hébergée, avec accès à Deezer
 const KEY = "blindtest-best-v2";
 function loadBest() {
   let b = {};
@@ -5261,6 +5264,7 @@ function renderHome() {
         }).join("")}
       </ul>
     </section>
+    ${ONLINE ? "" : `<p class="demo-note" role="note"><strong>Ici, la musique est simulée.</strong> Cette version ne peut pas joindre Deezer. Pour les vrais extraits, ouvre <a href="https://blind-test-jazz.netlify.app" target="_blank" rel="noopener">blind-test-jazz.netlify.app</a>, et installe-la comme une app depuis ton navigateur.</p>`}
     <p class="foot-note"><span class="chip">Deezer</span><span>Extraits de 30 secondes fournis par Deezer. Si un morceau est introuvable, la platine tourne quand même et grésille.</span></p>`;
   $app.querySelectorAll(".room").forEach(b => b.addEventListener("click", () => { unlockAudio(); renderTheme(THEMES.find(t => t.id === b.dataset.theme)); }));
   $app.querySelector("#m-solo").addEventListener("click", () => { DUO = null; renderHome(); });
