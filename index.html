@@ -278,6 +278,10 @@ p { margin: 0; }
   .set.tier .meta { grid-column: auto; flex-direction: column; align-items: flex-end; }
 }
 .play.is-pause { background: var(--cream); }
+.install { display: grid; grid-template-columns: 56px 1fr auto; gap: 14px; align-items: center; padding: 14px 16px; border-radius: 16px; background: var(--velvet); border: 1px solid var(--line); }
+.install-ico { width: 56px; height: 56px; } .install-ico svg { width: 100%; height: 100%; display: block; }
+.install-t { min-width: 0; } .install h2 { font-size: 20px; } .install p { color: var(--smoke); font-size: 14px; }
+@media (max-width: 480px) { .install { grid-template-columns: 48px 1fr; } .install .btn { grid-column: 1 / -1; } }
 .demo-note { border: 1px solid var(--brass-deep); border-radius: 14px; padding: 12px 14px; font-size: 14px; color: var(--cream); background: var(--velvet); }
 .demo-note a { color: var(--brass); overflow-wrap: anywhere; }
 /* ——— Duo ——— */
@@ -5135,6 +5139,18 @@ const PAUSE_ICO = `<svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="1"
 
 /* ===================== État & stockage ===================== */
 const ONLINE = /netlify\.app$/.test(location.hostname); // version hébergée, avec accès à Deezer
+/* Installation comme app (Chrome, Edge, Android) ; consigne manuelle sur iPhone. */
+let installEvt = null;
+const STANDALONE = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+const IS_IOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; if (S.screen === "home") renderHome(); });
+window.addEventListener("appinstalled", () => { installEvt = null; if (S.screen === "home") renderHome(); });
+async function installApp() {
+  if (!installEvt) return;
+  installEvt.prompt();
+  try { await installEvt.userChoice; } catch (e) {}
+  installEvt = null; if (S.screen === "home") renderHome();
+}
 const KEY = "blindtest-best-v2";
 function loadBest() {
   let b = {};
@@ -5265,9 +5281,16 @@ function renderHome() {
       </ul>
     </section>
     ${ONLINE ? "" : `<p class="demo-note" role="note"><strong>Ici, la musique est simulée.</strong> Cette version ne peut pas joindre Deezer. Pour les vrais extraits, ouvre <a href="https://blind-test-jazz.netlify.app" target="_blank" rel="noopener">blind-test-jazz.netlify.app</a>, et installe-la comme une app depuis ton navigateur.</p>`}
+    ${ONLINE && !STANDALONE && (installEvt || IS_IOS) ? `<section class="install" aria-labelledby="inst-h">
+      <span class="install-ico">${vinyl("#5e1a26")}</span>
+      <div class="install-t"><h2 id="inst-h">Installer Blind Test</h2>
+        <p>${installEvt ? "Ajoute l'app sur cet appareil : elle s'ouvre dans sa propre fenêtre, avec l'icône du vinyle." : "Sur iPhone : touche Partager, puis « Sur l'écran d'accueil »."}</p></div>
+      ${installEvt ? `<button class="btn primary" id="install">Installer l'app</button>` : ""}
+    </section>` : ""}
     <p class="foot-note"><span class="chip">Deezer</span><span>Extraits de 30 secondes fournis par Deezer. Si un morceau est introuvable, la platine tourne quand même et grésille.</span></p>`;
   $app.querySelectorAll(".room").forEach(b => b.addEventListener("click", () => { unlockAudio(); renderTheme(THEMES.find(t => t.id === b.dataset.theme)); }));
   $app.querySelector("#m-solo").addEventListener("click", () => { DUO = null; renderHome(); });
+  const ib = $app.querySelector("#install"); if (ib) ib.addEventListener("click", installApp);
   $app.querySelector("#m-duo").addEventListener("click", renderDuoSetup);
   const ed = $app.querySelector("#m-edit"); if (ed) ed.addEventListener("click", renderDuoSetup);
 }
