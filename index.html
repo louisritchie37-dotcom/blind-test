@@ -301,6 +301,24 @@ p { margin: 0; }
 .duo-form { display: flex; flex-direction: column; gap: 16px; max-width: 420px; }
 .field { display: flex; flex-direction: column; gap: 6px; }
 .answer-mode { display: flex; flex-direction: column; gap: 8px; }
+.voice { display: flex; align-items: center; gap: 12px; min-height: 48px; }
+.mic { display: inline-flex; align-items: center; gap: 10px; flex: none; border-radius: 999px; padding: 10px 18px 10px 12px;
+  background: var(--velvet); border: 1px solid var(--line); color: var(--cream); font-weight: 700;
+  user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: none; }
+.mic .dot { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--pc, var(--lvl)) 25%, transparent); }
+.mic svg { width: 16px; height: 16px; }
+.mic:not([disabled]):hover { border-color: var(--pc, var(--lvl)); }
+.mic[disabled] { opacity: .45; }
+.mic.on { border-color: var(--ko); background: rgba(238,107,115,.14); }
+.mic.on .dot { background: var(--ko); animation: micpulse 1.1s ease-in-out infinite; }
+.mic.on svg path, .mic.on svg rect { fill: #2c0d10; }
+@keyframes micpulse { 50% { box-shadow: 0 0 0 7px rgba(238,107,115,.25); } }
+@media (prefers-reduced-motion: reduce) { .mic.on .dot { animation: none; } }
+.fb-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.fb-actions .voice { flex: 1 1 auto; }
+.fb-actions .next { margin-left: auto; }
+.voice-msg { margin: 0; font-size: 14px; color: var(--smoke); min-width: 0; }
+.voice-msg q { color: var(--cream); }
 .type-ans { display: flex; flex-direction: column; gap: 8px; }
 .type-ans label { font-weight: 700; }
 .type-row { display: flex; gap: 8px; }
@@ -8276,7 +8294,7 @@ function newQuestion() {
   S.choices = quiz
     ? shuffle([{ title: t.answer, ok: true }, ...t.decoys.map(d => ({ title: d, ok: false }))])
     : shuffle([{ title: t.title, artist: t.artist, ok: true }, ...t.decoys.map(([title, artist]) => ({ title, artist, ok: false }))]);
-  S.phase = "loading"; S.picked = null; S.typed = ""; S.tries = 0; S.typeMsg = ""; S.clip = undefined; S.img = undefined; S.elapsed = 0; S.simulated = false; S.silent = quiz;
+  S.phase = "loading"; S.picked = null; S.typed = ""; S.tries = 0; S.typeMsg = ""; V.msg = ""; S.clip = undefined; S.img = undefined; S.elapsed = 0; S.simulated = false; S.silent = quiz;
   S.simMsg = quiz ? "" : "Recherche de l'extrait sur Deezer…";
   const token = ++S.token;
   renderGame();
@@ -8345,6 +8363,134 @@ function syncDeck() {
   if (a) a.classList.toggle("down", on);
 }
 players.forEach(a => ["play", "pause", "ended"].forEach(ev => a.addEventListener(ev, e => { if (e.target === player) syncDeck(); })));
+
+/* ===================== Commande vocale =====================
+   Bouton micro : maintenu = on parle tant qu'on appuie ; tapé = l'écoute s'arrête toute seule à la fin de la phrase.
+   Pendant l'écoute, la musique baisse (ou se met en pause sur iPhone, où le volume n'est pas réglable). */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const VOL_OK = (() => { try { const a = new Audio(); a.volume = 0.5; return a.volume === 0.5; } catch (e) { return false; } })();
+const V = { rec: null, on: false, msg: "", heard: "", downAt: 0, held: false, resume: false, duckT: 0 };
+const MIC_ICO = `<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="1" width="6" height="9" rx="3" fill="#e0b04f"/><path d="M3 7.5a5 5 0 0 0 10 0h-1.6a3.4 3.4 0 0 1-6.8 0zM7.2 12.4h1.6V15H7.2z" fill="#e0b04f"/></svg>`;
+const voiceUsable = () => !!SR && ["playing", "paused", "answered"].includes(S.phase);
+function voiceBar() {
+  if (!SR) return "";
+  const lbl = V.on ? "J'écoute… relâche pour valider" : "Maintenir pour parler";
+  return `<div class="voice">
+      <button type="button" class="mic ${V.on ? "on" : ""}" id="mic" aria-pressed="${V.on}" ${voiceUsable() ? "" : "disabled"}><span class="dot">${MIC_ICO}</span><span class="mic-l">${lbl}</span></button>
+      <p class="voice-msg" id="voice-msg" aria-live="polite">${V.msg || (S.phase === "answered" ? "Dis « suivant » pour continuer." : typing() ? "Dis le nom de l'artiste." : S.order[S.qi].kind === "quiz" ? "Dis le numéro ou la réponse." : "Dis le numéro, le titre ou l'artiste.")}</p>
+    </div>`;
+}
+function voiceUI() {
+  const b = document.getElementById("mic"), m = document.getElementById("voice-msg");
+  if (b) { b.classList.toggle("on", V.on); b.setAttribute("aria-pressed", V.on); const l = b.querySelector(".mic-l"); if (l) l.textContent = V.on ? "J'écoute… relâche pour valider" : "Maintenir pour parler"; }
+  if (m) m.innerHTML = V.msg;
+}
+function duck(on) {
+  clearInterval(V.duckT);
+  try { if (crackleSrc && crackleGain && actx) crackleGain.gain.setTargetAtTime(on ? 0.05 : 0.45, actx.currentTime, 0.06); } catch (e) {}
+  if (!VOL_OK) { // iPhone : pas de volume, on met en pause le temps de parler
+    if (on && !player.paused) { V.resume = true; player.pause(); }
+    else if (!on && V.resume) { V.resume = false; if (S.phase === "playing" || S.phase === "answered") { const p = player.play(); if (p) p.catch(() => {}); } }
+    return;
+  }
+  const el = player, target = on ? 0.12 : 1;
+  V.duckT = setInterval(() => {
+    const v = el.volume + (target - el.volume) * 0.35;
+    el.volume = Math.abs(target - v) < 0.02 ? target : v;
+    if (el.volume === target) clearInterval(V.duckT);
+  }, 30);
+}
+function micStart() {
+  if (!SR || V.on || !voiceUsable()) return;
+  const r = new SR();
+  r.lang = "fr-FR"; r.interimResults = true; r.maxAlternatives = 5; r.continuous = false;
+  let finals = null;
+  r.onresult = e => {
+    const res = e.results[e.results.length - 1];
+    if (res.isFinal) finals = Array.from(res, a => a.transcript.trim()).filter(Boolean);
+    else { V.msg = `<q>${esc(res[0].transcript)}</q>`; voiceUI(); }
+  };
+  r.onerror = e => {
+    V.msg = e.error === "not-allowed" || e.error === "service-not-allowed" ? "Micro refusé : autorise-le dans les réglages du navigateur."
+      : e.error === "no-speech" ? "Je n'ai rien entendu. Réessaie."
+      : e.error === "network" ? "Reconnaissance vocale indisponible sans réseau."
+      : e.error === "aborted" ? V.msg : "Le micro n'a pas marché. Réessaie.";
+  };
+  r.onend = () => {
+    V.on = false; V.rec = null; duck(false);
+    if (finals && finals.length) handleVoice(finals); else voiceUI();
+  };
+  try { r.start(); } catch (e) { return; }
+  V.rec = r; V.on = true; V.msg = "J'écoute…"; voiceUI(); duck(true);
+}
+function micStop() { if (V.rec) try { V.rec.stop(); } catch (e) {} }
+
+const NUM_WORDS = [["1", "un", "une", "premier", "premiere", "hein"], ["2", "deux", "deuxieme", "second", "seconde", "de"], ["3", "trois", "troisieme"], ["4", "quatre", "quatrieme", "cat", "catre"]];
+const CMD = {
+  next: ["suivant", "suivante", "la suivante", "chanson suivante", "morceau suivant", "question suivante", "next", "on continue", "continue", "resultat", "voir le resultat"],
+  pass: ["je passe", "passe", "joker", "je sais pas", "je ne sais pas", "aucune idee"],
+  pause: ["pause", "stop", "arrete"],
+  play: ["reprendre", "reprends", "lecture", "play", "rejoue", "reecouter", "encore"]
+};
+function voiceNumber(alts) {
+  for (const a of alts) {
+    const t = toks(a).filter(x => !["le", "la", "reponse", "numero", "c", "est", "cest", "n"].includes(x));
+    if (t.length === 1) { const i = NUM_WORDS.findIndex(w => w.includes(t[0])); if (i >= 0) return i; }
+  }
+  return -1;
+}
+function handleVoice(alts) {
+  const said = alts[0];
+  V.heard = said;
+  const phrases = alts.map(a => toks(a).join(" "));
+  const is = k => phrases.some(p => CMD[k].includes(p));
+  const live = S.phase === "playing" || S.phase === "paused";
+  V.msg = `Entendu : <q>${esc(said)}</q>`;
+  if (S.phase === "answered") {
+    if (is("next")) { const n = document.getElementById("next"); V.msg = ""; if (n) n.click(); return; }
+    if (is("pause") && !player.paused) { player.pause(); voiceUI(); return; }
+    if (is("play") && canReplay()) { onPlayButton(); voiceUI(); return; }
+    V.msg += " · dis « suivant » pour continuer."; voiceUI(); return;
+  }
+  if (!live) { voiceUI(); return; }
+  if (is("pass")) { V.msg = ""; answer(null, { pass: true }); return; }
+  if (is("pause") && S.phase === "playing") { pauseRound(); voiceUI(); return; }
+  if (is("play") && S.phase === "paused") { resumeRound(); voiceUI(); return; }
+  const t = S.order[S.qi];
+  if (typing()) {
+    const hit = alts.find(a => artistMatch(a, t.artist));
+    const inp = document.getElementById("type-in"); if (inp) inp.value = hit || said;
+    V.msg = "";
+    submitTyped(hit || said);
+    if (!hit) { V.msg = `Entendu : <q>${esc(said)}</q>`; voiceUI(); }
+    return;
+  }
+  let i = voiceNumber(alts);
+  if (i < 0) {
+    for (const a of alts) {
+      const m = S.choices.map((c, k) => (titleMatch(a, c.title) || (c.artist && artistMatch(a, c.artist))) ? k : -1).filter(k => k >= 0);
+      if (m.length === 1) { i = m[0]; break; }
+    }
+  }
+  if (i >= 0 && i < S.choices.length) { V.msg = ""; answer(i); return; }
+  V.msg += " · pas reconnu, réessaie ou touche une réponse."; voiceUI();
+}
+function bindMic() {
+  const b = document.getElementById("mic");
+  if (!b) return;
+  b.addEventListener("contextmenu", e => e.preventDefault());
+  b.addEventListener("pointerdown", e => {
+    if (b.disabled || e.button > 0) return;
+    e.preventDefault();
+    try { b.setPointerCapture(e.pointerId); } catch (er) {}
+    if (V.on) { micStop(); V.downAt = 0; return; }
+    V.downAt = performance.now(); micStart();
+  });
+  const up = () => { if (V.downAt && performance.now() - V.downAt > 450) micStop(); V.downAt = 0; };
+  b.addEventListener("pointerup", up);
+  b.addEventListener("pointercancel", up);
+  b.addEventListener("click", e => { if (e.detail === 0) { V.on ? micStop() : micStart(); } }); // clavier : Entrée / Espace
+}
 function pauseRound() {
   cancelAnimationFrame(S.raf);
   S.elapsed += (performance.now() - S.t0) / 1000;
@@ -8367,7 +8513,7 @@ function tick() {
   if (left <= 0) { answer(null); return; }
   S.raf = requestAnimationFrame(tick);
 }
-function stopRound() { cancelAnimationFrame(S.raf); stopCrackle(); stopClip(); }
+function stopRound() { cancelAnimationFrame(S.raf); stopCrackle(); stopClip(); micStop(); }
 function focusPlay() {
   const inp = document.getElementById("type-in");
   if (inp && S.phase === "playing") { inp.focus({ preventScroll: true }); return; }
@@ -8437,6 +8583,7 @@ function renderGame() {
       </div>
     </section>`}
     ${!quiz && !live && !answered ? `<p class="hint">${ph === "loading" ? "L'extrait démarre tout seul." : "Lance l'extrait pour débloquer les réponses."}${typeMode ? "" : " Raccourcis : 1 à 4 pour répondre, P pour la pause."}</p>` : ""}
+    ${answered ? "" : voiceBar()}
     ${typeMode ? `
     <form class="type-ans ${answered ? (res.ok ? "is-ok" : "is-ko") : live ? "" : "locked"}" id="type-form" novalidate>
       <label for="type-in">Quel artiste ? Le nom de famille suffit</label>
@@ -8479,12 +8626,13 @@ function renderGame() {
           ${t.context ? `<div><dt>Contexte</dt><dd>${t.context}</dd></div>` : ""}
         </dl>` : ""}
         <p class="pts mono">${res.ok ? `+${res.points} pts (dont ${res.points - BASE_POINTS} de bonus vitesse)` : "+0 pt"}</p>
-        <button class="next" id="next">${nextLabel}</button>
+        <div class="fb-actions">${voiceBar()}<button class="next" id="next">${nextLabel}</button></div>
       </section>` : ""}`;
 
   $app.querySelector("#back").addEventListener("click", () => { stopRound(); S.token++; S.phase = "idle"; renderTheme(th); });
   const play = $app.querySelector("#play"); if (play) play.addEventListener("click", onPlayButton);
   $app.querySelectorAll(".choice").forEach(b => b.addEventListener("click", () => answer(+b.dataset.i)));
+  bindMic();
   const tf = $app.querySelector("#type-form");
   if (tf) {
     const inp = tf.querySelector("#type-in");
@@ -8625,6 +8773,7 @@ function renderDuoResult() {
 
 /* Téléphone verrouillé, onglet changé ou page fermée : on coupe le son et on met le chrono en pause. */
 function pauseForBackground() {
+  micStop();
   if (S.phase === "playing") pauseRound();
   else { stopCrackle(); if (!player.paused) player.pause(); }
 }
