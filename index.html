@@ -8658,7 +8658,7 @@ function renderGame() {
           ${t.context ? `<div><dt>Contexte</dt><dd>${t.context}</dd></div>` : ""}
         </dl>` : ""}
         <p class="pts mono">${res.ok ? `+${res.points} pts (dont ${res.points - BASE_POINTS} de bonus vitesse)` : "+0 pt"}</p>
-        <div class="fb-actions">${voiceBar()}<button class="next" id="next">${nextLabel}</button></div>
+        <button class="next" id="next">${nextLabel}</button>
       </section>` : ""}`;
 
   $app.querySelector("#back").addEventListener("click", () => { stopRound(); S.token++; S.phase = "idle"; renderTheme(th); });
