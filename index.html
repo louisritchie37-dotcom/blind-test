@@ -109,6 +109,11 @@ p { margin: 0; }
 .foot-note { font-size: 13px; color: var(--smoke); display: flex; gap: 10px; align-items: flex-start;
   border-top: 1px dashed var(--line); padding-top: 16px; }
 .foot-note .chip { flex: none; }
+.update-bar { position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 50;
+  display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 18px; border-radius: 999px; max-width: calc(100% - 24px);
+  background: var(--cream); color: var(--night); font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,.45); }
+.update-bar button { border: none; border-radius: 999px; padding: 9px 16px; background: var(--night); color: var(--cream); font-weight: 700; }
+.app-version { font-size: 12px; color: var(--smoke); text-align: center; margin: 0; }
 .chip { font-family: var(--f-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
   border: 1px solid var(--brass-deep); color: var(--brass); padding: 3px 8px; border-radius: 999px; }
 
@@ -8214,7 +8219,8 @@ function renderHome() {
         <p>${installEvt ? "Ajoute l'app sur cet appareil : elle s'ouvre dans sa propre fenêtre, avec l'icône du vinyle." : "Sur iPhone : touche Partager, puis « Sur l'écran d'accueil »."}</p></div>
       ${installEvt ? `<button class="btn primary" id="install">Installer l'app</button>` : ""}
     </section>` : ""}
-    <p class="foot-note"><span class="chip">Deezer</span><span>Extraits de 30 secondes fournis par Deezer. Si un morceau est introuvable, la platine tourne quand même et grésille.</span></p>`;
+    <p class="foot-note"><span class="chip">Deezer</span><span>Extraits de 30 secondes fournis par Deezer. Si un morceau est introuvable, la platine tourne quand même et grésille.</span></p>
+    <p class="app-version mono">Version du ${APP_VERSION}</p>`;
   $app.querySelectorAll(".room").forEach(b => b.addEventListener("click", () => { unlockAudio(); renderTheme(THEMES.find(t => t.id === b.dataset.theme)); }));
   $app.querySelector("#m-solo").addEventListener("click", () => { DUO = null; renderHome(); });
   const ib = $app.querySelector("#install"); if (ib) ib.addEventListener("click", installApp);
@@ -8395,6 +8401,27 @@ function syncDeck() {
   if (a) a.classList.toggle("down", on);
 }
 players.forEach(a => ["play", "pause", "ended"].forEach(ev => a.addEventListener(ev, e => { if (e.target === player) syncDeck(); })));
+
+/* ===================== Mises à jour =====================
+   L'app installée peut garder une ancienne version en mémoire. Au retour sur l'app (et toutes les 10 minutes),
+   on regarde si le site a changé ; si oui, un bandeau propose de recharger. */
+const APP_VERSION = "25/11/2026 à 22h36";
+async function checkUpdate() {
+  if (!/^https?:$/.test(location.protocol) || document.getElementById("update-bar")) return;
+  try {
+    const html = await fetch(location.pathname + "?check=" + Date.now(), { cache: "no-store" }).then(r => r.text());
+    const m = html.match(/const APP_VERSION = "([^"]+)"/);
+    if (!m || m[1] === APP_VERSION || m[1] === "__BUILD__") return;
+    const bar = document.createElement("div");
+    bar.id = "update-bar"; bar.className = "update-bar"; bar.setAttribute("role", "status");
+    bar.innerHTML = `<span>Nouvelle version disponible</span><button type="button">Mettre à jour</button>`;
+    bar.querySelector("button").addEventListener("click", () => location.reload());
+    document.body.appendChild(bar);
+  } catch (e) {}
+}
+setTimeout(checkUpdate, 3000);
+setInterval(checkUpdate, 10 * 60 * 1000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) checkUpdate(); });
 
 /* ===================== Commande vocale =====================
    Bouton micro : maintenu = on parle tant qu'on appuie ; tapé = l'écoute s'arrête toute seule à la fin de la phrase.
