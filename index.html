@@ -4296,9 +4296,14 @@ function pickBest(list, track) {
       || withPrev.find(x => norm(x.title).includes(want))
       || null;
 }
-async function getPreview(track) {
+const PREVIEW_PENDING = new Map();
+function getPreview(track) {
   const key = track.artist + "|" + track.title;
-  if (PREVIEW_CACHE.has(key)) return PREVIEW_CACHE.get(key);
+  if (PREVIEW_CACHE.has(key)) return Promise.resolve(PREVIEW_CACHE.get(key));
+  if (!PREVIEW_PENDING.has(key)) PREVIEW_PENDING.set(key, findPreview(track, key).finally(() => PREVIEW_PENDING.delete(key)));
+  return PREVIEW_PENDING.get(key);
+}
+async function findPreview(track, key) {
   let hit = null;
   try {
     const a = await deezer("/search?limit=10&q=" + encodeURIComponent(track.q));
@@ -4341,22 +4346,49 @@ function getImage(wiki) {
   IMG_PENDING.set(wiki, p);
   return p;
 }
-function prefetch(t) { if (!t) return; if (t.kind === "quiz") { if (t.img) getImage(t.img.wiki); } else getPreview(t); }
+function prefetch(t, audio) {
+  if (!t) return;
+  if (t.kind === "quiz") { if (t.img) getImage(t.img.wiki); return; }
+  const p = getPreview(t);
+  if (audio) p.then(c => { if (c && S.screen !== "home") preloadClip(c.url); });
+}
 
-const player = new Audio();
-player.preload = "auto";
-let fadeT = 0;
+/* Deux lecteurs : pendant qu'un extrait joue, l'autre télécharge déjà le suivant.
+   Au clic sur « Suivant », on bascule sur le lecteur prêt : la musique part sans attendre le réseau. */
+const players = [new Audio(), new Audio()];
+players.forEach(a => { a.preload = "auto"; a.dataset.url = ""; });
+let player = players[0];
+const spare = () => player === players[0] ? players[1] : players[0];
+function preloadClip(url) {
+  if (!url) return;
+  const s = spare();
+  if (s.dataset.url === url) return;
+  if (!s.paused) s.pause();
+  s.dataset.url = url; s.dataset.pre = "1"; s.src = url;
+  try { s.load(); } catch (e) {}
+}
 function playClip(url) {
   clearInterval(fadeT);
-  player.src = url; player.currentTime = 0; player.volume = 1;
+  const s = spare();
+  if (s.dataset.url === url) {
+    if (!player.paused) player.pause();
+    player = s;
+  } else if (player.dataset.url !== url || player.ended) {
+    player.dataset.url = url; player.src = url;
+  }
+  player.dataset.pre = "";
+  try { player.currentTime = 0; } catch (e) {}
+  player.volume = 1;
   return player.play();
 }
+let fadeT = 0;
 function stopClip() {
-  if (player.paused) return;
+  const el = player;
+  if (el.paused) return;
   clearInterval(fadeT);
   fadeT = setInterval(() => {
-    player.volume = Math.max(0, player.volume - 0.15);
-    if (player.volume <= 0.01) { clearInterval(fadeT); player.pause(); }
+    el.volume = Math.max(0, el.volume - 0.15);
+    if (el.volume <= 0.01) { clearInterval(fadeT); el.pause(); }
   }, 40);
 }
 
@@ -8022,7 +8054,10 @@ const pad2 = n => String(n).padStart(2, "0");
 const SILENT = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
 function unlockAudio() {
   try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === "suspended") actx.resume(); } catch (e) {}
-  if (player.paused) { try { player.src = SILENT; const p = player.play(); if (p) p.catch(() => {}); } catch (e) {} }
+  players.forEach(a => {
+    if (!a.paused || a.dataset.pre === "1") return;
+    try { a.src = SILENT; a.dataset.url = ""; const p = a.play(); if (p) p.catch(() => {}); } catch (e) {}
+  });
 }
 
 /* ===================== Mode Duo (un seul appareil, chacun son tour) ===================== */
@@ -8214,7 +8249,11 @@ function renderTheme(th) {
     const b = document.querySelector(sel); b && b.focus({ preventScroll: true });
     say(m === "saisie" ? "Mode saisie : tape le nom de l'artiste." : "Mode QCM : quatre propositions.");
   }));
-  $app.querySelectorAll(".set").forEach(b => b.addEventListener("click", () => { unlockAudio(); startLevel(+b.dataset.level); }));
+  $app.querySelectorAll(".set").forEach(b => {
+    b.addEventListener("click", () => { unlockAudio(); startLevel(+b.dataset.level); });
+    const warm = () => { const o = S.pre && S.pre[+b.dataset.level]; if (o && o[0]) prefetch(o[0], true); };
+    ["pointerenter", "touchstart", "focus"].forEach(ev => b.addEventListener(ev, warm, { passive: true }));
+  });
   window.scrollTo({ top: 0 });
   prepareOrders(th.levels);
 }
@@ -8241,7 +8280,7 @@ function newQuestion() {
   S.simMsg = quiz ? "" : "Recherche de l'extrait sur Deezer…";
   const token = ++S.token;
   renderGame();
-  prefetch(S.order[S.qi + 1]);
+  prefetch(S.order[S.qi + 1], true);
   if (quiz) {
     if (!t.img) { beginTimer("", true); return; }
     const done = info => { if (token !== S.token || S.phase !== "loading") return; S.img = info; beginTimer("", true); };
@@ -8305,7 +8344,7 @@ function syncDeck() {
   if (d) d.classList.toggle("spinning", on);
   if (a) a.classList.toggle("down", on);
 }
-["play", "pause", "ended"].forEach(ev => player.addEventListener(ev, syncDeck));
+players.forEach(a => ["play", "pause", "ended"].forEach(ev => a.addEventListener(ev, e => { if (e.target === player) syncDeck(); })));
 function pauseRound() {
   cancelAnimationFrame(S.raf);
   S.elapsed += (performance.now() - S.t0) / 1000;
@@ -8507,6 +8546,7 @@ function renderResult() {
   const verdict = ["Le DJ a fait une pause.", "Encore quelques disques (et quelques livres) à découvrir.", "Pas mal du tout.", "Belle oreille.", "Presque parfait.", "Un sans-faute. Le club t'offre un verre."][vi];
   const order = playOrder(th), nextLevel = order[order.indexOf(l) + 1];
   prepareOrders([l, nextLevel]);
+  if (S.pre[l.id]) prefetch(S.pre[l.id][0], true);
   $app.innerHTML = `
     <div class="topbar"><button class="back" id="back">← ${th.name}</button><span class="eyebrow">Fin du ${l.tier ? `niveau ${l.tier}` : `set ${pad2(l.id)}`}</span></div>
     <section class="result-card" style="--lvl:${l.color}">
@@ -8549,6 +8589,7 @@ function renderDuoResult() {
   const sub = tie ? `${ranked[0].score} points chacun. Il va falloir une revanche.` : `${ranked[0].score} points contre ${ranked[1].score}.`;
   const order = playOrder(th), nextLevel = order[order.indexOf(l) + 1];
   prepareOrders([l, nextLevel]);
+  if (S.pre[l.id]) prefetch(S.pre[l.id][0], true);
   $app.innerHTML = `
     <div class="topbar"><button class="back" id="back">← ${th.name}</button><span class="eyebrow">Duo · fin du ${l.tier ? `niveau ${l.tier}` : `set ${pad2(l.id)}`}</span></div>
     <section class="result-card" style="--lvl:${l.color}">
