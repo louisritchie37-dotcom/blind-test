@@ -8401,7 +8401,7 @@ players.forEach(a => ["play", "pause", "ended"].forEach(ev => a.addEventListener
    Pendant l'écoute, la musique baisse (ou se met en pause sur iPhone, où le volume n'est pas réglable). */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 const VOL_OK = (() => { try { const a = new Audio(); a.volume = 0.5; return a.volume === 0.5; } catch (e) { return false; } })();
-const V = { rec: null, on: false, msg: "", heard: "", downAt: 0, held: false, resume: false, duckT: 0 };
+const V = { rec: null, on: false, msg: "", heard: "", downAt: 0, held: false, resume: false, duckT: 0, ducked: false };
 const MIC_ICO = `<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="1" width="6" height="9" rx="3" fill="#e0b04f"/><path d="M3 7.5a5 5 0 0 0 10 0h-1.6a3.4 3.4 0 0 1-6.8 0zM7.2 12.4h1.6V15H7.2z" fill="#e0b04f"/></svg>`;
 const voiceUsable = () => !!SR && ["playing", "paused", "answered"].includes(S.phase);
 function voiceBar() {
@@ -8418,6 +8418,8 @@ function voiceUI() {
   if (m) m.innerHTML = V.msg;
 }
 function duck(on) {
+  if (V.ducked === on) return;
+  V.ducked = on;
   clearInterval(V.duckT);
   try { if (crackleSrc && crackleGain && actx) crackleGain.gain.setTargetAtTime(on ? 0.05 : 0.45, actx.currentTime, 0.06); } catch (e) {}
   if (!VOL_OK) { // iPhone : pas de volume, on met en pause le temps de parler
@@ -8430,7 +8432,7 @@ function duck(on) {
     const v = el.volume + (target - el.volume) * 0.35;
     el.volume = Math.abs(target - v) < 0.02 ? target : v;
     if (el.volume === target) clearInterval(V.duckT);
-  }, 30);
+  }, 15);
 }
 function micStart() {
   if (!SR || V.on || !voiceUsable()) return;
@@ -8448,12 +8450,16 @@ function micStart() {
       : e.error === "network" ? "Reconnaissance vocale indisponible sans réseau."
       : e.error === "aborted" ? V.msg : "Le micro n'a pas marché. Réessaie.";
   };
+  /* Le son baisse quand le micro capte vraiment et remonte dès qu'il s'arrête : deux niveaux seulement,
+     calés sur la baisse automatique que Windows ou Android appliquent pendant l'utilisation du micro. */
+  r.onaudiostart = () => duck(true);
+  r.onaudioend = () => duck(false);
   r.onend = () => {
     V.on = false; V.rec = null; duck(false);
     if (finals && finals.length) handleVoice(finals); else voiceUI();
   };
   try { r.start(); } catch (e) { return; }
-  V.rec = r; V.on = true; V.msg = "J'écoute…"; voiceUI(); duck(true);
+  V.rec = r; V.on = true; V.msg = "J'écoute…"; voiceUI();
 }
 function micStop() { if (V.rec) try { V.rec.stop(); } catch (e) {} }
 
