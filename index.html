@@ -8188,7 +8188,23 @@ function onPlayButton() {
     else { startCrackle(); beginTimer("Extrait introuvable sur Deezer · simulé", true); }
   } else if (S.phase === "playing") pauseRound();
   else if (S.phase === "paused") resumeRound();
+  else if (S.phase === "answered" && canReplay()) {
+    if (!player.paused) player.pause();
+    else { if (player.ended) player.currentTime = 0; const p = player.play(); if (p) p.catch(() => {}); }
+  }
 }
+/* Après la réponse, l'extrait continue jusqu'au morceau suivant ; le bouton reste Pause / Reprendre / Réécouter. */
+const canReplay = () => S.phase === "answered" && S.order[S.qi].kind !== "quiz" && !!S.clip && !S.simulated;
+function deckLabel() { return !player.paused ? ["Pause", PAUSE_ICO] : player.ended ? ["Réécouter", PLAY_ICO] : ["Reprendre", PLAY_ICO]; }
+function syncDeck() {
+  if (S.screen !== "game" || !canReplay()) return;
+  const b = document.getElementById("play"), on = !player.paused, [lbl, ico] = deckLabel();
+  if (b) { b.classList.toggle("is-pause", on); b.setAttribute("aria-label", lbl); b.innerHTML = `<span class="ico">${ico}</span>${lbl}`; }
+  const d = document.querySelector(".deck .disc"), a = document.querySelector(".deck .arm");
+  if (d) d.classList.toggle("spinning", on);
+  if (a) a.classList.toggle("down", on);
+}
+["play", "pause", "ended"].forEach(ev => player.addEventListener(ev, syncDeck));
 function pauseRound() {
   cancelAnimationFrame(S.raf);
   S.elapsed += (performance.now() - S.t0) / 1000;
@@ -8221,14 +8237,15 @@ function renderGame() {
   const ph = S.phase, answered = ph === "answered", live = ph === "playing" || ph === "paused";
   const res = S.results[S.qi];
   const left = answered ? 0 : leftNow();
-  const btn = {
+  const replay = canReplay(), musicOn = replay && !player.paused;
+  const btn = replay ? [...deckLabel(), false] : {
     loading: ["Chargement…", PLAY_ICO, true], idle: ["Lancer l'extrait", PLAY_ICO, false],
     playing: ["Pause", PAUSE_ICO, false], paused: ["Reprendre", PLAY_ICO, false], answered: [quiz ? "Question terminée" : "Extrait terminé", PLAY_ICO, true]
   }[ph];
   const turn = S.players ? turnOf(S.qi) : -1;
   $app.style.setProperty("--lvl", l.color);
   $app.style.setProperty("--pc", S.players ? PCOLORS[turn] : l.color);
-  const playBtn = `<button class="play ${ph === "playing" ? "is-pause" : ""}" id="play" ${btn[2] ? "disabled" : ""} aria-label="${btn[0]}"><span class="ico">${btn[1]}</span>${btn[0]}</button>`;
+  const playBtn = `<button class="play ${ph === "playing" || musicOn ? "is-pause" : ""}" id="play" ${btn[2] ? "disabled" : ""} aria-label="${btn[0]}"><span class="ico">${btn[1]}</span>${btn[0]}</button>`;
   const timer = `<div class="timer">
           <div class="row"><span>${ph === "paused" ? "En pause" : "Temps restant"}</span><span class="clock mono" id="clock">00:${pad2(Math.ceil(left))}</span></div>
           <div class="bar"><i id="bar" style="transform:scaleX(${left / ROUND_SECONDS})"></i></div>
@@ -8262,8 +8279,8 @@ function renderGame() {
     </section>` : `
     <section class="stage ${S.players ? "duo" : ""}" aria-label="Platine">
       <div class="deck">
-        <div class="disc ${ph === "playing" ? "spinning" : ""}">${vinyl(l.color)}</div>
-        <div class="arm ${live ? "down" : ""}">${ARM}</div>
+        <div class="disc ${ph === "playing" || musicOn ? "spinning" : ""}">${vinyl(l.color)}</div>
+        <div class="arm ${live || musicOn ? "down" : ""}">${ARM}</div>
       </div>
       <div class="controls">
         ${playBtn}
@@ -8307,13 +8324,13 @@ function renderGame() {
   const play = $app.querySelector("#play"); if (play) play.addEventListener("click", onPlayButton);
   $app.querySelectorAll(".choice").forEach(b => b.addEventListener("click", () => answer(+b.dataset.i)));
   const next = $app.querySelector("#next");
-  if (next) next.addEventListener("click", () => { unlockAudio(); goNext(); });
+  if (next) next.addEventListener("click", () => { clearInterval(fadeT); if (!player.paused) player.pause(); unlockAudio(); goNext(); });
 }
 
 function answer(i) {
   if (S.phase !== "playing" && S.phase !== "paused") return;
   const left = leftNow();
-  stopRound();
+  cancelAnimationFrame(S.raf); stopCrackle();
   const ok = i !== null && S.choices[i].ok;
   const points = ok ? BASE_POINTS + Math.round(left) * BONUS_PER_SEC : 0;
   S.score += points; S.picked = i; S.phase = "answered";
@@ -8430,7 +8447,7 @@ window.addEventListener("blur", () => { if (document.hidden) pauseForBackground(
 
 document.addEventListener("keydown", e => {
   if (S.screen !== "game" || e.altKey || e.ctrlKey || e.metaKey) return;
-  if ((e.key === "p" || e.key === "P") && (S.phase === "playing" || S.phase === "paused")) { e.preventDefault(); onPlayButton(); return; }
+  if ((e.key === "p" || e.key === "P") && (S.phase === "playing" || S.phase === "paused" || canReplay())) { e.preventDefault(); onPlayButton(); return; }
   if (S.phase !== "playing" && S.phase !== "paused") return;
   const n = parseInt(e.key, 10);
   if (n >= 1 && n <= 4) { e.preventDefault(); answer(n - 1); }
