@@ -300,6 +300,23 @@ p { margin: 0; }
 .linkish { background: none; border: none; padding: 0; color: var(--brass); text-decoration: underline; text-underline-offset: 3px; font-size: 14px; }
 .duo-form { display: flex; flex-direction: column; gap: 16px; max-width: 420px; }
 .field { display: flex; flex-direction: column; gap: 6px; }
+.answer-mode { display: flex; flex-direction: column; gap: 8px; }
+.type-ans { display: flex; flex-direction: column; gap: 8px; }
+.type-ans label { font-weight: 700; }
+.type-row { display: flex; gap: 8px; }
+.type-row input { flex: 1; min-width: 0; font: inherit; font-size: 18px; color: var(--cream); background: var(--velvet); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+.type-row input:focus-visible { outline: none; border-color: var(--pc, var(--lvl)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--pc, var(--lvl)) 35%, transparent); }
+.type-row input:disabled { opacity: .55; }
+.type-ans.locked .type-row input { opacity: .45; }
+.type-ans.is-ok .type-row input { border-color: var(--ok); background: rgba(115,201,143,.12); opacity: 1; }
+.type-ans.is-ko .type-row input { border-color: var(--ko); background: rgba(238,107,115,.12); opacity: 1; }
+.type-row .btn { flex: none; }
+.type-msg { min-height: 1.4em; margin: 0; font-size: 14px; color: var(--smoke); }
+.type-msg.ko { color: var(--ko); }
+.type-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.type-row.shake { animation: shake .32s; }
+@keyframes shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+@media (prefers-reduced-motion: reduce) { .type-row.shake { animation: none; } }
 .field label { font-weight: 700; }
 .field input { font: inherit; color: var(--cream); background: var(--velvet); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
 .field input:focus-visible { border-color: var(--brass); }
@@ -7886,7 +7903,7 @@ const THEMES = [
 THEMES.forEach(th => th.levels.forEach(l => l.tracks.forEach(t => { if (t.kind !== "quiz") t.q = `${t.artist.split(" & ")[0]} ${t.title}`; })));
 const PCOLORS = ["#e0b04f", "#5fc4d6"]; // couleur de chaque joueur en Duo
 
-const ROUND_SECONDS = 20;
+const ROUND_SECONDS = 20, TYPE_SECONDS = 30;
 const BASE_POINTS = 100;
 const BONUS_PER_SEC = 5;
 
@@ -7919,7 +7936,76 @@ function loadBest() {
 }
 function saveBest(b) { try { localStorage.setItem(KEY, JSON.stringify(b)); } catch (e) {} }
 let best = loadBest();
-const bkey = (th, l) => th.id + "-" + l.id;
+/* Mode de réponse : QCM (4 propositions) ou Saisie (on tape le nom de l'artiste). Records séparés par mode. */
+const MODE_KEY = "blindtest-answer-mode";
+let MODE = (() => { try { return localStorage.getItem(MODE_KEY) === "saisie" ? "saisie" : "qcm"; } catch (e) { return "qcm"; } })();
+function setMode(m) { MODE = m; try { localStorage.setItem(MODE_KEY, m); } catch (e) {} }
+const bkey = (th, l, mode = MODE) => th.id + "-" + l.id + (mode === "saisie" ? "~saisie" : "");
+
+/* Saisie : on accepte le nom complet, le nom de famille, le nom du groupe (sans « The »), avec une ou deux fautes de frappe. */
+const normTxt = s => String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+  .replace(/&/g, " ").replace(/['’`´.]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+const toks = s => normTxt(s).split(" ").filter(Boolean);
+function lev(a, b) {
+  const d = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    let prev = d[0]; d[0] = i;
+    for (let j = 1; j <= b.length; j++) { const t = d[j]; d[j] = Math.min(d[j] + 1, d[j - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = t; }
+  }
+  return d[b.length];
+}
+function close(a, b) {
+  if (a === b) return true;
+  const n = Math.max(a.length, b.length), tol = n >= 8 ? 2 : n >= 5 ? 1 : 0;
+  return tol > 0 && Math.abs(a.length - b.length) <= tol && lev(a, b) <= tol;
+}
+/* Une faute de frappe est tolérée, sauf si le mot tapé est lui-même un autre artiste connu (Collins n'est pas Rollins). */
+let KNOWN = null;
+function knownNames() {
+  if (KNOWN) return KNOWN;
+  KNOWN = new Set();
+  const add = a => artistKeys(a).forEach(k => { k.forEach(x => KNOWN.add(x)); KNOWN.add(k.join("")); });
+  THEMES.forEach(th => th.levels.forEach(l => l.tracks.forEach(t => { if (t.kind === "quiz") return; add(t.artist); (t.decoys || []).forEach(d => d[1] && add(d[1])); })));
+  return KNOWN;
+}
+const near = (typed, key) => typed === key || (!knownNames().has(typed) && close(typed, key));
+function hasSeq(inp, cand) {
+  const jc = cand.join("");
+  for (let i = 0; i + cand.length <= inp.length; i++) if (cand.every((c, k) => near(inp[i + k], c))) return true;
+  for (let i = 0; i < inp.length; i++) { let acc = ""; for (let j = i; j < inp.length; j++) { acc += inp[j]; if (near(acc, jc)) return true; } }
+  return false;
+}
+const BAND_WORDS = new Set("orchestra orchestre quartet quintet quintette trio club band boys girls gang experience messengers five seeds stripes league aid social dark sus tesos papas mamas".split(" "));
+const NOSPLIT = /^(Earth, Wind & Fire|The Mamas & the Papas|Booker T\. & the M\.G\.'s)$/;
+const ARTIST_ALIASES = {
+  "The Jimi Hendrix Experience": ["Hendrix", "Jimi Hendrix"], "Duke Ellington Orchestra": ["Ellington"], "The Dave Brubeck Quartet": ["Brubeck"],
+  "Ramsey Lewis Trio": ["Ramsey Lewis"], "Quintette du Hot Club de France": ["Hot Club de France", "Reinhardt", "Grappelli"],
+  "Orchestral Manoeuvres In The Dark": ["OMD"], "Booker T. & the M.G.'s": ["Booker T"], "Earth, Wind & Fire": ["EWF"],
+  "Grandmaster Flash & The Furious Five": ["Grandmaster Flash"], "Fruko y sus Tesos": ["Fruko"]
+};
+const KEY_CACHE = new Map(), FILLER = new Set(["the", "and", "et"]);
+function artistKeys(artist) {
+  if (KEY_CACHE.has(artist)) return KEY_CACHE.get(artist);
+  const strip = w => w[0] === "the" ? w.slice(1) : w;
+  const out = [toks(artist), strip(toks(artist)), ...(ARTIST_ALIASES[artist] || []).map(toks)];
+  const segs = NOSPLIT.test(artist) ? [artist] : artist.split(/\s*(?:&|,|\bfeat\.?|\bft\.)\s*/i).filter(x => x.trim());
+  segs.forEach(seg => {
+    const w = toks(seg), s = strip(w);
+    if (!s.length) return;
+    out.push(s);
+    const band = w[0] === "the" || NOSPLIT.test(artist) || s.some(x => BAND_WORDS.has(x));
+    if (band || s.length < 2) return;
+    const raw = seg.trim().split(/\s+/);
+    while (raw.length > 1 && /^(jr|sr|ii|iii)\.?$/i.test(raw[raw.length - 1])) raw.pop();
+    const last = toks(raw[raw.length - 1]);
+    if (last.join("").length >= 3) out.push(last);
+  });
+  const keys = out.map(k => k.filter(x => !FILLER.has(x))).filter(k => k.length);
+  KEY_CACHE.set(artist, keys);
+  return keys;
+}
+const artistMatch = (input, artist) => { const t = toks(input).filter(x => !FILLER.has(x)); return t.length > 0 && artistKeys(artist).some(k => hasSeq(t, k)); };
+const titleMatch = (input, title) => { const t = toks(input), k = toks(title.replace(/\(.*?\)/g, "")); return t.length > 0 && k.length > 0 && hasSeq(t, k); };
 
 const S = { screen: "home", theme: null, level: null, order: [], qi: 0, score: 0, results: [], phase: "idle",
   choices: [], t0: 0, elapsed: 0, raf: 0, picked: null, clip: undefined, token: 0, simulated: false, simMsg: "" };
@@ -8075,6 +8161,15 @@ function renderTheme(th) {
       <div><p class="eyebrow">Blind Test</p><h1 class="room-title">${th.name}</h1><p class="tag">${th.tagline}</p></div>
       <div class="room-art lg">${ART[th.hero](th.color)}</div>
     </header>
+    <section class="answer-mode" aria-label="Mode de réponse">
+      <div class="seg" role="group" aria-label="Mode de réponse">
+        <button class="seg-b ${MODE === "qcm" ? "on" : ""}" id="am-qcm" aria-pressed="${MODE === "qcm"}">QCM</button>
+        <button class="seg-b ${MODE === "saisie" ? "on" : ""}" id="am-saisie" aria-pressed="${MODE === "saisie"}">Saisie</button>
+      </div>
+      <p class="mode-line">${MODE === "saisie"
+        ? `Tape le nom de l'artiste : <strong>le nom de famille suffit</strong>, ou le nom du groupe. 30 secondes par morceau, plusieurs essais permis.${th.levels.some(l => l.tracks.some(t => t.kind === "quiz")) ? " Les questions de culture générale restent en QCM." : ""} Records séparés du QCM.`
+        : "Quatre propositions, un seul essai, 20 secondes par morceau."}</p>
+    </section>
     ${groupsOf(th).map((g, gi) => g.tiered ? `<section aria-labelledby="sets-h${gi}" class="stack decade-group" style="--lvl:${g.color}">
       <div class="decade-head">
         <span class="decade-art">${ART[g.art](g.color)}</span>
@@ -8113,6 +8208,12 @@ function renderTheme(th) {
       </ol>
     </section>`).join("")}`;
   $app.querySelector("#back").addEventListener("click", renderHome);
+  [["#am-qcm", "qcm"], ["#am-saisie", "saisie"]].forEach(([sel, m]) => $app.querySelector(sel).addEventListener("click", () => {
+    if (MODE === m) return;
+    const y = window.scrollY; setMode(m); renderTheme(th); window.scrollTo({ top: y });
+    const b = document.querySelector(sel); b && b.focus({ preventScroll: true });
+    say(m === "saisie" ? "Mode saisie : tape le nom de l'artiste." : "Mode QCM : quatre propositions.");
+  }));
   $app.querySelectorAll(".set").forEach(b => b.addEventListener("click", () => { unlockAudio(); startLevel(+b.dataset.level); }));
   window.scrollTo({ top: 0 });
   prepareOrders(th.levels);
@@ -8122,7 +8223,7 @@ function startLevel(id) {
   S.level = S.theme.levels.find(l => l.id === id);
   S.order = (S.pre && S.pre[id]) || shuffle(S.level.tracks);
   if (S.pre) S.pre[id] = null;
-  S.qi = 0; S.score = 0; S.results = [];
+  S.qi = 0; S.score = 0; S.results = []; S.mode = MODE;
   S.players = DUO ? DUO.names.map(name => ({ name, score: 0, correct: 0 })) : null;
   window.scrollTo({ top: 0 });
   newQuestion();
@@ -8136,7 +8237,7 @@ function newQuestion() {
   S.choices = quiz
     ? shuffle([{ title: t.answer, ok: true }, ...t.decoys.map(d => ({ title: d, ok: false }))])
     : shuffle([{ title: t.title, artist: t.artist, ok: true }, ...t.decoys.map(([title, artist]) => ({ title, artist, ok: false }))]);
-  S.phase = "loading"; S.picked = null; S.clip = undefined; S.img = undefined; S.elapsed = 0; S.simulated = false; S.silent = quiz;
+  S.phase = "loading"; S.picked = null; S.typed = ""; S.tries = 0; S.typeMsg = ""; S.clip = undefined; S.img = undefined; S.elapsed = 0; S.simulated = false; S.silent = quiz;
   S.simMsg = quiz ? "" : "Recherche de l'extrait sur Deezer…";
   const token = ++S.token;
   renderGame();
@@ -8216,17 +8317,23 @@ function resumeRound() {
   S.phase = "playing"; S.t0 = performance.now();
   renderGame(); focusPlay(); tick();
 }
-const leftNow = () => Math.max(0, ROUND_SECONDS - S.elapsed - (S.phase === "playing" ? (performance.now() - S.t0) / 1000 : 0));
+const typing = () => S.mode === "saisie" && S.order[S.qi] && S.order[S.qi].kind !== "quiz";
+const roundSecs = () => typing() ? TYPE_SECONDS : ROUND_SECONDS;
+const leftNow = () => Math.max(0, roundSecs() - S.elapsed - (S.phase === "playing" ? (performance.now() - S.t0) / 1000 : 0));
 function tick() {
   const left = leftNow();
   const clock = document.getElementById("clock"), bar = document.getElementById("bar");
   if (clock) clock.textContent = "00:" + pad2(Math.ceil(left));
-  if (bar) bar.style.transform = `scaleX(${left / ROUND_SECONDS})`;
+  if (bar) bar.style.transform = `scaleX(${left / roundSecs()})`;
   if (left <= 0) { answer(null); return; }
   S.raf = requestAnimationFrame(tick);
 }
 function stopRound() { cancelAnimationFrame(S.raf); stopCrackle(); stopClip(); }
-function focusPlay() { const p = document.getElementById("play"); if (p && !p.disabled) p.focus(); }
+function focusPlay() {
+  const inp = document.getElementById("type-in");
+  if (inp && S.phase === "playing") { inp.focus({ preventScroll: true }); return; }
+  const p = document.getElementById("play"); if (p && !p.disabled) p.focus();
+}
 
 const imgCredit = im => `Image : ${esc(im.author)} · ${esc(im.license)} · <a href="${im.page}" target="_blank" rel="noopener">Wikimedia Commons</a>${im.article ? ` · <a href="${im.article}" target="_blank" rel="noopener">article Wikipédia</a>` : ""}`;
 const itemLine = t => t.kind === "quiz" ? `${t.q} <span>· ${t.answer}</span>` : `${t.title} <span>· ${t.artist}${t.year ? ` (${t.year})` : ""}</span>`;
@@ -8243,12 +8350,14 @@ function renderGame() {
     playing: ["Pause", PAUSE_ICO, false], paused: ["Reprendre", PLAY_ICO, false], answered: [quiz ? "Question terminée" : "Extrait terminé", PLAY_ICO, true]
   }[ph];
   const turn = S.players ? turnOf(S.qi) : -1;
+  const typeMode = typing();
+  const typeFocused = document.activeElement && document.activeElement.id === "type-in";
   $app.style.setProperty("--lvl", l.color);
   $app.style.setProperty("--pc", S.players ? PCOLORS[turn] : l.color);
   const playBtn = `<button class="play ${ph === "playing" || musicOn ? "is-pause" : ""}" id="play" ${btn[2] ? "disabled" : ""} aria-label="${btn[0]}"><span class="ico">${btn[1]}</span>${btn[0]}</button>`;
   const timer = `<div class="timer">
           <div class="row"><span>${ph === "paused" ? "En pause" : "Temps restant"}</span><span class="clock mono" id="clock">00:${pad2(Math.ceil(left))}</span></div>
-          <div class="bar"><i id="bar" style="transform:scaleX(${left / ROUND_SECONDS})"></i></div>
+          <div class="bar"><i id="bar" style="transform:scaleX(${left / roundSecs()})"></i></div>
         </div>`;
   const nt = S.order[S.qi + 1];
   const nextLabel = !nt ? "Voir le résultat →"
@@ -8288,7 +8397,20 @@ function renderGame() {
         <p class="sim" id="sim">${S.simMsg}</p>
       </div>
     </section>`}
-    ${!quiz && !live && !answered ? `<p class="hint">${ph === "loading" ? "L'extrait démarre tout seul." : "Lance l'extrait pour débloquer les réponses."} Raccourcis : 1 à 4 pour répondre, P pour la pause.</p>` : ""}
+    ${!quiz && !live && !answered ? `<p class="hint">${ph === "loading" ? "L'extrait démarre tout seul." : "Lance l'extrait pour débloquer les réponses."}${typeMode ? "" : " Raccourcis : 1 à 4 pour répondre, P pour la pause."}</p>` : ""}
+    ${typeMode ? `
+    <form class="type-ans ${answered ? (res.ok ? "is-ok" : "is-ko") : live ? "" : "locked"}" id="type-form" novalidate>
+      <label for="type-in">Quel artiste ? Le nom de famille suffit</label>
+      <div class="type-row">
+        <input id="type-in" type="text" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="go"
+          placeholder="Nom de l'artiste ou du groupe" value="${esc(S.typed || "")}" ${answered ? "disabled" : ""} aria-describedby="type-msg">
+        ${answered ? "" : `<button class="btn primary" type="submit" ${live ? "" : "disabled"}>Valider</button>`}
+      </div>
+      <div class="type-foot">
+        <p class="type-msg ${S.typeMsg && !answered ? "ko" : ""}" id="type-msg">${answered ? "" : S.typeMsg || (S.tries ? "" : "Entrée pour valider. Tu peux réessayer jusqu'à la fin du temps.")}</p>
+        ${live ? `<button type="button" class="linkish" id="give-up">Je passe</button>` : ""}
+      </div>
+    </form>` : `
     <ol class="choices ${!live && !answered ? "locked" : ""}" aria-label="${quiz ? "Quelle est la bonne réponse ?" : "Quel est ce morceau ?"}">
       ${S.choices.map((c, i) => {
         let cls = "";
@@ -8298,10 +8420,11 @@ function renderGame() {
           <span class="k">${i + 1}</span><span class="t"><span class="title">${c.title}</span>${c.artist ? `<span class="artist">${c.artist}</span>` : ""}</span>
         </button></li>`;
       }).join("")}
-    </ol>
+    </ol>`}
     ${answered ? `
       <section class="feedback ${res.ok ? "ok" : "ko"}">
-        <h3 tabindex="-1" id="fb-h">${S.players ? (res.ok ? `Bien joué, ${esc(S.players[res.player].name)} !` : res.timeout ? `Temps écoulé pour ${esc(S.players[res.player].name)}` : `Raté, ${esc(S.players[res.player].name)}`) : res.ok ? "Bien joué !" : res.timeout ? "Temps écoulé" : "Raté"}</h3>
+        <h3 tabindex="-1" id="fb-h">${S.players ? (res.ok ? `Bien joué, ${esc(S.players[res.player].name)} !` : res.pass ? `${esc(S.players[res.player].name)} passe` : res.timeout ? `Temps écoulé pour ${esc(S.players[res.player].name)}` : `Raté, ${esc(S.players[res.player].name)}`) : res.ok ? "Bien joué !" : res.pass ? "Passé" : res.timeout ? "Temps écoulé" : "Raté"}</h3>
+        ${typeMode && res.typed ? `<p class="mode-line">Ta réponse : « ${esc(res.typed)} »</p>` : ""}
         ${quiz ? `<p class="answer">${t.answer}</p>` : `
         <div class="reveal">
           ${S.clip && S.clip.cover ? `<img src="${S.clip.cover}" alt="Pochette de l'album ${S.clip.album || ""}" width="72" height="72">` : ""}
@@ -8323,20 +8446,43 @@ function renderGame() {
   $app.querySelector("#back").addEventListener("click", () => { stopRound(); S.token++; S.phase = "idle"; renderTheme(th); });
   const play = $app.querySelector("#play"); if (play) play.addEventListener("click", onPlayButton);
   $app.querySelectorAll(".choice").forEach(b => b.addEventListener("click", () => answer(+b.dataset.i)));
+  const tf = $app.querySelector("#type-form");
+  if (tf) {
+    const inp = tf.querySelector("#type-in");
+    inp.addEventListener("input", () => { S.typed = inp.value; });
+    tf.addEventListener("submit", e => { e.preventDefault(); submitTyped(inp.value); });
+    const gu = tf.querySelector("#give-up"); if (gu) gu.addEventListener("click", () => answer(null, { pass: true }));
+    if (typeFocused && !inp.disabled) { inp.focus({ preventScroll: true }); const n = inp.value.length; try { inp.setSelectionRange(n, n); } catch (e) {} }
+  }
   const next = $app.querySelector("#next");
   if (next) next.addEventListener("click", () => { clearInterval(fadeT); if (!player.paused) player.pause(); unlockAudio(); goNext(); });
 }
 
-function answer(i) {
+function submitTyped(v) {
+  if (S.phase !== "playing" && S.phase !== "paused") return;
+  S.typed = v;
+  if (!v.trim()) { document.getElementById("type-in").focus(); return; }
+  const t = S.order[S.qi];
+  if (artistMatch(v, t.artist)) { answer(null, { typed: v, ok: true }); return; }
+  S.tries++;
+  S.typeMsg = titleMatch(v, t.title) ? "Bon titre ! Mais il faut le nom de l'artiste." : "Pas ça. Essaie encore.";
+  const msg = document.getElementById("type-msg"), row = document.querySelector(".type-row"), inp = document.getElementById("type-in");
+  if (msg) { msg.textContent = S.typeMsg; msg.classList.add("ko"); }
+  if (row) { row.classList.remove("shake"); void row.offsetWidth; row.classList.add("shake"); }
+  if (inp) { inp.focus(); inp.select(); }
+  say(S.typeMsg);
+}
+function answer(i, o = {}) {
   if (S.phase !== "playing" && S.phase !== "paused") return;
   const left = leftNow();
   cancelAnimationFrame(S.raf); stopCrackle();
-  const ok = i !== null && S.choices[i].ok;
+  if (i === null && !o.typed && typing() && S.typed && S.typed.trim()) o.typed = S.typed.trim();
+  const ok = "ok" in o ? o.ok : i !== null && S.choices[i].ok;
   const points = ok ? BASE_POINTS + Math.round(left) * BONUS_PER_SEC : 0;
   S.score += points; S.picked = i; S.phase = "answered";
   const player = turnOf(S.qi);
   if (S.players) { S.players[player].score += points; if (ok) S.players[player].correct++; }
-  S.results.push({ ok, points, timeout: i === null, player });
+  S.results.push({ ok, points, timeout: i === null && !o.pass && !("ok" in o), pass: !!o.pass, typed: o.typed || "", player });
   renderGame();
   const t = S.order[S.qi];
   say(`${ok ? "Bonne réponse" : "Mauvaise réponse"}. C'était ${t.title}, de ${t.artist}.`);
@@ -8447,9 +8593,11 @@ window.addEventListener("blur", () => { if (document.hidden) pauseForBackground(
 
 document.addEventListener("keydown", e => {
   if (S.screen !== "game" || e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.target && /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
   if ((e.key === "p" || e.key === "P") && (S.phase === "playing" || S.phase === "paused" || canReplay())) { e.preventDefault(); onPlayButton(); return; }
   if (S.phase !== "playing" && S.phase !== "paused") return;
   const n = parseInt(e.key, 10);
+  if (typing()) return;
   if (n >= 1 && n <= 4) { e.preventDefault(); answer(n - 1); }
 });
 
