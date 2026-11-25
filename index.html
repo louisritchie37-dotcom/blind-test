@@ -263,6 +263,10 @@ p { margin: 0; }
 .room-art.lg { width: clamp(90px, 24vw, 130px); height: auto; }
 .decade { font-size: 12px; color: var(--lvl); white-space: nowrap; }
 .decade-group { border-top: 1px dashed var(--line); padding-top: 20px; }
+.room-head + .decade-group { border-top: 0; padding-top: 0; }
+.decade-head { align-items: flex-start; }
+.back { white-space: nowrap; flex: none; }
+.topbar .eyebrow { text-align: right; min-width: 0; }
 .decade-head { display: flex; gap: 14px; align-items: center; }
 .decade-head h2 { font-size: 28px; color: var(--lvl); }
 .decade-head .blurb { color: var(--smoke); font-size: 14px; margin-top: 2px; }
@@ -282,6 +286,8 @@ p { margin: 0; }
 .install-ico { width: 56px; height: 56px; } .install-ico svg { width: 100%; height: 100%; display: block; }
 .install-t { min-width: 0; } .install h2 { font-size: 20px; } .install p { color: var(--smoke); font-size: 14px; }
 @media (max-width: 480px) { .install { grid-template-columns: 48px 1fr; } .install .btn { grid-column: 1 / -1; } }
+.src { font-size: 12px; color: var(--smoke); margin-top: 2px; } .src a { color: var(--lvl); }
+.rank { align-self: flex-start; font-size: 13px; font-weight: 700; color: #15131e; background: var(--lvl); border-radius: 999px; padding: 4px 12px; }
 .demo-note { border: 1px solid var(--brass-deep); border-radius: 14px; padding: 12px 14px; font-size: 14px; color: var(--cream); background: var(--velvet); }
 .demo-note a { color: var(--brass); overflow-wrap: anywhere; }
 /* ——— Duo ——— */
@@ -4407,6 +4413,22 @@ const ARM = `<svg viewBox="0 0 90 120" aria-hidden="true">
   <rect x="32" y="98" width="20" height="12" rx="3" fill="#e0b04f" transform="rotate(42 42 104)"/></svg>`;
 
 Object.assign(ART, {
+  trophy: c => `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="${c}" opacity=".22"/>
+    <path d="M38 22 H82 V44 C82 60 72 70 60 70 C48 70 38 60 38 44 Z" fill="#e0b04f"/>
+    <path d="M38 28 H24 C24 44 30 52 42 54" fill="none" stroke="#e0b04f" stroke-width="6" stroke-linecap="round"/>
+    <path d="M82 28 H96 C96 44 90 52 78 54" fill="none" stroke="#e0b04f" stroke-width="6" stroke-linecap="round"/>
+    <rect x="54" y="68" width="12" height="16" fill="#9c7228"/><rect x="40" y="84" width="40" height="10" rx="3" fill="#9c7228"/>
+    <rect x="34" y="94" width="52" height="10" rx="3" fill="#15131e"/>
+    <circle cx="60" cy="42" r="10" fill="${c}"/><rect x="58" y="34" width="3" height="10" fill="#15131e"/><circle cx="57" cy="44" r="3" fill="#15131e"/>
+    <path d="M100 14 l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2 Z" fill="#f3e6c8"/></svg>`,
+  globe: c => `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="${c}" opacity=".22"/>
+    <circle cx="60" cy="58" r="34" fill="#1d3c5e"/>
+    <path d="M40 40 C48 36 52 44 58 42 C64 40 62 50 56 54 C50 58 44 52 40 56 C34 52 34 44 40 40 Z" fill="${c}"/>
+    <path d="M66 62 C74 58 84 62 86 70 C82 80 74 86 70 80 C66 76 70 70 64 68 Z" fill="${c}"/>
+    <path d="M62 30 C68 28 74 32 72 36 C68 38 64 36 62 30 Z" fill="${c}"/>
+    <circle cx="60" cy="58" r="34" fill="none" stroke="#f3e6c8" stroke-width="2"/>
+    <path d="M26 58 H94 M60 24 C46 40 46 76 60 92 M60 24 C74 40 74 76 60 92" fill="none" stroke="#f3e6c8" stroke-opacity=".35" stroke-width="1.5"/>
+    <rect x="56" y="92" width="8" height="10" fill="#9c7228"/><rect x="42" y="102" width="36" height="6" rx="3" fill="#9c7228"/></svg>`,
   lightbulb: c => `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="${c}" opacity=".22"/>
     <g stroke="${c}" stroke-width="3" stroke-linecap="round"><line x1="60" y1="4" x2="60" y2="12"/><line x1="20" y1="22" x2="26" y2="28"/><line x1="100" y1="22" x2="94" y2="28"/><line x1="10" y1="54" x2="18" y2="54"/><line x1="110" y1="54" x2="102" y2="54"/></g>
     <path d="M60 18 C40 18 28 33 28 50 C28 63 36 70 41 78 L41 88 L79 88 L79 78 C84 70 92 63 92 50 C92 33 80 18 60 18 Z" fill="#f3e6c8"/>
@@ -5115,6 +5137,2736 @@ const MIX = [
  }
 ];
 
+/* ===================== Données : Top Charts (rempli par charts/merge.js) ===================== */
+const CHARTS = [
+ {
+  "id": 1,
+  "tier": 1,
+  "decadeKey": "monde",
+  "groupTitle": "Monde",
+  "groupBlurb": "Faute de classement mondial complet des ventes depuis 1969, on retient les 5 singles les plus certifiés de chaque décennie (années 1970, en excluant les sorties d'avant 1969, puis 1980 à 2020) selon Wikipédia, en unités certifiées qui cumulent ventes physiques, téléchargements et streaming, puis on classe ces 30 titres par nombre d'unités.",
+  "source": {
+   "label": "Wikipédia (en), List of best-selling singles : top 10 des singles les plus certifiés par décennie",
+   "url": "https://en.wikipedia.org/wiki/List_of_best-selling_singles"
+  },
+  "decade": "Rangs 1 à 30 · depuis 1969",
+  "instrument": "globe",
+  "color": "#45b7c4",
+  "name": "Monde · Facile",
+  "blurb": "Rangs 1 à 10.",
+  "tracks": [
+   {
+    "title": "Shape of You",
+    "artist": "Ed Sheeran",
+    "year": 2017,
+    "rank": 1,
+    "fact": "D'abord pensé pour Rihanna, c'est le premier titre à avoir dépassé 3 milliards d'écoutes sur Spotify, en décembre 2021. Wikipédia lui compte 34,68 millions d'unités certifiées.",
+    "context": "En 2017, le streaming devient la première source de revenus de la musique enregistrée dans le monde, et les écoutes comptent désormais dans les certifications.",
+    "decoys": [
+     [ "Attention", "Charlie Puth"
+     ],
+     [ "Despacito", "Luis Fonsi"
+     ],
+     [ "Cheap Thrills", "Sia"
+     ]
+    ]
+   },
+   {
+    "title": "All I Want for Christmas Is You",
+    "artist": "Mariah Carey",
+    "year": 1994,
+    "rank": 2,
+    "fact": "Sorti en 1994, il n'a atteint la 1re place du Billboard Hot 100 qu'en décembre 2019, 25 ans plus tard.",
+    "film": "Love Actually (2003) : la jeune Joanna la chante au spectacle de Noël de l'école, devant Sam et son beau-père.",
+    "context": "Son retour en tête chaque mois de décembre illustre l'effet du streaming, qui fait remonter tous les ans les chansons de Noël anciennes dans les classements.",
+    "decoys": [
+     [ "Un-Break My Heart", "Toni Braxton"
+     ],
+     [ "Because You Loved Me", "Celine Dion"
+     ],
+     [ "Fantasy", "Mariah Carey"
+     ]
+    ]
+   },
+   {
+    "title": "Sunflower",
+    "artist": "Post Malone",
+    "year": 2018,
+    "rank": 3,
+    "fact": "Chanté avec Swae Lee, c'est le premier single certifié double diamant (20 millions d'unités) par la RIAA aux États-Unis, en 2024.",
+    "film": "Spider-Man : New Generation (2018) : Miles Morales chante le titre au casque, dans sa chambre, au début du film.",
+    "context": "Il sort juste après 2017, année où le hip-hop et le R&B dépassent le rock comme genre le plus écouté aux États-Unis selon Nielsen.",
+    "decoys": [
+     [ "Psycho", "Post Malone"
+     ],
+     [ "Girls Like You", "Maroon 5"
+     ],
+     [ "Without Me", "Halsey"
+     ]
+    ]
+   },
+   {
+    "title": "Closer",
+    "artist": "The Chainsmokers",
+    "year": 2016,
+    "rank": 4,
+    "fact": "Chanté avec Halsey, il est resté 12 semaines n° 1 du Billboard Hot 100. Les paroles citent le groupe Blink-182.",
+    "context": "Il incarne la vague EDM des années 2010, quand des DJ américains passent des festivals électro au sommet des classements pop.",
+    "decoys": [
+     [ "Don't Let Me Down", "The Chainsmokers"
+     ],
+     [ "Cold Water", "Major Lazer"
+     ],
+     [ "This Is What You Came For", "Calvin Harris"
+     ]
+    ]
+   },
+   {
+    "title": "Thinking Out Loud",
+    "artist": "Ed Sheeran",
+    "year": 2014,
+    "rank": 5,
+    "fact": "En octobre 2015, c'est le premier titre à atteindre 500 millions d'écoutes sur Spotify. Il a reçu le Grammy de la chanson de l'année en 2016.",
+    "context": "Accusé de copier Let's Get It On de Marvin Gaye, Ed Sheeran a gagné son procès devant un jury new-yorkais en 2023. La Cour suprême a clos l'affaire en 2025.",
+    "decoys": [
+     [ "All of Me", "John Legend"
+     ],
+     [ "Stay with Me", "Sam Smith"
+     ],
+     [ "Photograph", "Ed Sheeran"
+     ]
+    ]
+   },
+   {
+    "title": "Just the Way You Are",
+    "artist": "Bruno Mars",
+    "year": 2010,
+    "rank": 6,
+    "fact": "Premier single solo de Bruno Mars, n° 1 aux États-Unis, il lui a valu le Grammy de la meilleure performance vocale pop masculine en 2011.",
+    "context": "Il sort en 2010, quand le téléchargement payant, porté par l'iTunes Store, est encore le principal moyen d'acheter un single.",
+    "decoys": [
+     [ "Grenade", "Bruno Mars"
+     ],
+     [ "Billionaire", "Travie McCoy"
+     ],
+     [ "Love the Way You Lie", "Eminem"
+     ]
+    ]
+   },
+   {
+    "title": "Don't Stop Believin'",
+    "artist": "Journey",
+    "year": 1981,
+    "rank": 7,
+    "fact": "Seulement 9e du Billboard Hot 100 à sa sortie, c'est le single des années 1980 le plus certifié de la liste, avec 26,52 millions d'unités.",
+    "film": "Les Soprano (2007) : il accompagne la toute dernière scène de la série, dans un restaurant, avant un écran noir.",
+    "context": "Il chante les rêves de jeunes gens des villes ouvrières, dans une Amérique frappée par la récession du début des années 1980.",
+    "decoys": [
+     [ "Open Arms", "Journey"
+     ],
+     [ "Eye of the Tiger", "Survivor"
+     ],
+     [ "Keep On Loving You", "REO Speedwagon"
+     ]
+    ]
+   },
+   {
+    "title": "Candle in the Wind 1997",
+    "artist": "Elton John",
+    "year": 1997,
+    "rank": 8,
+    "fact": "Bernie Taupin a réécrit pour Diana le texte de 1973 sur Marilyn Monroe. Elton John ne l'a chantée en public qu'une fois, aux obsèques.",
+    "context": "Diana meurt dans un accident à Paris le 31 août 1997. Tous les bénéfices du single, vendu à plus de 33 millions d'exemplaires, vont à son fonds caritatif.",
+    "decoys": [
+     [ "Tears in Heaven", "Eric Clapton"
+     ],
+     [ "I'll Be Missing You", "Puff Daddy"
+     ],
+     [ "Can You Feel the Love Tonight", "Elton John"
+     ]
+    ]
+   },
+   {
+    "title": "Heat Waves",
+    "artist": "Glass Animals",
+    "year": 2020,
+    "rank": 9,
+    "fact": "Il a mis 59 semaines à atteindre la 1re place du Billboard Hot 100, en mars 2022 : la plus longue ascension de l'histoire du classement.",
+    "context": "Sorti pendant les confinements liés au Covid-19, son clip a été filmé au téléphone par les voisins du chanteur. TikTok a ensuite relancé le titre.",
+    "decoys": [
+     [ "Watermelon Sugar", "Harry Styles"
+     ],
+     [ "Dance Monkey", "Tones And I"
+     ],
+     [ "Someone You Loved", "Lewis Capaldi"
+     ]
+    ]
+   },
+   {
+    "title": "Lose Yourself",
+    "artist": "Eminem",
+    "year": 2002,
+    "rank": 10,
+    "fact": "En 2003, c'est le premier morceau de rap à remporter l'Oscar de la meilleure chanson originale.",
+    "film": "8 Mile (2002) : Eminem y joue B-Rabbit, jeune rappeur qui s'impose dans les battles de Detroit.",
+    "context": "Le film et la chanson racontent la jeunesse pauvre de Detroit, ville ouvrière en déclin après la crise de l'industrie automobile.",
+    "decoys": [
+     [ "In da Club", "50 Cent"
+     ],
+     [ "Without Me", "Eminem"
+     ],
+     [ "Hot in Herre", "Nelly"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 2,
+  "tier": 2,
+  "decadeKey": "monde",
+  "groupTitle": "Monde",
+  "groupBlurb": "Faute de classement mondial complet des ventes depuis 1969, on retient les 5 singles les plus certifiés de chaque décennie (années 1970, en excluant les sorties d'avant 1969, puis 1980 à 2020) selon Wikipédia, en unités certifiées qui cumulent ventes physiques, téléchargements et streaming, puis on classe ces 30 titres par nombre d'unités.",
+  "source": {
+   "label": "Wikipédia (en), List of best-selling singles : top 10 des singles les plus certifiés par décennie",
+   "url": "https://en.wikipedia.org/wiki/List_of_best-selling_singles"
+  },
+  "decade": "Rangs 1 à 30 · depuis 1969",
+  "instrument": "globe",
+  "color": "#45b7c4",
+  "name": "Monde · Moyen",
+  "blurb": "Rangs 11 à 20.",
+  "tracks": [
+   {
+    "title": "I Gotta Feeling",
+    "artist": "Black Eyed Peas",
+    "year": 2009,
+    "rank": 11,
+    "fact": "Il a succédé à Boom Boom Pow, du même groupe, à la 1re place du Billboard Hot 100 : les Black Eyed Peas y sont restés 26 semaines d'affilée.",
+    "context": "Cet hymne à la fête sort en 2009, en pleine récession mondiale provoquée par la crise financière de 2008.",
+    "decoys": [
+     [ "Boom Boom Pow", "Black Eyed Peas"
+     ],
+     [ "When Love Takes Over", "David Guetta"
+     ],
+     [ "Down", "Jay Sean"
+     ]
+    ]
+   },
+   {
+    "title": "Party in the U.S.A.",
+    "artist": "Miley Cyrus",
+    "year": 2009,
+    "rank": 12,
+    "fact": "Coécrit par Jessie J, qui devait l'enregistrer, le titre a finalement été confié à Miley Cyrus, alors star de Disney Channel.",
+    "context": "Devenu un hymne patriotique officieux, il a été chanté pour fêter la mort de Ben Laden en 2011, puis à Times Square après la victoire de Joe Biden en 2020.",
+    "decoys": [
+     [ "The Climb", "Miley Cyrus"
+     ],
+     [ "You Belong with Me", "Taylor Swift"
+     ],
+     [ "Fireflies", "Owl City"
+     ]
+    ]
+   },
+   {
+    "title": "Last Christmas",
+    "artist": "Wham!",
+    "year": 1984,
+    "rank": 13,
+    "fact": "Bloqué à la 2e place au Royaume-Uni en 1984 par Do They Know It's Christmas?, il n'a atteint la 1re place que le 1er janvier 2021.",
+    "film": "Last Christmas (2019) : la comédie romantique de Paul Feig, avec Emilia Clarke, est construite autour des chansons de George Michael.",
+    "context": "Wham! a reversé ses droits sur le titre à la lutte contre la famine en Éthiopie, la même cause que le disque caritatif Band Aid.",
+    "decoys": [
+     [ "Wake Me Up Before You Go-Go", "Wham!"
+     ],
+     [ "Do They Know It's Christmas?", "Band Aid"
+     ],
+     [ "Careless Whisper", "George Michael"
+     ]
+    ]
+   },
+   {
+    "title": "Save Your Tears",
+    "artist": "The Weeknd",
+    "year": 2020,
+    "rank": 14,
+    "fact": "Son remix avec Ariana Grande, sorti en 2021, l'a porté à la 1re place du Billboard Hot 100.",
+    "context": "Tourné en pleine pandémie de Covid-19, le clip montre The Weeknd au visage déformé par la chirurgie esthétique, devant un public masqué.",
+    "decoys": [
+     [ "Blinding Lights", "The Weeknd"
+     ],
+     [ "Levitating", "Dua Lipa"
+     ],
+     [ "Watermelon Sugar", "Harry Styles"
+     ]
+    ]
+   },
+   {
+    "title": "I'm Yours",
+    "artist": "Jason Mraz",
+    "year": 2008,
+    "rank": 15,
+    "fact": "Il est resté 76 semaines dans le Billboard Hot 100, un record à l'époque.",
+    "context": "Il sort en 2008, l'année où l'iTunes Store d'Apple devient le premier vendeur de musique des États-Unis, devant les grandes surfaces.",
+    "decoys": [
+     [ "Bubbly", "Colbie Caillat"
+     ],
+     [ "Viva la Vida", "Coldplay"
+     ],
+     [ "Fireflies", "Owl City"
+     ]
+    ]
+   },
+   {
+    "title": "Billie Jean",
+    "artist": "Michael Jackson",
+    "year": 1983,
+    "rank": 16,
+    "fact": "C'est en le chantant à la télévision en 1983, pour les 25 ans de la Motown, que Michael Jackson a dévoilé le moonwalk.",
+    "context": "Son clip a été l'un des premiers d'un artiste noir diffusés en forte rotation sur MTV, chaîne alors critiquée pour le peu d'artistes noirs qu'elle diffusait.",
+    "decoys": [
+     [ "Beat It", "Michael Jackson"
+     ],
+     [ "Every Breath You Take", "The Police"
+     ],
+     [ "Flashdance... What a Feeling", "Irene Cara"
+     ]
+    ]
+   },
+   {
+    "title": "Yeah!",
+    "artist": "Usher",
+    "year": 2004,
+    "rank": 17,
+    "fact": "Avec Lil Jon et Ludacris, il est resté 12 semaines n° 1 du Billboard Hot 100 et a popularisé le crunk, un rap festif venu d'Atlanta.",
+    "context": "Il accompagne la montée d'Atlanta comme capitale du rap américain au début des années 2000.",
+    "decoys": [
+     [ "Burn", "Usher"
+     ],
+     [ "Hey Ya!", "Outkast"
+     ],
+     [ "Get Low", "Lil Jon & The East Side Boyz"
+     ]
+    ]
+   },
+   {
+    "title": "Stay",
+    "artist": "The Kid LAROI",
+    "year": 2021,
+    "rank": 18,
+    "fact": "Avec Justin Bieber, il est resté 11 semaines n° 1 du classement mondial Billboard Global 200, un record à l'époque.",
+    "context": "Il a atteint un milliard d'écoutes sur Spotify en 118 jours, plus vite que tout autre titre à l'époque, signe de la domination du streaming.",
+    "decoys": [
+     [ "Peaches", "Justin Bieber"
+     ],
+     [ "Good 4 U", "Olivia Rodrigo"
+     ],
+     [ "Montero (Call Me by Your Name)", "Lil Nas X"
+     ]
+    ]
+   },
+   {
+    "title": "Bohemian Rhapsody",
+    "artist": "Queen",
+    "year": 1975,
+    "rank": 19,
+    "fact": "Long de près de 6 minutes et sans refrain, il est resté 9 semaines n° 1 au Royaume-Uni.",
+    "film": "Wayne's World (1992) : Wayne et ses amis secouent la tête en rythme dans leur voiture. Le titre donne aussi son nom au biopic de 2018.",
+    "context": "Son clip, tourné pour éviter de jouer ce morceau complexe en direct à la télévision, est souvent cité comme un pionnier du clip vidéo.",
+    "decoys": [
+     [ "Somebody to Love", "Queen"
+     ],
+     [ "Hotel California", "Eagles"
+     ],
+     [ "Born to Run", "Bruce Springsteen"
+     ]
+    ]
+   },
+   {
+    "title": "Flowers",
+    "artist": "Miley Cyrus",
+    "year": 2023,
+    "rank": 20,
+    "fact": "Avec 96 millions d'écoutes en une semaine, il a battu le record de Spotify en janvier 2023. Il a gagné le Grammy de l'enregistrement de l'année.",
+    "context": "Son refrain retourne celui de When I Was Your Man de Bruno Mars, en hymne à l'amour de soi après une rupture.",
+    "decoys": [
+     [ "Anti-Hero", "Taylor Swift"
+     ],
+     [ "Kill Bill", "SZA"
+     ],
+     [ "Unholy", "Sam Smith"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 3,
+  "tier": 3,
+  "decadeKey": "monde",
+  "groupTitle": "Monde",
+  "groupBlurb": "Faute de classement mondial complet des ventes depuis 1969, on retient les 5 singles les plus certifiés de chaque décennie (années 1970, en excluant les sorties d'avant 1969, puis 1980 à 2020) selon Wikipédia, en unités certifiées qui cumulent ventes physiques, téléchargements et streaming, puis on classe ces 30 titres par nombre d'unités.",
+  "source": {
+   "label": "Wikipédia (en), List of best-selling singles : top 10 des singles les plus certifiés par décennie",
+   "url": "https://en.wikipedia.org/wiki/List_of_best-selling_singles"
+  },
+  "decade": "Rangs 1 à 30 · depuis 1969",
+  "instrument": "globe",
+  "color": "#45b7c4",
+  "name": "Monde · Difficile",
+  "blurb": "Rangs 21 à 30.",
+  "tracks": [
+   {
+    "title": "Smells Like Teen Spirit",
+    "artist": "Nirvana",
+    "year": 1991,
+    "rank": 21,
+    "fact": "Son titre vient d'une phrase écrite par une amie de Kurt Cobain : Teen Spirit était une marque de déodorant.",
+    "context": "Il porte le grunge de Seattle et le malaise de la génération X, au moment où le rock alternatif conquiert MTV et les grandes radios.",
+    "decoys": [
+     [ "Come as You Are", "Nirvana"
+     ],
+     [ "Alive", "Pearl Jam"
+     ],
+     [ "Black Hole Sun", "Soundgarden"
+     ]
+    ]
+   },
+   {
+    "title": "As It Was",
+    "artist": "Harry Styles",
+    "year": 2022,
+    "rank": 22,
+    "fact": "Resté 15 semaines n° 1 du Billboard Hot 100, c'est le n° 1 américain le plus long pour un artiste britannique.",
+    "context": "Sorti en avril 2022, au sortir des années de pandémie, il illustre le retour des sons synthpop des années 1980 dans la pop mondiale.",
+    "decoys": [
+     [ "Watermelon Sugar", "Harry Styles"
+     ],
+     [ "Bad Habit", "Steve Lacy"
+     ],
+     [ "About Damn Time", "Lizzo"
+     ]
+    ]
+   },
+   {
+    "title": "Iris",
+    "artist": "Goo Goo Dolls",
+    "year": 1998,
+    "rank": 23,
+    "fact": "Resté 18 semaines n° 1 en radio aux États-Unis, il n'a pu entrer au Billboard Hot 100 qu'en décembre 1998, faute de single vendu en magasin.",
+    "film": "La Cité des anges (1998) : la chanson a été écrite pour la bande originale du film, avec Nicolas Cage et Meg Ryan.",
+    "context": "Jusqu'à fin 1998, le Hot 100 exigeait un single commercialisé, alors que les maisons de disques en sortaient moins pour pousser l'achat d'albums.",
+    "decoys": [
+     [ "Torn", "Natalie Imbruglia"
+     ],
+     [ "Semi-Charmed Life", "Third Eye Blind"
+     ],
+     [ "Slide", "Goo Goo Dolls"
+     ]
+    ]
+   },
+   {
+    "title": "Thunderstruck",
+    "artist": "AC/DC",
+    "year": 1990,
+    "rank": 24,
+    "fact": "Titre phare de l'album The Razors Edge, c'est le single d'AC/DC le plus certifié de la liste, avec 15,8 millions d'unités.",
+    "context": "Ce retour d'AC/DC survient quand le hard rock domine encore MTV, juste avant que le grunge ne bouleverse le rock en 1991.",
+    "decoys": [
+     [ "Enter Sandman", "Metallica"
+     ],
+     [ "Moneytalks", "AC/DC"
+     ],
+     [ "Kickstart My Heart", "Mötley Crüe"
+     ]
+    ]
+   },
+   {
+    "title": "Africa",
+    "artist": "Toto",
+    "year": 1982,
+    "rank": 25,
+    "fact": "N° 1 du Billboard Hot 100 en février 1983, il a connu une seconde vie grâce à une reprise de Weezer en 2018.",
+    "context": "David Paich, qui n'était jamais allé en Afrique, l'a écrit après un documentaire télévisé sur les souffrances du continent.",
+    "decoys": [
+     [ "Rosanna", "Toto"
+     ],
+     [ "Hungry Like the Wolf", "Duran Duran"
+     ],
+     [ "Eye in the Sky", "The Alan Parsons Project"
+     ]
+    ]
+   },
+   {
+    "title": "Livin' on a Prayer",
+    "artist": "Bon Jovi",
+    "year": 1986,
+    "rank": 26,
+    "fact": "Resté 4 semaines n° 1 aux États-Unis début 1987, il raconte l'histoire de Tommy et Gina, un jeune couple qui lutte pour s'en sortir.",
+    "context": "Tommy, docker dont le syndicat est en grève, et Gina, serveuse, incarnent les difficultés des classes populaires dans l'Amérique des années 1980.",
+    "decoys": [
+     [ "You Give Love a Bad Name", "Bon Jovi"
+     ],
+     [ "The Final Countdown", "Europe"
+     ],
+     [ "Here I Go Again", "Whitesnake"
+     ]
+    ]
+   },
+   {
+    "title": "We Will Rock You",
+    "artist": "Queen",
+    "year": 1977,
+    "rank": 27,
+    "fact": "Brian May l'a conçu pour que le public participe. Le rythme pied, pied, clap a été obtenu en tapant sur une estrade du studio.",
+    "film": "Chevalier (2001) : la chanson ouvre le film, scandée par la foule d'un tournoi de joute médiéval.",
+    "context": "Paru en 1977 avec We Are the Champions, il est devenu un chant de stade repris dans les rencontres sportives du monde entier.",
+    "decoys": [
+     [ "Don't Stop Me Now", "Queen"
+     ],
+     [ "Rock and Roll All Nite", "Kiss"
+     ],
+     [ "More Than a Feeling", "Boston"
+     ]
+    ]
+   },
+   {
+    "title": "September",
+    "artist": "Earth, Wind & Fire",
+    "year": 1978,
+    "rank": 28,
+    "fact": "Maurice White a choisi le 21 septembre pour sa sonorité et a refusé de remplacer le ba-dee-ya, qui ne veut rien dire.",
+    "film": "La Nuit au musée (2006) : le titre accompagne la dernière scène, juste avant le générique de fin.",
+    "context": "Sorti en pleine vague disco, il illustre le succès des groupes funk afro-américains sur les radios grand public de la fin des années 1970.",
+    "decoys": [
+     [ "Boogie Wonderland", "Earth, Wind & Fire"
+     ],
+     [ "Le Freak", "Chic"
+     ],
+     [ "Stayin' Alive", "Bee Gees"
+     ]
+    ]
+   },
+   {
+    "title": "Highway to Hell",
+    "artist": "AC/DC",
+    "year": 1979,
+    "rank": 29,
+    "fact": "Selon Angus Young, l'autoroute de l'enfer désigne les tournées épuisantes du groupe. Le chanteur Bon Scott meurt six mois après la sortie.",
+    "film": "Iron Man 2 (2010) : il figure sur la bande originale du film, entièrement composée de titres d'AC/DC.",
+    "context": "L'album Highway to Hell marque la percée d'AC/DC aux États-Unis, à la fin d'une décennie où le hard rock remplit les stades.",
+    "decoys": [
+     [ "Whole Lotta Rosie", "AC/DC"
+     ],
+     [ "Runnin' with the Devil", "Van Halen"
+     ],
+     [ "Detroit Rock City", "Kiss"
+     ]
+    ]
+   },
+   {
+    "title": "Have You Ever Seen the Rain",
+    "artist": "Creedence Clearwater Revival",
+    "year": 1971,
+    "rank": 30,
+    "fact": "John Fogerty a expliqué que la chanson parle de la séparation imminente de Creedence et du départ de son frère Tom.",
+    "context": "Le critique Mark Deming y lit le déclin de l'idéalisme des années 1960 sous Nixon, après le concert d'Altamont et la fusillade de Kent State.",
+    "decoys": [
+     [ "Fortunate Son", "Creedence Clearwater Revival"
+     ],
+     [ "American Pie", "Don McLean"
+     ],
+     [ "A Horse with No Name", "America"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 4,
+  "tier": 1,
+  "decadeKey": "usa",
+  "groupTitle": "États-Unis",
+  "groupBlurb": "Faute de classement exhaustif des ventes aux États-Unis (les certifications RIAA sont payantes et incomplètes), on suit le classement officiel de Billboard, qui cumule les performances hebdomadaires dans le Hot 100 (ventes, radio puis streaming) du 4 août 1958 au 6 novembre 2021 ; les titres sortis avant 1969 ont été retirés puis la liste renumérotée.",
+  "source": {
+   "label": "Billboard, Greatest of All Time Hot 100 Songs (édition 2021)",
+   "url": "https://www.billboard.com/charts/greatest-hot-100-singles/"
+  },
+  "decade": "Rangs 1 à 30 · depuis 1969",
+  "instrument": "trophy",
+  "color": "#e8735a",
+  "name": "États-Unis · Facile",
+  "blurb": "Rangs 1 à 10.",
+  "tracks": [
+   {
+    "title": "Blinding Lights",
+    "artist": "The Weeknd",
+    "year": 2019,
+    "rank": 1,
+    "fact": "Il est resté 90 semaines dans le Hot 100 et 57 semaines dans le top 10, un record. C'est le n°1 du classement de tous les temps de Billboard.",
+    "film": "Dévoilé dans une publicité Mercedes-Benz diffusée en Allemagne en novembre 2019, cinq jours avant sa sortie ; un remix ouvre aussi la série Ms. Marvel (2022).",
+    "context": "Sorti fin 2019, le titre a accompagné les confinements de 2020 liés au Covid-19 ; The Weeknd l'a chanté à la mi-temps du Super Bowl 2021.",
+    "decoys": [
+     [ "Don't Start Now", "Dua Lipa"
+     ],
+     [ "Adore You", "Harry Styles"
+     ],
+     [ "Midnight Sky", "Miley Cyrus"
+     ]
+    ]
+   },
+   {
+    "title": "Smooth",
+    "artist": "Santana",
+    "year": 1999,
+    "rank": 2,
+    "fact": "Chanté par Rob Thomas, il reste 12 semaines n°1 : dernier n°1 des années 1990 et premier des années 2000. Il a gagné 3 Grammy Awards en 2000.",
+    "context": "Sorti en pleine vague latino de 1999 (Ricky Martin, Jennifer Lopez), il relance la carrière de Carlos Santana, révélé trente ans plus tôt au festival de Woodstock.",
+    "decoys": [
+     [ "Livin' la Vida Loca", "Ricky Martin"
+     ],
+     [ "3AM", "Matchbox Twenty"
+     ],
+     [ "Iris", "Goo Goo Dolls"
+     ]
+    ]
+   },
+   {
+    "title": "Uptown Funk",
+    "artist": "Mark Ronson",
+    "year": 2014,
+    "rank": 3,
+    "fact": "14 semaines n°1 en 2015. En raison de sa ressemblance avec Oops Up Side Your Head, les membres du Gap Band ont été ajoutés aux auteurs.",
+    "context": "Il sort en pleine vague de procès pour emprunts musicaux, après l'affaire Blurred Lines en 2015 ; Bruno Mars le chante à la mi-temps du Super Bowl 2016.",
+    "decoys": [
+     [ "Get Lucky", "Daft Punk"
+     ],
+     [ "Happy", "Pharrell Williams"
+     ],
+     [ "Can't Stop the Feeling!", "Justin Timberlake"
+     ]
+    ]
+   },
+   {
+    "title": "How Do I Live",
+    "artist": "LeAnn Rimes",
+    "year": 1997,
+    "rank": 4,
+    "fact": "Écrite par Diane Warren, elle n'a jamais été n°1 (n°2 au mieux) mais est restée 69 semaines dans le Hot 100, un record à l'époque. La chanteuse avait 14 ans.",
+    "film": "Les Ailes de l'enfer (Con Air, 1997) : c'est la version de Trisha Yearwood, enregistrée après celle de LeAnn Rimes, qu'on entend dans le film.",
+    "context": "Les deux versions sont envoyées aux radios le même jour de mai 1997 : un signe du poids des bandes originales de blockbusters dans l'industrie du disque des années 1990.",
+    "decoys": [
+     [ "Because You Loved Me", "Celine Dion"
+     ],
+     [ "Butterfly Kisses", "Bob Carlisle"
+     ],
+     [ "Truly Madly Deeply", "Savage Garden"
+     ]
+    ]
+   },
+   {
+    "title": "Party Rock Anthem",
+    "artist": "LMFAO",
+    "year": 2011,
+    "rank": 5,
+    "fact": "6 semaines n°1 en 2011. Redfoo est le fils de Berry Gordy, fondateur de la Motown, et Sky Blu, son neveu, en est le petit-fils.",
+    "film": "On l'entend dans le film 21 Jump Street (2012) et dans les séries Glee et Parks and Recreation.",
+    "context": "Sommet de l'électro-pop du début des années 2010, à l'apogée du téléchargement : plus de 8 millions d'exemplaires vendus aux États-Unis. Le clip a popularisé le shuffle.",
+    "decoys": [
+     [ "Give Me Everything", "Pitbull"
+     ],
+     [ "On the Floor", "Jennifer Lopez"
+     ],
+     [ "Turn Me On", "David Guetta"
+     ]
+    ]
+   },
+   {
+    "title": "I Gotta Feeling",
+    "artist": "Black Eyed Peas",
+    "year": 2009,
+    "rank": 6,
+    "fact": "Produit par David Guetta, il reste 14 semaines n°1 après Boom Boom Pow : 26 semaines d'affilée au sommet pour le groupe. Plus de 8 millions de téléchargements.",
+    "context": "Hymne festif en pleine Grande Récession : le 8 septembre 2009, 21 000 personnes l'ont dansé à Chicago pour la rentrée de l'émission d'Oprah Winfrey.",
+    "decoys": [
+     [ "Poker Face", "Lady Gaga"
+     ],
+     [ "Right Round", "Flo Rida"
+     ],
+     [ "Down", "Jay Sean"
+     ]
+    ]
+   },
+   {
+    "title": "Macarena",
+    "artist": "Los Del Rio",
+    "year": 1995,
+    "rank": 7,
+    "fact": "Sortie en Espagne en 1993, elle triomphe aux États-Unis grâce au remix des Bayside Boys, deux producteurs de Miami qui ont ajouté des paroles en anglais. 14 semaines n°1 en 1996.",
+    "context": "En août 1996, la chaîne C-SPAN a filmé des participants à la convention démocrate en train de danser la Macarena, devenue un phénomène de société.",
+    "decoys": [
+     [ "Bailando", "Paradisio"
+     ],
+     [ "Mambo No. 5 (A Little Bit Of...)", "Lou Bega"
+     ],
+     [ "Tic Tic Tac", "Carrapicho"
+     ]
+    ]
+   },
+   {
+    "title": "Shape of You",
+    "artist": "Ed Sheeran",
+    "year": 2017,
+    "rank": 8,
+    "fact": "Ed Sheeran l'a écrite en pensant à Rihanna. 12 semaines n°1 en 2017, c'est le premier titre à avoir atteint 2 puis 3 milliards d'écoutes sur Spotify.",
+    "context": "Il domine 2017, juste après que le streaming est devenu, en 2016, la première source de revenus de la musique enregistrée aux États-Unis selon la RIAA.",
+    "decoys": [
+     [ "Attention", "Charlie Puth"
+     ],
+     [ "That's What I Like", "Bruno Mars"
+     ],
+     [ "Stay", "Zedd"
+     ]
+    ]
+   },
+   {
+    "title": "Physical",
+    "artist": "Olivia Newton-John",
+    "year": 1981,
+    "rank": 9,
+    "fact": "10 semaines n°1 de novembre 1981 à janvier 1982, le plus long règne des années 1980. Ses auteurs l'imaginaient pour un rocker viril comme Rod Stewart.",
+    "context": "Le clip, où la chanteuse en justaucorps fait faire du sport à des hommes en surpoids, surfe sur la mode du fitness ; ses sous-entendus l'ont fait censurer par des radios.",
+    "decoys": [
+     [ "Gloria", "Laura Branigan"
+     ],
+     [ "Centerfold", "The J. Geils Band"
+     ],
+     [ "Morning Train (Nine to Five)", "Sheena Easton"
+     ]
+    ]
+   },
+   {
+    "title": "You Light Up My Life",
+    "artist": "Debby Boone",
+    "year": 1977,
+    "rank": 10,
+    "fact": "10 semaines n°1 en 1977, un record pour le Hot 100 à l'époque. Debby Boone est la fille du crooner Pat Boone.",
+    "film": "Tirée du film You Light Up My Life (1977) : on y entend la voix de Kasey Cisyk, sur laquelle l'actrice Didi Conn chante en playback.",
+    "context": "La chanson vaut à Joseph Brooks l'Oscar de la meilleure chanson originale ; cette ballade s'impose en 1977, en pleine montée du disco.",
+    "decoys": [
+     [ "Nobody Does It Better", "Carly Simon"
+     ],
+     [ "Evergreen (Love Theme from A Star Is Born)", "Barbra Streisand"
+     ],
+     [ "Don't It Make My Brown Eyes Blue", "Crystal Gayle"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 5,
+  "tier": 2,
+  "decadeKey": "usa",
+  "groupTitle": "États-Unis",
+  "groupBlurb": "Faute de classement exhaustif des ventes aux États-Unis (les certifications RIAA sont payantes et incomplètes), on suit le classement officiel de Billboard, qui cumule les performances hebdomadaires dans le Hot 100 (ventes, radio puis streaming) du 4 août 1958 au 6 novembre 2021 ; les titres sortis avant 1969 ont été retirés puis la liste renumérotée.",
+  "source": {
+   "label": "Billboard, Greatest of All Time Hot 100 Songs (édition 2021)",
+   "url": "https://www.billboard.com/charts/greatest-hot-100-singles/"
+  },
+  "decade": "Rangs 1 à 30 · depuis 1969",
+  "instrument": "trophy",
+  "color": "#e8735a",
+  "name": "États-Unis · Moyen",
+  "blurb": "Rangs 11 à 20.",
+  "tracks": [
+   {
+    "title": "Closer",
+    "artist": "The Chainsmokers",
+    "year": 2016,
+    "rank": 11,
+    "fact": "En duo avec Halsey, il reste 12 semaines n°1 en 2016. Les paroles citent le groupe Blink-182 et la ville de Tucson, en Arizona.",
+    "context": "Il profite du poids croissant du streaming : depuis 2012, le Hot 100 intègre les écoutes à la demande, ce qui allonge la durée de vie des tubes.",
+    "decoys": [
+     [ "Cheap Thrills", "Sia"
+     ],
+     [ "Let Me Love You", "DJ Snake"
+     ],
+     [ "This Is What You Came For", "Calvin Harris"
+     ]
+    ]
+   },
+   {
+    "title": "We Belong Together",
+    "artist": "Mariah Carey",
+    "year": 2005,
+    "rank": 12,
+    "fact": "14 semaines n°1 en 2005, ce titre marque le retour de Mariah Carey après l'échec de Glitter. Billboard l'a désigné chanson de la décennie 2000.",
+    "context": "Il triomphe en 2005, l'année où le Hot 100 intègre les téléchargements payants (février), signe de l'essor de l'iTunes Store lancé en 2003.",
+    "decoys": [
+     [ "Let Me Love You", "Mario"
+     ],
+     [ "Run It!", "Chris Brown"
+     ],
+     [ "Be Without You", "Mary J. Blige"
+     ]
+    ]
+   },
+   {
+    "title": "Un-Break My Heart",
+    "artist": "Toni Braxton",
+    "year": 1996,
+    "rank": 13,
+    "fact": "Écrite par Diane Warren, elle reste 11 semaines n°1 entre décembre 1996 et février 1997. Toni Braxton en a aussi enregistré une version espagnole, Regresa a mí.",
+    "context": "Malgré ce triomphe, Toni Braxton se déclare en faillite en 1998, après un conflit avec ses labels LaFace et Arista, qui a relancé le débat sur les contrats d'artistes.",
+    "decoys": [
+     [ "Exhale (Shoop Shoop)", "Whitney Houston"
+     ],
+     [ "Nobody Knows", "The Tony Rich Project"
+     ],
+     [ "Always Be My Baby", "Mariah Carey"
+     ]
+    ]
+   },
+   {
+    "title": "Yeah!",
+    "artist": "Usher",
+    "year": 2004,
+    "rank": 14,
+    "fact": "Avec Lil Jon et Ludacris, il reste 12 semaines n°1 en 2004. L'album Confessions s'est vendu à 1,1 million d'exemplaires dès sa première semaine.",
+    "context": "Produit par Lil Jon, il popularise le crunk, rap festif d'Atlanta, à l'heure où le hip-hop domine le Hot 100. Usher l'a rejoué au Super Bowl 2024.",
+    "decoys": [
+     [ "Goodies", "Ciara"
+     ],
+     [ "Lean Back", "Terror Squad"
+     ],
+     [ "Get Low", "Lil Jon & The East Side Boyz"
+     ]
+    ]
+   },
+   {
+    "title": "Bette Davis Eyes",
+    "artist": "Kim Carnes",
+    "year": 1981,
+    "rank": 15,
+    "fact": "Écrite en 1974 par Jackie DeShannon et Donna Weiss, elle reste 9 semaines n°1 et devient la chanson de l'année 1981. Bette Davis, 73 ans, a remercié ses auteurs.",
+    "context": "Sortie l'année du lancement de MTV (août 1981), sa production aux synthétiseurs illustre le virage électronique de la pop au début des années 1980.",
+    "decoys": [
+     [ "Jessie's Girl", "Rick Springfield"
+     ],
+     [ "Kiss on My List", "Daryl Hall & John Oates"
+     ],
+     [ "Being with You", "Smokey Robinson"
+     ]
+    ]
+   },
+   {
+    "title": "Circles",
+    "artist": "Post Malone",
+    "year": 2019,
+    "rank": 16,
+    "fact": "Premier n°1 en solo de Post Malone, il a battu en 2020 le record de semaines dans le top 10 (39), avant d'être dépassé par Blinding Lights.",
+    "context": "Rappeur devenu chanteur pop-rock, Post Malone incarne l'effacement des frontières entre genres à l'ère du streaming et des playlists.",
+    "decoys": [
+     [ "Someone You Loved", "Lewis Capaldi"
+     ],
+     [ "Memories", "Maroon 5"
+     ],
+     [ "Señorita", "Shawn Mendes"
+     ]
+    ]
+   },
+   {
+    "title": "Endless Love",
+    "artist": "Diana Ross & Lionel Richie",
+    "year": 1981,
+    "rank": 17,
+    "fact": "9 semaines n°1 en 1981, c'est le single le plus vendu de la carrière de Diana Ross. Écrit par Lionel Richie, il a été nommé à l'Oscar.",
+    "film": "Chanson-titre du film Un amour infini (Endless Love, 1981) de Franco Zeffirelli, avec Brooke Shields.",
+    "context": "Dernier single de Diana Ross chez Motown, qu'elle quitte pour RCA en 1981 ; il annonce aussi le départ de Lionel Richie des Commodores.",
+    "decoys": [
+     [ "Lady", "Kenny Rogers"
+     ],
+     [ "Arthur's Theme (Best That You Can Do)", "Christopher Cross"
+     ],
+     [ "Still", "Commodores"
+     ]
+    ]
+   },
+   {
+    "title": "Tonight's the Night (Gonna Be Alright)",
+    "artist": "Rod Stewart",
+    "year": 1976,
+    "rank": 18,
+    "fact": "8 semaines n°1 de novembre 1976 à janvier 1977, chanson n°1 de l'année 1977. Les paroles en français sont dites par l'actrice Britt Ekland, alors sa compagne.",
+    "context": "En pleine révolution sexuelle, ses paroles suggestives lui valent d'être interdite par la BBC et critiquée aux États-Unis par le révérend Jesse Jackson.",
+    "decoys": [
+     [ "You Make Me Feel Like Dancing", "Leo Sayer"
+     ],
+     [ "Afternoon Delight", "Starland Vocal Band"
+     ],
+     [ "Silly Love Songs", "Wings"
+     ]
+    ]
+   },
+   {
+    "title": "You Were Meant For Me",
+    "artist": "Jewel",
+    "year": 1996,
+    "rank": 19,
+    "fact": "Classé avec Foolish Games, le single reste 65 semaines dans le Hot 100, un record à l'époque, sans jamais être n°1 (n°2 au mieux).",
+    "context": "Jewel a vécu un temps dans sa voiture en chantant dans les cafés de San Diego ; en 1997, elle est tête d'affiche du Lilith Fair, festival de musiciennes.",
+    "decoys": [
+     [ "Building a Mystery", "Sarah McLachlan"
+     ],
+     [ "Torn", "Natalie Imbruglia"
+     ],
+     [ "Ironic", "Alanis Morissette"
+     ]
+    ]
+   },
+   {
+    "title": "(Everything I Do) I Do It for You",
+    "artist": "Bryan Adams",
+    "year": 1991,
+    "rank": 20,
+    "fact": "7 semaines n°1 aux États-Unis et 16 semaines d'affilée au Royaume-Uni, un record. Environ 4,1 millions d'exemplaires vendus aux États-Unis.",
+    "film": "Chanson phare de Robin des Bois, prince des voleurs (1991), avec Kevin Costner.",
+    "context": "Au début des années 1990, les ballades de bandes originales hollywoodiennes pouvaient encore porter un single à plusieurs millions de ventes physiques.",
+    "decoys": [
+     [ "More Than Words", "Extreme"
+     ],
+     [ "When a Man Loves a Woman", "Michael Bolton"
+     ],
+     [ "Right Here Waiting", "Richard Marx"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 6,
+  "tier": 3,
+  "decadeKey": "usa",
+  "groupTitle": "États-Unis",
+  "groupBlurb": "Faute de classement exhaustif des ventes aux États-Unis (les certifications RIAA sont payantes et incomplètes), on suit le classement officiel de Billboard, qui cumule les performances hebdomadaires dans le Hot 100 (ventes, radio puis streaming) du 4 août 1958 au 6 novembre 2021 ; les titres sortis avant 1969 ont été retirés puis la liste renumérotée.",
+  "source": {
+   "label": "Billboard, Greatest of All Time Hot 100 Songs (édition 2021)",
+   "url": "https://www.billboard.com/charts/greatest-hot-100-singles/"
+  },
+  "decade": "Rangs 1 à 30 · depuis 1969",
+  "instrument": "trophy",
+  "color": "#e8735a",
+  "name": "États-Unis · Difficile",
+  "blurb": "Rangs 21 à 30.",
+  "tracks": [
+   {
+    "title": "I'll Make Love to You",
+    "artist": "Boyz II Men",
+    "year": 1994,
+    "rank": 21,
+    "fact": "Écrite et produite par Babyface, elle reste 14 semaines n°1 en 1994, égalant le record de I Will Always Love You de Whitney Houston.",
+    "context": "Groupe de Philadelphie signé chez Motown, Boyz II Men incarne l'âge d'or du R&B vocal des années 1990 ; il bat son propre record en 1995 avec One Sweet Day.",
+    "decoys": [
+     [ "I Swear", "All-4-One"
+     ],
+     [ "Weak", "SWV"
+     ],
+     [ "Any Time, Any Place", "Janet Jackson"
+     ]
+    ]
+   },
+   {
+    "title": "Le Freak",
+    "artist": "Chic",
+    "year": 1978,
+    "rank": 22,
+    "fact": "Né le soir où Nile Rodgers et Bernard Edwards ont été refoulés du Studio 54, fin 1977. Premier titre à revenir trois fois à la 1re place du Hot 100.",
+    "context": "Hymne de l'apogée du disco et des nuits du Studio 54 à New York, peu avant le rejet du genre symbolisé par la Disco Demolition Night de Chicago en juillet 1979.",
+    "decoys": [
+     [ "Boogie Wonderland", "Earth, Wind & Fire"
+     ],
+     [ "I Will Survive", "Gloria Gaynor"
+     ],
+     [ "Y.M.C.A.", "Village People"
+     ]
+    ]
+   },
+   {
+    "title": "How Deep Is Your Love",
+    "artist": "Bee Gees",
+    "year": 1977,
+    "rank": 23,
+    "fact": "Elle atteint la 1re place du Hot 100 le jour de Noël 1977 et reste 17 semaines dans le top 10.",
+    "film": "La Fièvre du samedi soir (1977), avec John Travolta : la ballade figure dans le film et sur sa bande originale.",
+    "context": "La bande originale de La Fièvre du samedi soir, l'un des albums les plus vendus de l'histoire, fait du disco un phénomène de masse aux États-Unis.",
+    "decoys": [
+     [ "If I Can't Have You", "Yvonne Elliman"
+     ],
+     [ "Baby Come Back", "Player"
+     ],
+     [ "Emotion", "Samantha Sang"
+     ]
+    ]
+   },
+   {
+    "title": "Eye of the Tiger",
+    "artist": "Survivor",
+    "year": 1982,
+    "rank": 24,
+    "fact": "6 semaines n°1 en 1982. Sylvester Stallone voulait Another One Bites the Dust de Queen ; faute d'accord, il a commandé un titre à Survivor.",
+    "film": "Rocky III, l'œil du tigre (1982) : le titre accompagne le montage d'ouverture, qui oppose Rocky à son rival Clubber Lang.",
+    "context": "Devenu un hymne de l'effort, il est souvent joué en meeting politique : en 2012, Survivor a poursuivi le candidat républicain Newt Gingrich pour cet usage.",
+    "decoys": [
+     [ "Don't Stop Believin'", "Journey"
+     ],
+     [ "Rosanna", "Toto"
+     ],
+     [ "Hold On Loosely", ".38 Special"
+     ]
+    ]
+   },
+   {
+    "title": "We Found Love",
+    "artist": "Rihanna",
+    "year": 2011,
+    "rank": 25,
+    "fact": "Produit par Calvin Harris, il reste 10 semaines n°1, le plus long règne de la carrière de Rihanna. Son clip a reçu le Grammy du meilleur clip court en 2013.",
+    "context": "Le clip, qui montre drogue et relation toxique, a fait polémique ; en France, sa diffusion a été limitée après 22 heures.",
+    "decoys": [
+     [ "Titanium", "David Guetta"
+     ],
+     [ "Feel So Close", "Calvin Harris"
+     ],
+     [ "Starships", "Nicki Minaj"
+     ]
+    ]
+   },
+   {
+    "title": "Girls Like You",
+    "artist": "Maroon 5",
+    "year": 2018,
+    "rank": 26,
+    "fact": "Avec Cardi B, il reste 7 semaines n°1 en 2018 et 36 semaines n°1 du classement Adult Contemporary, un record à l'époque.",
+    "context": "Le clip réunit 25 femmes de tous horizons, dont Gal Gadot, Ellen DeGeneres et Jennifer Lopez, certaines vêtues de tee-shirts à message militant.",
+    "decoys": [
+     [ "Meant to Be", "Bebe Rexha"
+     ],
+     [ "Perfect", "Ed Sheeran"
+     ],
+     [ "Better Now", "Post Malone"
+     ]
+    ]
+   },
+   {
+    "title": "Low",
+    "artist": "Flo Rida",
+    "year": 2007,
+    "rank": 27,
+    "fact": "Avec T-Pain, il reste 10 semaines n°1. Premier titre à dépasser 5 millions de téléchargements aux États-Unis, il reste le plus vendu en numérique jusqu'à I Gotta Feeling en 2010.",
+    "film": "Sexy Dance 2 (Step Up 2: The Streets, 2008) : le titre ouvre la bande originale du film.",
+    "context": "Porté par l'Auto-Tune de T-Pain, il illustre l'ère du téléchargement à l'unité : c'est le single numérique le plus téléchargé des années 2000.",
+    "decoys": [
+     [ "Love in This Club", "Usher"
+     ],
+     [ "Lollipop", "Lil Wayne"
+     ],
+     [ "Crank That (Soulja Boy)", "Soulja Boy Tell'em"
+     ]
+    ]
+   },
+   {
+    "title": "Levitating",
+    "artist": "Dua Lipa",
+    "year": 2020,
+    "rank": 28,
+    "fact": "Jamais n°1 hebdomadaire (n°2 au mieux), c'est pourtant la chanson de l'année 2021 du Hot 100, où elle est restée 77 semaines.",
+    "context": "Son album Future Nostalgia sort en mars 2020, au début des confinements : un disque pour danser alors que les clubs sont fermés, relayé par TikTok.",
+    "decoys": [
+     [ "Say So", "Doja Cat"
+     ],
+     [ "Watermelon Sugar", "Harry Styles"
+     ],
+     [ "Save Your Tears", "The Weeknd"
+     ]
+    ]
+   },
+   {
+    "title": "I Just Want to Be Your Everything",
+    "artist": "Andy Gibb",
+    "year": 1977,
+    "rank": 29,
+    "fact": "Premier single américain d'Andy Gibb, benjamin des frères Gibb, écrit par son aîné Barry. Il atteint la 1re place en 1977, à 19 ans.",
+    "context": "En 1977 et 1978, en pleine vague disco, la famille Gibb domine la pop américaine, entre les Bee Gees, la BO de La Fièvre du samedi soir et Andy.",
+    "decoys": [
+     [ "Best of My Love", "The Emotions"
+     ],
+     [ "Sir Duke", "Stevie Wonder"
+     ],
+     [ "Dancing Queen", "ABBA"
+     ]
+    ]
+   },
+   {
+    "title": "Too Close",
+    "artist": "Next",
+    "year": 1998,
+    "rank": 30,
+    "fact": "5 semaines n°1 et chanson de l'année 1998 au Hot 100. Sa ligne de basse provient de Christmas Rappin' de Kurtis Blow (1979).",
+    "context": "Vendu en single physique, il triomphe en 1998, juste avant que le Hot 100 n'accepte, en décembre, les titres diffusés en radio sans sortie commerciale.",
+    "decoys": [
+     [ "Nice & Slow", "Usher"
+     ],
+     [ "The Boy Is Mine", "Brandy"
+     ],
+     [ "Are You That Somebody?", "Aaliyah"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 7,
+  "tier": 1,
+  "decadeKey": "uk",
+  "groupTitle": "Royaume-Uni",
+  "groupBlurb": "Classement de l'Official Charts Company publié en novembre 2023, fondé sur les ventes pures (disques physiques et téléchargements payants, sans le streaming) ; les deux singles des Beatles de 1963 (She Loves You, I Want to Hold Your Hand) ont été retirés car antérieurs à 1969, puis la liste a été renumérotée.",
+  "source": {
+   "label": "Official Charts Company, meilleures ventes de singles de l'histoire du classement britannique (novembre 2023)",
+   "url": "https://www.officialcharts.com/chart-news/the-best-selling-singles-of-all-time-on-the-official-uk-chart__21298/"
+  },
+  "decade": "Rangs 1 à 30 · depuis 1969",
+  "instrument": "trophy",
+  "color": "#9d8be0",
+  "name": "Royaume-Uni · Facile",
+  "blurb": "Rangs 1 à 10.",
+  "tracks": [
+   {
+    "title": "Something About the Way You Look Tonight",
+    "artist": "Elton John",
+    "year": 1997,
+    "rank": 1,
+    "fact": "Double face A avec Candle in the Wind 1997, c'est le single le plus vendu de l'histoire britannique : 4,94 millions d'exemplaires, dont 658 000 le premier jour.",
+    "context": "Elton John réécrit Candle in the Wind après la mort de Diana à Paris le 31 août 1997 et la chante à ses funérailles le 6 septembre. Les bénéfices vont au fonds créé en sa mémoire.",
+    "decoys": [
+     [ "Your Song", "Elton John"
+     ],
+     [ "Lady in Red", "Chris de Burgh"
+     ],
+     [ "Fields of Gold", "Sting"
+     ]
+    ]
+   },
+   {
+    "title": "Do They Know It's Christmas?",
+    "artist": "Band Aid",
+    "year": 1984,
+    "rank": 2,
+    "fact": "Écrit par Bob Geldof et Midge Ure, enregistré les 25 et 26 novembre 1984, il s'écoule à plus d'un million d'exemplaires en une semaine. Total : 3,83 millions.",
+    "context": "Les reportages de Michael Buerk pour la BBC sur la famine en Éthiopie, en octobre 1984, déclenchent le projet. Il rapporte environ 8 millions de livres en un an et inspire le concert Live Aid de 1985.",
+    "decoys": [
+     [ "Fairytale of New York", "The Pogues"
+     ],
+     [ "Driving Home for Christmas", "Chris Rea"
+     ],
+     [ "Merry Christmas Everyone", "Shakin' Stevens"
+     ]
+    ]
+   },
+   {
+    "title": "Bohemian Rhapsody",
+    "artist": "Queen",
+    "year": 1975,
+    "rank": 3,
+    "fact": "Neuf semaines numéro 1 en 1975, puis cinq en 1991 après la mort de Freddie Mercury : seul titre classé numéro 1 de Noël deux fois dans la même version.",
+    "film": "Wayne's World (1992) : Wayne, Garth et leurs amis secouent la tête en voiture sur la partie hard rock, scène qui relance le morceau aux États-Unis.",
+    "context": "Son clip, tourné en quatre heures pour 4 500 livres et diffusé dans Top of the Pops, contribue à faire du clip vidéo un outil standard de promotion des singles.",
+    "decoys": [
+     [ "Life on Mars?", "David Bowie"
+     ],
+     [ "Mr. Blue Sky", "Electric Light Orchestra"
+     ],
+     [ "I'm Not in Love", "10cc"
+     ]
+    ]
+   },
+   {
+    "title": "Mull of Kintyre",
+    "artist": "Wings",
+    "year": 1977,
+    "rank": 4,
+    "fact": "Premier single à dépasser 2 millions de ventes au Royaume-Uni, neuf semaines numéro 1. Les cornemuses sont jouées par le Campbeltown Pipe Band.",
+    "context": "Sortie en 1977, année du jubilé d'Elizabeth II et de l'explosion punk, cette ballade écossaise prend le contre-pied de l'époque. McCartney y célèbre la péninsule où il possède une ferme.",
+    "decoys": [
+     [ "Sailing", "Rod Stewart"
+     ],
+     [ "Annie's Song", "John Denver"
+     ],
+     [ "Seasons in the Sun", "Terry Jacks"
+     ]
+    ]
+   },
+   {
+    "title": "You're the One That I Want",
+    "artist": "John Travolta & Olivia Newton-John",
+    "year": 1978,
+    "rank": 5,
+    "fact": "Absente de la comédie musicale d'origine, la chanson est écrite par John Farrar pour le film. Elle reste neuf semaines numéro 1 au Royaume-Uni à l'été 1978.",
+    "film": "Grease (1978) : Danny et Sandy, transformée en blouson de cuir, la chantent à la fête foraine de fin d'année du lycée.",
+    "context": "Le producteur Robert Stigwood enchaîne La Fièvre du samedi soir puis Grease, deux films dont les bandes originales dominent les ventes de disques à la fin des années 1970.",
+    "decoys": [
+     [ "Night Fever", "Bee Gees"
+     ],
+     [ "Grease", "Frankie Valli"
+     ],
+     [ "Don't Go Breaking My Heart", "Elton John & Kiki Dee"
+     ]
+    ]
+   },
+   {
+    "title": "Relax",
+    "artist": "Frankie Goes to Hollywood",
+    "year": 1983,
+    "rank": 6,
+    "fact": "Premier single du groupe, il devient numéro 1 en janvier 1984 malgré son interdiction sur la BBC et reste 48 semaines d'affilée dans le top 75.",
+    "film": "Body Double de Brian De Palma (1984) : le groupe joue Relax sur le tournage d'un film érotique, dans un long plan sans coupe.",
+    "context": "Le 11 janvier 1984, l'animateur Mike Read dénonce à l'antenne ses paroles sexuellement explicites, puis la BBC bannit le titre. La censure dope les ventes au lieu de les freiner.",
+    "decoys": [
+     [ "Tainted Love", "Soft Cell"
+     ],
+     [ "Smalltown Boy", "Bronski Beat"
+     ],
+     [ "Blue Monday", "New Order"
+     ]
+    ]
+   },
+   {
+    "title": "Rivers of Babylon",
+    "artist": "Boney M.",
+    "year": 1978,
+    "rank": 7,
+    "fact": "Cinq semaines numéro 1 en 1978. Quand la face A faiblit, les radios passent la face B, Brown Girl in the Ring, qui monte à son tour jusqu'à la 2e place.",
+    "context": "C'est la reprise d'un titre reggae des Melodians (1970) tiré du psaume 137 sur l'exil à Babylone. Boney M. retire les références rastafari de l'original.",
+    "decoys": [
+     [ "Kung Fu Fighting", "Carl Douglas"
+     ],
+     [ "Dancing Queen", "ABBA"
+     ],
+     [ "Yes Sir, I Can Boogie", "Baccara"
+     ]
+    ]
+   },
+   {
+    "title": "Happy",
+    "artist": "Pharrell Williams",
+    "year": 2013,
+    "rank": 8,
+    "fact": "Lancé avec le premier clip de 24 heures, il est numéro 1 à trois reprises au Royaume-Uni et devient le single le plus vendu de 2014.",
+    "film": "Moi, moche et méchant 2 (2013) : Pharrell écrit le morceau pour ce film d'animation, dont c'est l'unique single. Il est nommé à l'Oscar de la meilleure chanson.",
+    "context": "En 2014, des jeunes Iraniens qui ont tourné leur propre version du clip à Téhéran sont arrêtés, puis condamnés à des peines avec sursis et à des coups de fouet.",
+    "decoys": [
+     [ "Can't Stop the Feeling!", "Justin Timberlake"
+     ],
+     [ "Shut Up and Dance", "Walk the Moon"
+     ],
+     [ "Best Day of My Life", "American Authors"
+     ]
+    ]
+   },
+   {
+    "title": "Last Christmas",
+    "artist": "Wham!",
+    "year": 1984,
+    "rank": 9,
+    "fact": "Bloqué à la 2e place à Noël 1984 par Band Aid, auquel George Michael participe, il atteint enfin la 1re place le 1er janvier 2021, 36 ans plus tard.",
+    "film": "Last Christmas (2019), comédie romantique de Paul Feig avec Emilia Clarke, construite autour de la chanson et du répertoire de George Michael.",
+    "context": "Wham! reverse ses droits sur Last Christmas à la lutte contre la famine en Éthiopie, la même cause que Band Aid, son concurrent direct dans le classement.",
+    "decoys": [
+     [ "Wonderful Christmastime", "Paul McCartney"
+     ],
+     [ "Step into Christmas", "Elton John"
+     ],
+     [ "Thank God It's Christmas", "Queen"
+     ]
+    ]
+   },
+   {
+    "title": "Love Is All Around",
+    "artist": "Wet Wet Wet",
+    "year": 1994,
+    "rank": 10,
+    "fact": "Quinze semaines numéro 1 en 1994. Le groupe retire lui-même le disque de la vente, laissant Saturday Night de Whigfield prendre la première place.",
+    "film": "Quatre mariages et un enterrement (1994) : Richard Curtis commande cette reprise pour le film. Il la parodie en 2003 dans Love Actually avec Christmas Is All Around.",
+    "context": "Reprise d'un tube des Troggs de 1967, elle porte le succès mondial du film de Working Title, symbole du renouveau de la comédie britannique dans les années 1990.",
+    "decoys": [
+     [ "Back for Good", "Take That"
+     ],
+     [ "Stay Another Day", "East 17"
+     ],
+     [ "Without You", "Mariah Carey"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 8,
+  "tier": 2,
+  "decadeKey": "uk",
+  "groupTitle": "Royaume-Uni",
+  "groupBlurb": "Classement de l'Official Charts Company publié en novembre 2023, fondé sur les ventes pures (disques physiques et téléchargements payants, sans le streaming) ; les deux singles des Beatles de 1963 (She Loves You, I Want to Hold Your Hand) ont été retirés car antérieurs à 1969, puis la liste a été renumérotée.",
+  "source": {
+   "label": "Official Charts Company, meilleures ventes de singles de l'histoire du classement britannique (novembre 2023)",
+   "url": "https://www.officialcharts.com/chart-news/the-best-selling-singles-of-all-time-on-the-official-uk-chart__21298/"
+  },
+  "decade": "Rangs 1 à 30 · depuis 1969",
+  "instrument": "trophy",
+  "color": "#9d8be0",
+  "name": "Royaume-Uni · Moyen",
+  "blurb": "Rangs 11 à 20.",
+  "tracks": [
+   {
+    "title": "Mary's Boy Child / Oh My Lord",
+    "artist": "Boney M.",
+    "year": 1978,
+    "rank": 11,
+    "fact": "Numéro 1 de Noël 1978, comme la version originale de Harry Belafonte l'avait été en 1957. Il dépasse 1,8 million de ventes au Royaume-Uni.",
+    "context": "Groupe disco formé en Allemagne de l'Ouest par le producteur Frank Farian avec des chanteurs venus des Caraïbes, Boney M. place deux titres parmi les plus vendus en 1978.",
+    "decoys": [
+     [ "Lonely This Christmas", "Mud"
+     ],
+     [ "Merry Xmas Everybody", "Slade"
+     ],
+     [ "I Wish It Could Be Christmas Everyday", "Wizzard"
+     ]
+    ]
+   },
+   {
+    "title": "I Just Called to Say I Love You",
+    "artist": "Stevie Wonder",
+    "year": 1984,
+    "rank": 12,
+    "fact": "Seul numéro 1 en solo de Stevie Wonder au Royaume-Uni, six semaines en tête, c'est aussi le single Motown le plus vendu du pays.",
+    "film": "La Fille en rouge (1984), comédie de et avec Gene Wilder. La chanson remporte l'Oscar et le Golden Globe de la meilleure chanson originale.",
+    "context": "En 1985, Stevie Wonder reçoit son Oscar au nom de Nelson Mandela, alors emprisonné. Le gouvernement sud-africain de l'apartheid interdit aussitôt sa musique à la radio.",
+    "decoys": [
+     [ "Hello", "Lionel Richie"
+     ],
+     [ "Say You, Say Me", "Lionel Richie"
+     ],
+     [ "Endless Love", "Diana Ross & Lionel Richie"
+     ]
+    ]
+   },
+   {
+    "title": "(Everything I Do) I Do It for You",
+    "artist": "Bryan Adams",
+    "year": 1991,
+    "rank": 13,
+    "fact": "Record absolu : seize semaines consécutives numéro 1 au Royaume-Uni, du 7 juillet au 27 octobre 1991. La mélodie vient du thème d'amour composé par Michael Kamen.",
+    "film": "Robin des Bois, prince des voleurs (1991), avec Kevin Costner : la chanson accompagne le générique de fin.",
+    "context": "Comme Bodyguard puis Titanic, le film illustre la stratégie des studios des années 1990 : une grande ballade diffusée en radio pour porter la promotion d'une superproduction.",
+    "decoys": [
+     [ "It Must Have Been Love", "Roxette"
+     ],
+     [ "Nothing Compares 2 U", "Sinéad O'Connor"
+     ],
+     [ "I'd Do Anything for Love (But I Won't Do That)", "Meat Loaf"
+     ]
+    ]
+   },
+   {
+    "title": "Unchained Melody",
+    "artist": "Robson & Jerome",
+    "year": 1995,
+    "rank": 14,
+    "fact": "Simon Cowell a mis quatre mois à convaincre les deux acteurs. Le single se vend à 314 000 exemplaires en une semaine et reste sept semaines numéro 1.",
+    "film": "Soldier Soldier (ITV), épisode de novembre 1994 : leurs personnages chantent le morceau à un mariage dont les musiciens prévus ne sont pas venus.",
+    "context": "Sorti avec White Cliffs of Dover pour les 50 ans de la victoire de 1945, il montre la force de la télévision dans les ventes : plus gros single et plus gros album de 1995.",
+    "decoys": [
+     [ "Think Twice", "Céline Dion"
+     ],
+     [ "Earth Song", "Michael Jackson"
+     ],
+     [ "Words", "Boyzone"
+     ]
+    ]
+   },
+   {
+    "title": "Barbie Girl",
+    "artist": "Aqua",
+    "year": 1997,
+    "rank": 15,
+    "fact": "Numéro 1 au Royaume-Uni le 26 octobre 1997, il y reste quatre semaines. Mattel en a ensuite échantillonné la mélodie pour Barbie World, sur la bande originale du film Barbie (2023).",
+    "context": "Mattel attaque la maison de disques pour atteinte à sa marque. En 2002, la justice américaine y voit une parodie protégée, le juge concluant que les parties sont invitées à se calmer.",
+    "decoys": [
+     [ "Blue (Da Ba Dee)", "Eiffel 65"
+     ],
+     [ "Coco Jamboo", "Mr. President"
+     ],
+     [ "Cotton Eye Joe", "Rednex"
+     ]
+    ]
+   },
+   {
+    "title": "Believe",
+    "artist": "Cher",
+    "year": 1998,
+    "rank": 16,
+    "fact": "Sept semaines numéro 1 et single le plus vendu de 1998, c'est le plus gros succès d'une artiste solo féminine au Royaume-Uni : 1,83 million en 2017.",
+    "context": "Le producteur Mark Taylor détourne le logiciel de correction Auto-Tune pour robotiser la voix. Cher refuse de retirer l'effet, que le manuel du logiciel baptisera « effet Cher ».",
+    "decoys": [
+     [ "Freed from Desire", "Gala"
+     ],
+     [ "Torn", "Natalie Imbruglia"
+     ],
+     [ "Ray of Light", "Madonna"
+     ]
+    ]
+   },
+   {
+    "title": "Evergreen",
+    "artist": "Will Young",
+    "year": 2002,
+    "rank": 17,
+    "fact": "Double face A avec Anything Is Possible, il se vend à 403 027 exemplaires le jour de sa sortie. Evergreen est une reprise d'un titre de Westlife.",
+    "context": "Will Young gagne la première saison de Pop Idol, dont le public choisit le vainqueur par téléphone. Ces télé-crochets deviennent un moteur majeur de l'industrie du disque.",
+    "decoys": [
+     [ "Anyone of Us (Stupid Mistake)", "Gareth Gates"
+     ],
+     [ "Flying Without Wings", "Westlife"
+     ],
+     [ "Sound of the Underground", "Girls Aloud"
+     ]
+    ]
+   },
+   {
+    "title": "Imagine",
+    "artist": "John Lennon",
+    "year": 1975,
+    "rank": 18,
+    "fact": "Sorti en single au Royaume-Uni seulement en 1975, il n'atteint que la 6e place. Après l'assassinat de Lennon en décembre 1980, il est numéro 1 quatre semaines.",
+    "film": "La Déchirure (1984), de Roland Joffé, sur le Cambodge des Khmers rouges : la chanson accompagne la fin du film. Yoko Ono a salué ce choix.",
+    "context": "Écrite en pleine contestation de la guerre du Vietnam, elle imagine un monde sans pays ni religion. En 2017, Yoko Ono est officiellement reconnue coautrice.",
+    "decoys": [
+     [ "My Sweet Lord", "George Harrison"
+     ],
+     [ "Bridge over Troubled Water", "Simon & Garfunkel"
+     ],
+     [ "Your Song", "Elton John"
+     ]
+    ]
+   },
+   {
+    "title": "Eye of the Tiger",
+    "artist": "Survivor",
+    "year": 1982,
+    "rank": 19,
+    "fact": "Stallone commande ce titre après le refus de Queen de lui céder Another One Bites the Dust. Il reste quatre semaines numéro 1 au Royaume-Uni.",
+    "film": "Rocky III, l'œil du tigre (1982) : Stallone l'a fait écrire pour le montage d'ouverture, où Rocky enchaîne les victoires pendant que Clubber Lang monte en puissance.",
+    "context": "Le titre est souvent utilisé sans autorisation en campagne électorale aux États-Unis. Le groupe s'y oppose, notamment en 2012 contre Newt Gingrich, ce qui aboutit à un procès.",
+    "decoys": [
+     [ "Don't Stop Believin'", "Journey"
+     ],
+     [ "Jump", "Van Halen"
+     ],
+     [ "The Final Countdown", "Europe"
+     ]
+    ]
+   },
+   {
+    "title": "Uptown Funk",
+    "artist": "Mark Ronson feat. Bruno Mars",
+    "year": 2014,
+    "rank": 20,
+    "fact": "Sa sortie britannique est avancée après une reprise dans The X Factor. Entré numéro 1 en décembre 2014, il y passe sept semaines au total.",
+    "context": "Signe d'une époque de litiges sur les emprunts musicaux, les membres du Gap Band sont ajoutés aux auteurs en 2015 pour la ressemblance avec Oops Up Side Your Head (1979).",
+    "decoys": [
+     [ "Can't Feel My Face", "The Weeknd"
+     ],
+     [ "Sugar", "Maroon 5"
+     ],
+     [ "Want to Want Me", "Jason Derulo"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 9,
+  "tier": 3,
+  "decadeKey": "uk",
+  "groupTitle": "Royaume-Uni",
+  "groupBlurb": "Classement de l'Official Charts Company publié en novembre 2023, fondé sur les ventes pures (disques physiques et téléchargements payants, sans le streaming) ; les deux singles des Beatles de 1963 (She Loves You, I Want to Hold Your Hand) ont été retirés car antérieurs à 1969, puis la liste a été renumérotée.",
+  "source": {
+   "label": "Official Charts Company, meilleures ventes de singles de l'histoire du classement britannique (novembre 2023)",
+   "url": "https://www.officialcharts.com/chart-news/the-best-selling-singles-of-all-time-on-the-official-uk-chart__21298/"
+  },
+  "decade": "Rangs 1 à 30 · depuis 1969",
+  "instrument": "trophy",
+  "color": "#9d8be0",
+  "name": "Royaume-Uni · Difficile",
+  "blurb": "Rangs 21 à 30.",
+  "tracks": [
+   {
+    "title": "I'll Be Missing You",
+    "artist": "Puff Daddy & Faith Evans",
+    "year": 1997,
+    "rank": 21,
+    "fact": "Construit sur un échantillon de Every Breath You Take de The Police, utilisé sans autorisation préalable : Sting obtient la totalité des droits d'auteur.",
+    "context": "Hommage à The Notorious B.I.G., tué le 9 mars 1997 à Los Angeles, six mois après Tupac Shakur, au cœur de la rivalité violente entre rap de la côte Est et de la côte Ouest.",
+    "decoys": [
+     [ "No Diggity", "Blackstreet"
+     ],
+     [ "Mo Money Mo Problems", "The Notorious B.I.G."
+     ],
+     [ "Changes", "2Pac"
+     ]
+    ]
+   },
+   {
+    "title": "Blurred Lines",
+    "artist": "Robin Thicke",
+    "year": 2013,
+    "rank": 22,
+    "fact": "En 2015, un jury juge que le titre plagie Got to Give It Up de Marvin Gaye. La famille obtient 7,4 millions de dollars, ramenés ensuite à 5,3 millions.",
+    "context": "En 2013, plusieurs associations étudiantes britanniques, dont celle d'Édimbourg, interdisent sa diffusion, accusant ses paroles de banaliser l'absence de consentement.",
+    "decoys": [
+     [ "Get Lucky", "Daft Punk"
+     ],
+     [ "Roar", "Katy Perry"
+     ],
+     [ "Treasure", "Bruno Mars"
+     ]
+    ]
+   },
+   {
+    "title": "Someone Like You",
+    "artist": "Adele",
+    "year": 2011,
+    "rank": 23,
+    "fact": "Après sa prestation piano-voix aux BRIT Awards du 15 février 2011, la chanson bondit de la 47e à la 1re place, puis y reste cinq semaines.",
+    "context": "En 2011, le téléchargement payant porte le marché du single britannique. Le streaming ne sera compté dans le classement officiel qu'à partir de juillet 2014.",
+    "decoys": [
+     [ "Jar of Hearts", "Christina Perri"
+     ],
+     [ "The A Team", "Ed Sheeran"
+     ],
+     [ "Read All About It", "Professor Green"
+     ]
+    ]
+   },
+   {
+    "title": "Three Lions",
+    "artist": "Baddiel, Skinner & The Lightning Seeds",
+    "year": 1996,
+    "rank": 24,
+    "fact": "Paroles des humoristes David Baddiel et Frank Skinner, musique d'Ian Broudie. Le titre est numéro 1 en 1996, en 1998 dans une nouvelle version, puis en 2018.",
+    "context": "Hymne de l'équipe d'Angleterre pour l'Euro 96 organisé à domicile, il évoque les « trente ans de souffrance » depuis la Coupe du monde 1966 et popularise le refrain « It's coming home ».",
+    "decoys": [
+     [ "World in Motion", "New Order"
+     ],
+     [ "Vindaloo", "Fat Les"
+     ],
+     [ "Back Home", "England World Cup Squad"
+     ]
+    ]
+   },
+   {
+    "title": "I Will Always Love You",
+    "artist": "Whitney Houston",
+    "year": 1992,
+    "rank": 25,
+    "fact": "Dolly Parton, qui l'a écrite en 1973, avait refusé de céder la moitié des droits d'édition exigée par le manager d'Elvis Presley. Version Whitney : dix semaines numéro 1.",
+    "film": "Bodyguard (1992), avec Kevin Costner et Whitney Houston : la chanson accompagne la séparation finale des deux héros à l'aéroport.",
+    "context": "Single le plus vendu au monde en 1992, il illustre l'âge d'or des bandes originales de superproductions hollywoodiennes, avant Titanic quelques années plus tard.",
+    "decoys": [
+     [ "Hero", "Mariah Carey"
+     ],
+     [ "Because You Loved Me", "Céline Dion"
+     ],
+     [ "Show Me Heaven", "Maria McKee"
+     ]
+    ]
+   },
+   {
+    "title": "Don't You Want Me",
+    "artist": "The Human League",
+    "year": 1981,
+    "rank": 26,
+    "fact": "Philip Oakey ne voulait pas le sortir en single et le jugeait moins fort que Open Your Heart. Il devient numéro 1 de Noël 1981 et le reste cinq semaines.",
+    "context": "Le groupe vient de Sheffield, ville sidérurgique frappée par la crise industrielle du début des années 1980, où naît une scène pop électronique faite de synthétiseurs bon marché.",
+    "decoys": [
+     [ "Enola Gay", "Orchestral Manoeuvres in the Dark"
+     ],
+     [ "Vienna", "Ultravox"
+     ],
+     [ "Just Can't Get Enough", "Depeche Mode"
+     ]
+    ]
+   },
+   {
+    "title": "Summer Nights",
+    "artist": "John Travolta & Olivia Newton-John",
+    "year": 1978,
+    "rank": 27,
+    "fact": "Sept semaines numéro 1 : avec You're the One That I Want, le duo Travolta et Newton-John occupe la tête du classement britannique 16 semaines en 1978.",
+    "film": "Grease (1978) : à la rentrée, Danny raconte son flirt de l'été à sa bande, tandis que Sandy raconte le même été à ses amies, chacun à sa façon.",
+    "context": "Grease, comédie musicale créée à Chicago en 1971, joue sur la nostalgie des années 1950, très en vogue dans les années 1970 avec American Graffiti et la série Happy Days.",
+    "decoys": [
+     [ "Hopelessly Devoted to You", "Olivia Newton-John"
+     ],
+     [ "Greased Lightnin'", "John Travolta"
+     ],
+     [ "Sandy", "John Travolta"
+     ]
+    ]
+   },
+   {
+    "title": "Two Tribes",
+    "artist": "Frankie Goes to Hollywood",
+    "year": 1984,
+    "rank": 28,
+    "fact": "Entré directement numéro 1 en juin 1984, il y reste neuf semaines, record des années 1980. Pendant ce temps, Relax remonte à la 2e place.",
+    "context": "En pleine guerre froide, le clip montre Reagan et le dirigeant soviétique Tchernenko en combat de lutte. Patrick Allen y reprend sa voix des films officiels sur la survie en cas d'attaque nucléaire.",
+    "decoys": [
+     [ "99 Red Balloons", "Nena"
+     ],
+     [ "Russians", "Sting"
+     ],
+     [ "The Wild Boys", "Duran Duran"
+     ]
+    ]
+   },
+   {
+    "title": "Gangsta's Paradise",
+    "artist": "Coolio",
+    "year": 1995,
+    "rank": 29,
+    "fact": "Il reprend Pastime Paradise de Stevie Wonder, qui exige que Coolio retire les grossièretés. Premier single de rap à entrer directement numéro 1 au Royaume-Uni.",
+    "film": "Esprits rebelles (1995), avec Michelle Pfeiffer en professeure dans un lycée difficile. Elle reprend son rôle dans le clip réalisé par Antoine Fuqua.",
+    "context": "Sorti au milieu des années 1990, le morceau décrit la spirale de la violence des gangs dans les quartiers pauvres américains, un sujet alors au cœur du débat public.",
+    "decoys": [
+     [ "California Love", "2Pac"
+     ],
+     [ "Regulate", "Warren G"
+     ],
+     [ "This Is How We Do It", "Montell Jordan"
+     ]
+    ]
+   },
+   {
+    "title": "My Heart Will Go On",
+    "artist": "Céline Dion",
+    "year": 1998,
+    "rank": 30,
+    "fact": "James Cameron ne voulait pas de chanson pop pour finir son film. James Horner le convainc avec une maquette. Elle entre numéro 1 avec 234 000 ventes en une semaine.",
+    "film": "Titanic (1997), de James Cameron : la chanson accompagne le générique de fin. Elle remporte l'Oscar de la meilleure chanson originale.",
+    "context": "Le film, sur le naufrage de 1912, devient le plus gros succès de l'histoire du cinéma, et sa bande originale profite de cet engouement mondial.",
+    "decoys": [
+     [ "I Don't Want to Miss a Thing", "Aerosmith"
+     ],
+     [ "How Do I Live", "LeAnn Rimes"
+     ],
+     [ "Never Ever", "All Saints"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 10,
+  "tier": 1,
+  "decadeKey": "france",
+  "groupTitle": "France",
+  "groupBlurb": "Classement InfoDisc des ventes de singles en France (45 tours, CD single et téléchargement, estimations arrêtées fin 2018, streaming exclu), dont on a retiré Petit Papa Noël (1946) et Aline (1965), sortis avant 1969, avant de renuméroter de 1 à 30.",
+  "source": {
+   "label": "InfoDisc, meilleures ventes de singles de tous les temps en France",
+   "url": "https://infodisc.fr/Ventes_Chansons_Tout_Temps.php"
+  },
+  "decade": "Rangs 1 à 30 · depuis 1969",
+  "instrument": "trophy",
+  "color": "#5f8be8",
+  "name": "France · Facile",
+  "blurb": "Rangs 1 à 10.",
+  "tracks": [
+   {
+    "title": "La danse des canards",
+    "artist": "J.J. Lionel",
+    "year": 1981,
+    "rank": 1,
+    "fact": "L'air vient de l'accordéoniste suisse Werner Thomas, qui l'a composé en 1957 à Davos. InfoDisc estime les ventes de la version de J.J. Lionel à 3 150 000 exemplaires.",
+    "context": "Enregistrée à Bruxelles, la version chantée suit le succès d'une version instrumentale. Ce type de danse à gestes devient un incontournable des bals, des mariages et des fêtes populaires.",
+    "decoys": [
+     [ "Le bal masqué", "La Compagnie Créole"
+     ],
+     [ "La chenille", "La Bande à Basile"
+     ],
+     [ "Viens boire un p'tit coup à la maison", "Licence IV"
+     ]
+    ]
+   },
+   {
+    "title": "Belle",
+    "artist": "Garou, Daniel Lavoie, Patrick Fiori",
+    "year": 1998,
+    "rank": 2,
+    "fact": "Signé Luc Plamondon et Richard Cocciante, le titre reste 18 semaines numéro un en France, une première pour un trio. Il est élu chanson de l'année aux Victoires de la musique 1999.",
+    "context": "Extrait de Notre-Dame de Paris, d'après Victor Hugo, le single lance la vague des comédies musicales françaises qui dominent les ventes de disques à la fin des années 1990.",
+    "decoys": [
+     [ "Le temps des cathédrales", "Bruno Pelletier"
+     ],
+     [ "Tu m'oublieras", "Larusso"
+     ],
+     [ "Savoir aimer", "Florent Pagny"
+     ]
+    ]
+   },
+   {
+    "title": "Candle in the Wind 1997",
+    "artist": "Elton John",
+    "year": 1997,
+    "rank": 3,
+    "fact": "Bernie Taupin a réécrit les paroles de la chanson de 1973. Avec plus de 33 millions d'exemplaires dans le monde, c'est l'un des singles les plus vendus de l'histoire.",
+    "context": "Hommage à Diana, morte dans un accident à Paris le 31 août 1997, la chanson est jouée une seule fois en public, à ses funérailles à l'abbaye de Westminster. Les droits vont à sa fondation.",
+    "decoys": [
+     [ "My Heart Will Go On", "Céline Dion"
+     ],
+     [ "Tears in Heaven", "Eric Clapton"
+     ],
+     [ "Don't Speak", "No Doubt"
+     ]
+    ]
+   },
+   {
+    "title": "You're the One That I Want",
+    "artist": "John Travolta, Olivia Newton-John",
+    "year": 1978,
+    "rank": 4,
+    "fact": "Absente du spectacle de Broadway, la chanson a été écrite par John Farrar spécialement pour le film. InfoDisc estime ses ventes en France à 1 800 900 exemplaires.",
+    "film": "Grease (1978), dans la scène finale à la fête foraine du lycée, où Sandy apparaît transformée, en tenue de cuir noir.",
+    "context": "En pleine vague disco, Hollywood mise sur la nostalgie des années 1950 : Grease devient l'un des plus gros succès du cinéma musical de la décennie.",
+    "decoys": [
+     [ "Summer Nights", "John Travolta, Olivia Newton-John"
+     ],
+     [ "Night Fever", "Bee Gees"
+     ],
+     [ "Hopelessly Devoted to You", "Olivia Newton-John"
+     ]
+    ]
+   },
+   {
+    "title": "The Ketchup Song (Aserejé)",
+    "artist": "Las Ketchup",
+    "year": 2002,
+    "rank": 5,
+    "fact": "Le refrain sans queue ni tête imite phonétiquement celui de Rapper's Delight du Sugarhill Gang. Le titre reste 11 semaines numéro un en France et devient la meilleure vente de 2002.",
+    "context": "Des rumeurs diffusées par e-mail, surtout en Amérique latine, prétendaient que les paroles cachaient des références sataniques. Le groupe a répondu que le mot ne voulait rien dire.",
+    "decoys": [
+     [ "Whenever, Wherever", "Shakira"
+     ],
+     [ "Stach Stach", "Bratisla Boys"
+     ],
+     [ "Dragostea din tei", "O-Zone"
+     ]
+    ]
+   },
+   {
+    "title": "Lambada",
+    "artist": "Kaoma",
+    "year": 1989,
+    "rank": 6,
+    "fact": "Le titre reprend sans crédit Llorando se fue des Boliviens Los Kjarkas (1981), qui ont gagné leur procès. Il reste 12 semaines numéro un du Top 50 et devient la meilleure vente de 1989.",
+    "context": "Kaoma est monté par des producteurs français qui avaient racheté au Brésil les droits de plus de 400 lambadas. Le tube de l'été 1989 est aussi porté par une publicité Orangina.",
+    "decoys": [
+     [ "Bamboléo", "Gipsy Kings"
+     ],
+     [ "La Isla Bonita", "Madonna"
+     ],
+     [ "Ride on Time", "Black Box"
+     ]
+    ]
+   },
+   {
+    "title": "Éthiopie",
+    "artist": "Chanteurs sans frontières",
+    "year": 1985,
+    "rank": 7,
+    "fact": "Renaud a écrit les paroles et Franck Langolff la musique. Tous les bénéfices et droits d'auteur sont allés à Médecins sans frontières.",
+    "context": "La famine de 1984 et 1985 en Éthiopie suscite des disques caritatifs collectifs : après Band Aid au Royaume-Uni et USA for Africa aux États-Unis, les artistes français lancent le leur.",
+    "decoys": [
+     [ "Mistral gagnant", "Renaud"
+     ],
+     [ "L'Aziza", "Daniel Balavoine"
+     ],
+     [ "La chanson des restos", "Les Enfoirés"
+     ]
+    ]
+   },
+   {
+    "title": "Chante",
+    "artist": "Les Forbans",
+    "year": 1982,
+    "rank": 8,
+    "fact": "C'est une adaptation de Shout! Shout! (Knock Yourself Out) de l'Américain Ernie Maresca, avec des paroles françaises du chanteur Bébert. InfoDisc estime ses ventes à 1 640 000 exemplaires.",
+    "context": "Au début des années 1980, le rock'n'roll des années 1950 revient à la mode. Les Forbans, formés en 1978 par des copains de lycée qui répétaient dans un garage, incarnent ce retour en France.",
+    "decoys": [
+     [ "Quand la musique est bonne", "Jean-Jacques Goldman"
+     ],
+     [ "Marcia Baïla", "Les Rita Mitsouko"
+     ],
+     [ "Ça plane pour moi", "Plastic Bertrand"
+     ]
+    ]
+   },
+   {
+    "title": "Mambo No. 5 (A Little Bit of...)",
+    "artist": "Lou Bega",
+    "year": 1999,
+    "rank": 9,
+    "fact": "Lou Bega ajoute des paroles à un mambo instrumental de Pérez Prado (1949). En France, le titre reste 20 semaines d'affilée numéro un, un record depuis la création du classement en 1984.",
+    "context": "Le succès s'inscrit dans la vague latino de 1999, portée aussi par Ricky Martin et Enrique Iglesias, qui fait revenir les rythmes cubains des années 1950 dans les classements.",
+    "decoys": [
+     [ "Livin' la Vida Loca", "Ricky Martin"
+     ],
+     [ "Bailamos", "Enrique Iglesias"
+     ],
+     [ "Blue (Da Ba Dee)", "Eiffel 65"
+     ]
+    ]
+   },
+   {
+    "title": "La musique (Angelica)",
+    "artist": "Star Academy",
+    "year": 2001,
+    "rank": 10,
+    "fact": "Reprise de La musique de Nicoletta (1967), elle-même adaptée d'Angelica de Barry Mann et Cynthia Weil. Le titre est certifié diamant deux semaines après sa sortie.",
+    "context": "Star Academy est lancée sur TF1 en octobre 2001, quelques mois après Loft Story sur M6 : la téléréalité devient aussi une machine à vendre des disques.",
+    "decoys": [
+     [ "J'attends l'amour", "Jenifer"
+     ],
+     [ "Je n'ai que mon âme", "Natasha St-Pier"
+     ],
+     [ "Laissons entrer le soleil", "Star Academy 2"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 11,
+  "tier": 2,
+  "decadeKey": "france",
+  "groupTitle": "France",
+  "groupBlurb": "Classement InfoDisc des ventes de singles en France (45 tours, CD single et téléchargement, estimations arrêtées fin 2018, streaming exclu), dont on a retiré Petit Papa Noël (1946) et Aline (1965), sortis avant 1969, avant de renuméroter de 1 à 30.",
+  "source": {
+   "label": "InfoDisc, meilleures ventes de singles de tous les temps en France",
+   "url": "https://infodisc.fr/Ventes_Chansons_Tout_Temps.php"
+  },
+  "decade": "Rangs 1 à 30 · depuis 1969",
+  "instrument": "trophy",
+  "color": "#5f8be8",
+  "name": "France · Moyen",
+  "blurb": "Rangs 11 à 20.",
+  "tracks": [
+   {
+    "title": "Les rois du monde",
+    "artist": "Philippe d'Avilla, Damien Sargue, Grégori Baquet",
+    "year": 2000,
+    "rank": 11,
+    "fact": "Écrite et composée par Gérard Presgurvic, elle reste 17 semaines numéro un en France. En 2001, des enseignants du canton de Fribourg ont eu l'interdiction de la faire chanter en classe.",
+    "film": "Ma part du gâteau (2011) de Cédric Klapisch, qui l'intègre à sa bande originale.",
+    "context": "Après Notre-Dame de Paris, la comédie musicale Roméo et Juliette, de la haine à l'amour confirme que les spectacles musicaux sont devenus les premiers fournisseurs de tubes en France.",
+    "decoys": [
+     [ "Aimer", "Cécilia Cara, Damien Sargue"
+     ],
+     [ "Moi... Lolita", "Alizée"
+     ],
+     [ "Tomber la chemise", "Zebda"
+     ]
+    ]
+   },
+   {
+    "title": "Ces soirées-là",
+    "artist": "Yannick",
+    "year": 2000,
+    "rank": 12,
+    "fact": "Le titre reprend la mélodie de December, 1963 (Oh, What a Night) des Four Seasons, déjà adaptée par Claude François. Il reste 15 semaines d'affilée numéro un en France.",
+    "context": "En 2000, le rap francophone s'impose dans les ventes et la variété l'intègre : Yannick rappe des couplets inédits sur une mélodie disco des années 1970.",
+    "decoys": [
+     [ "Belsunce Breakdown", "Bouga"
+     ],
+     [ "Hey Oh", "Tragédie"
+     ],
+     [ "Laisse pas traîner ton fils", "Suprême NTM"
+     ]
+    ]
+   },
+   {
+    "title": "Un monde parfait",
+    "artist": "Ilona",
+    "year": 2005,
+    "rank": 13,
+    "fact": "Ilona Mitrecey avait 12 ans à l'enregistrement. Sorti d'abord en Italie en 2004, le titre reste 15 semaines numéro un en France.",
+    "film": "Deux jours à tuer (2008) de Jean Becker, avec Albert Dupontel, qui l'utilise dans sa bande originale.",
+    "context": "Selon InfoDisc, c'est le dernier single à avoir dépassé 1,5 million de ventes en France, avant que le téléchargement puis le streaming ne transforment le marché.",
+    "decoys": [
+     [ "Tout le bonheur du monde", "Sinsemilia"
+     ],
+     [ "Les sardines", "Patrick Sébastien"
+     ],
+     [ "Ma liberté de penser", "Florent Pagny"
+     ]
+    ]
+   },
+   {
+    "title": "Pour le plaisir",
+    "artist": "Herbert Léonard",
+    "year": 1981,
+    "rank": 14,
+    "fact": "La musique est signée Julien Lepers, futur présentateur de Questions pour un champion, qui joue aussi le piano. Refusé par plusieurs maisons de disques, le titre est produit par Vline Buggy.",
+    "context": "En 1981, le 45 tours reste le support roi des tubes : le disque compact n'apparaît en France qu'à partir de 1983.",
+    "decoys": [
+     [ "Elle est d'ailleurs", "Pierre Bachelet"
+     ],
+     [ "Femme que j'aime", "Jean-Luc Lahaye"
+     ],
+     [ "Il jouait du piano debout", "France Gall"
+     ]
+    ]
+   },
+   {
+    "title": "Y.M.C.A.",
+    "artist": "Village People",
+    "year": 1978,
+    "rank": 15,
+    "fact": "Village People a été créé à New York par deux producteurs français, Jacques Morali et Henri Belolo, qui cosignent la chanson avec le chanteur Victor Willis.",
+    "film": "Moi, moche et méchant 2 (2013), où les Minions la reprennent à leur façon avec des paroles détournées.",
+    "context": "Le titre évoque une association chrétienne de jeunesse, mais la culture gay y lit un clin d'œil à un lieu de rencontre, dans les années qui suivent les émeutes de Stonewall (1969).",
+    "decoys": [
+     [ "In the Navy", "Village People"
+     ],
+     [ "I Will Survive", "Gloria Gaynor"
+     ],
+     [ "Le Freak", "Chic"
+     ]
+    ]
+   },
+   {
+    "title": "Rockollection",
+    "artist": "Laurent Voulzy",
+    "year": 1977,
+    "rank": 16,
+    "fact": "Ce medley cite des tubes des années 1960, des Beatles aux Rolling Stones, sur des couplets d'Alain Souchon. La version complète dure près de 12 minutes.",
+    "context": "En pleine vague punk, Voulzy rend hommage au rock des années 1960. Les droits d'auteur ont été bloqués pendant trois ans, faute d'accord avec les auteurs des morceaux cités.",
+    "decoys": [
+     [ "Le cœur grenadine", "Laurent Voulzy"
+     ],
+     [ "Allô maman bobo", "Alain Souchon"
+     ],
+     [ "Cette année-là", "Claude François"
+     ]
+    ]
+   },
+   {
+    "title": "Alane",
+    "artist": "Wes",
+    "year": 1997,
+    "rank": 17,
+    "fact": "Chanté en douala, langue du Cameroun, et composé par Michel Sanchez, le titre fait de Wes le second artiste africain disque de diamant en France, après Khaled.",
+    "context": "Soutenu par TF1, RTL et Fun Radio, le titre illustre l'essor de la world music dans les classements des années 1990. Un remix de Robin Schulz l'a relancé en 2020.",
+    "decoys": [
+     [ "Aïcha", "Khaled"
+     ],
+     [ "Sweet Lullaby", "Deep Forest"
+     ],
+     [ "Tic Tic Tac", "Carrapicho"
+     ]
+    ]
+   },
+   {
+    "title": "La tribu de Dana",
+    "artist": "Manau",
+    "year": 1998,
+    "rank": 18,
+    "fact": "Le refrain reprend l'air traditionnel breton Tri Martolod. Alan Stivell ayant refusé l'échantillon de sa harpe, l'introduction a été réenregistrée au biniou.",
+    "context": "Le rap français vit alors un âge d'or commercial, et Manau le mêle au renouveau celtique porté depuis les années 1970 par Alan Stivell. Un accord à l'amiable a évité un procès.",
+    "decoys": [
+     [ "Mais qui est la belette ?", "Manau"
+     ],
+     [ "Ma Benz", "Suprême NTM"
+     ],
+     [ "Les princes de la ville", "113"
+     ]
+    ]
+   },
+   {
+    "title": "Born to Be Alive",
+    "artist": "Patrick Hernandez",
+    "year": 1979,
+    "rank": 19,
+    "fact": "Pour sa tournée mondiale, Patrick Hernandez recrute des danseurs à New York. Parmi eux figure une inconnue : Madonna.",
+    "film": "Poltergay (2006) d'Éric Lavaine, où Julie Depardieu en chante une version très ralentie.",
+    "context": "Le titre marche d'abord en Italie en 1978, puis gagne la France et le monde : la disco permet alors à un chanteur français de percer aux États-Unis.",
+    "decoys": [
+     [ "Ring My Bell", "Anita Ward"
+     ],
+     [ "Funkytown", "Lipps Inc."
+     ],
+     [ "D.I.S.C.O.", "Ottawan"
+     ]
+    ]
+   },
+   {
+    "title": "María",
+    "artist": "Ricky Martin",
+    "year": 1997,
+    "rank": 20,
+    "fact": "C'est le remix de DJ Pablo Flores, plus rapide que l'original de 1995, qui fait le succès du titre. Il reste 9 semaines numéro un en France.",
+    "context": "Le succès annonce la vague latino de la fin des années 1990 : en 1998, Ricky Martin chante La copa de la vida, hymne officiel de la Coupe du monde organisée en France.",
+    "decoys": [
+     [ "Macarena", "Los del Río"
+     ],
+     [ "Bailando", "Paradisio"
+     ],
+     [ "La copa de la vida", "Ricky Martin"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 12,
+  "tier": 3,
+  "decadeKey": "france",
+  "groupTitle": "France",
+  "groupBlurb": "Classement InfoDisc des ventes de singles en France (45 tours, CD single et téléchargement, estimations arrêtées fin 2018, streaming exclu), dont on a retiré Petit Papa Noël (1946) et Aline (1965), sortis avant 1969, avant de renuméroter de 1 à 30.",
+  "source": {
+   "label": "InfoDisc, meilleures ventes de singles de tous les temps en France",
+   "url": "https://infodisc.fr/Ventes_Chansons_Tout_Temps.php"
+  },
+  "decade": "Rangs 1 à 30 · depuis 1969",
+  "instrument": "trophy",
+  "color": "#5f8be8",
+  "name": "France · Difficile",
+  "blurb": "Rangs 21 à 30.",
+  "tracks": [
+   {
+    "title": "L'oiseau et l'enfant",
+    "artist": "Marie Myriam",
+    "year": 1977,
+    "rank": 21,
+    "fact": "Marie Myriam a 20 ans quand elle remporte l'Eurovision 1977 avec 136 points. C'est la cinquième victoire de la France au concours.",
+    "context": "Hymne à la paix sur une mélodie disco, chanté entièrement en français, le titre est ensuite devenu un symbole de la Ligue des droits de l'enfant.",
+    "decoys": [
+     [ "Alexandrie Alexandra", "Claude François"
+     ],
+     [ "J'ai encore rêvé d'elle", "Il était une fois"
+     ],
+     [ "Salma ya salama", "Dalida"
+     ]
+    ]
+   },
+   {
+    "title": "Besoin de rien, envie de toi",
+    "artist": "Peter & Sloane",
+    "year": 1984,
+    "rank": 22,
+    "fact": "C'était à l'origine la face B. Europe 1 la diffusant plus que la face A, le disque a été réédité avec les faces inversées. Les producteurs sont ceux de La danse des canards.",
+    "context": "C'est le premier numéro un du Top 50, lancé en novembre 1984 : pour la première fois, un classement national repose sur les ventes réelles et non sur les votes des auditeurs.",
+    "decoys": [
+     [ "Femme libérée", "Cookie Dingler"
+     ],
+     [ "Toute première fois", "Jeanne Mas"
+     ],
+     [ "Tout doucement", "Bibie"
+     ]
+    ]
+   },
+   {
+    "title": "Flashdance... What a Feeling",
+    "artist": "Irene Cara",
+    "year": 1983,
+    "rank": 23,
+    "fact": "Coécrite par Giorgio Moroder, Keith Forsey et Irene Cara, la chanson remporte l'Oscar de la meilleure chanson originale en 1984.",
+    "film": "Flashdance (1983) d'Adrian Lyne, sur le générique d'ouverture, quand Alex traverse Pittsburgh à vélo pour aller à l'aciérie.",
+    "context": "L'héroïne est soudeuse dans une aciérie de Pittsburgh, ville frappée par le déclin de la sidérurgie américaine. Le film, monté comme un clip, profite de l'essor de MTV.",
+    "decoys": [
+     [ "Fame", "Irene Cara"
+     ],
+     [ "Maniac", "Michael Sembello"
+     ],
+     [ "Footloose", "Kenny Loggins"
+     ]
+    ]
+   },
+   {
+    "title": "Goldorak",
+    "artist": "Noam",
+    "year": 1978,
+    "rank": 24,
+    "fact": "Noam avait 16 ans. Ce générique a remplacé un premier thème jugé gênant par la chaîne, et son succès a lancé la carrière du producteur Haïm Saban.",
+    "context": "Diffusé à l'été 1978 dans Récré A2 sur Antenne 2, Goldorak ouvre l'ère des dessins animés japonais en France. En 1981, le livre À cinq ans seul avec Goldorak dénonce leur violence.",
+    "decoys": [
+     [ "Capitaine Flam", "Jean-Jacques Debout"
+     ],
+     [ "Albator 78", "Eric Charden"
+     ],
+     [ "Ulysse 31", "Lionel Leroy"
+     ]
+    ]
+   },
+   {
+    "title": "Dix ans plus tôt",
+    "artist": "Michel Sardou",
+    "year": 1977,
+    "rank": 25,
+    "fact": "Tube de l'été 1977, ce slow écrit avec Pierre Billon et Jacques Revaux ouvre l'album La java de Broadway. Sardou y affirme préférer faire danser plutôt que choquer.",
+    "context": "Le titre arrive après les vives polémiques de 1976 autour de l'album La vieille, qui provoquait des manifestations devant les concerts de Sardou.",
+    "decoys": [
+     [ "La java de Broadway", "Michel Sardou"
+     ],
+     [ "Je vole", "Michel Sardou"
+     ],
+     [ "Et si tu n'existais pas", "Joe Dassin"
+     ]
+    ]
+   },
+   {
+    "title": "Allons chanter avec Mickey",
+    "artist": "Chantal Goya",
+    "year": 1977,
+    "rank": 26,
+    "fact": "Le texte est de Jean-Jacques Debout. Couplé avec Voulez-vous danser grand-mère sur un 45 tours à double face A, c'est le plus gros succès de Chantal Goya.",
+    "context": "À la fin des années 1970, les disques pour enfants pèsent lourd : ce 45 tours et le générique de Goldorak dépassent chacun 1,3 million d'exemplaires selon InfoDisc.",
+    "decoys": [
+     [ "Bécassine, c'est ma cousine", "Chantal Goya"
+     ],
+     [ "Pandi Panda", "Chantal Goya"
+     ],
+     [ "Le papa pingouin", "Sophie et Magaly"
+     ]
+    ]
+   },
+   {
+    "title": "L'envie d'aimer",
+    "artist": "Daniel Lévi",
+    "year": 2000,
+    "rank": 27,
+    "fact": "Signée Pascal Obispo, Lionel Florence et Patrice Guirao, elle bloque six semaines à la deuxième place derrière Ces soirées-là, mais gagne la Victoire de la chanson originale en 2001.",
+    "context": "Extraite des Dix Commandements, la chanson s'inscrit dans le boom des comédies musicales françaises de 1998 à 2001, devenues des machines à tubes et à tournées.",
+    "decoys": [
+     [ "Lucie", "Pascal Obispo"
+     ],
+     [ "Marie", "Johnny Hallyday"
+     ],
+     [ "Si seulement je pouvais lui manquer", "Calogero"
+     ]
+    ]
+   },
+   {
+    "title": "Woman in Love",
+    "artist": "Barbra Streisand",
+    "year": 1980,
+    "rank": 28,
+    "fact": "La chanson est écrite par Barry et Robin Gibb, des Bee Gees, pour l'album Guilty, produit par Barry Gibb. InfoDisc estime ses ventes en France à 1 298 400 exemplaires.",
+    "context": "Après le rejet de la disco aux États-Unis en 1979, les Bee Gees se tournent vers l'écriture et la production pour d'autres artistes, avec un énorme succès.",
+    "decoys": [
+     [ "Guilty", "Barbra Streisand, Barry Gibb"
+     ],
+     [ "Bette Davis Eyes", "Kim Carnes"
+     ],
+     [ "Out Here on My Own", "Nikka Costa"
+     ]
+    ]
+   },
+   {
+    "title": "Axel F",
+    "artist": "Crazy Frog",
+    "year": 2005,
+    "rank": 29,
+    "fact": "C'est un remix du thème composé en 1984 par Harold Faltermeyer pour Le flic de Beverly Hills. Le cri du personnage vient du Suédois Daniel Malmedahl, qui imitait une mobylette.",
+    "context": "Le personnage devient célèbre comme sonnerie de téléphone vendue par la société Jamba!, au moment où les sonneries payantes pour mobiles deviennent un marché très lucratif.",
+    "decoys": [
+     [ "Chihuahua", "DJ BoBo"
+     ],
+     [ "Barbie Girl", "Aqua"
+     ],
+     [ "Gasolina", "Daddy Yankee"
+     ]
+    ]
+   },
+   {
+    "title": "Chacun fait (c'qui lui plaît)",
+    "artist": "Chagrin d'amour",
+    "year": 1981,
+    "rank": 30,
+    "fact": "Inspiré par Rapper's Delight, le duo pose un phrasé rap sur une chanson en français, porté par l'accent new-yorkais de Valli. Le titre reste 10 semaines numéro un début 1982.",
+    "context": "Le succès accompagne l'essor des radios libres, autorisées après l'élection de 1981 : NRJ le diffuse plusieurs fois par jour. Il est souvent cité parmi les premiers rap en français.",
+    "decoys": [
+     [ "Banana Split", "Lio"
+     ],
+     [ "Paris Latino", "Bandolero"
+     ],
+     [ "Elle a les yeux revolver", "Marc Lavoine"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 13,
+  "tier": 1,
+  "decadeKey": "europe",
+  "groupTitle": "Europe",
+  "groupBlurb": "Il n’existe pas de classement officiel des ventes de singles à l’échelle européenne : ce top 30 classe donc les titres selon leur nombre total de semaines à la 1re place du European Hot 100 Singles, le classement paneuropéen compilé de mars 1984 à décembre 2010 à partir des classements nationaux (comptage fait sur les listes annuelles de Wikipédia, à égalité par ordre chronologique). Il couvre 1984-2010 seulement, mesure la domination et non les ventes réelles, et parmi les neuf titres à égalité à 10 semaines, trois ont été retenus par choix éditorial (Alors on danse, Joyride, We Are the World). Aucun titre n’est antérieur à 1969.",
+  "source": {
+   "label": "European Hot 100 Singles (Music & Media puis Billboard), semaines à la 1re place, listes annuelles Wikipédia 1984-2010",
+   "url": "https://en.wikipedia.org/wiki/European_Hot_100_Singles"
+  },
+  "decade": "Rangs 1 à 30 · depuis 1969",
+  "instrument": "trophy",
+  "color": "#f2b134",
+  "name": "Europe · Facile",
+  "blurb": "Rangs 1 à 10.",
+  "tracks": [
+   {
+    "title": "(Everything I Do) I Do It For You",
+    "artist": "Bryan Adams",
+    "year": 1991,
+    "rank": 1,
+    "fact": "Écrite en 45 minutes avec le producteur Mutt Lange, elle reste 18 semaines d’affilée n°1 en Europe et 16 au Royaume-Uni. Plus de 15 millions d’exemplaires vendus.",
+    "film": "Robin des Bois, prince des voleurs (1991), avec Kevin Costner : la chanson accompagne le générique de fin.",
+    "context": "Elle domine l’Europe de fin juillet à fin novembre 1991, un été marqué par le putsch manqué de Moscou en août, prélude à la disparition de l’URSS en décembre.",
+    "decoys": [
+     [ "It Must Have Been Love", "Roxette"
+     ],
+     [ "When a Man Loves a Woman", "Michael Bolton"
+     ],
+     [ "Because I Love You (The Postman Song)", "Stevie B"
+     ]
+    ]
+   },
+   {
+    "title": "My Heart Will Go On",
+    "artist": "Céline Dion",
+    "year": 1997,
+    "rank": 2,
+    "fact": "James Cameron ne voulait pas de chanson pop dans Titanic. Le compositeur James Horner attend le bon moment pour lui faire écouter sa démo et le convainc. Oscar de la meilleure chanson en 1998.",
+    "film": "Titanic (1997) de James Cameron : la version de Céline Dion accompagne le générique de fin.",
+    "context": "Titanic devient le plus gros succès de l’histoire du cinéma, et sa bande originale se vend par millions à l’apogée du CD, juste avant l’arrivée de Napster en 1999.",
+    "decoys": [
+     [ "I Don't Want to Miss a Thing", "Aerosmith"
+     ],
+     [ "Because You Loved Me", "Céline Dion"
+     ],
+     [ "Un-Break My Heart", "Toni Braxton"
+     ]
+    ]
+   },
+   {
+    "title": "Can't Get You Out Of My Head",
+    "artist": "Kylie Minogue",
+    "year": 2001,
+    "rank": 3,
+    "fact": "Écrite par Cathy Dennis et Rob Davis, elle avait d’abord été refusée par S Club 7 et Sophie Ellis-Bextor. C’est le plus gros succès de Kylie, avec plus de 12 millions d’exemplaires.",
+    "context": "Elle règne sur l’Europe à l’automne 2001, juste après les attentats du 11 Septembre, alors que les pièces et billets en euros s’apprêtent à circuler le 1er janvier 2002.",
+    "decoys": [
+     [ "Murder on the Dancefloor", "Sophie Ellis-Bextor"
+     ],
+     [ "Love at First Sight", "Kylie Minogue"
+     ],
+     [ "Don't Stop Movin'", "S Club 7"
+     ]
+    ]
+   },
+   {
+    "title": "Aserejé",
+    "artist": "Las Ketchup",
+    "year": 2002,
+    "rank": 4,
+    "fact": "Le refrain ne veut rien dire : c’est l’imitation phonétique de Rapper’s Delight du Sugarhill Gang par un personnage qui ne parle pas anglais. Plus de 12 millions d’exemplaires vendus.",
+    "context": "Des courriels en chaîne, surtout en Amérique latine, ont prétendu que les paroles cachaient des messages sataniques. Le groupe a répondu que le mot n’avait aucun sens.",
+    "decoys": [
+     [ "Bailamos", "Enrique Iglesias"
+     ],
+     [ "Mambo No. 5 (A Little Bit of...)", "Lou Bega"
+     ],
+     [ "Livin' la Vida Loca", "Ricky Martin"
+     ]
+    ]
+   },
+   {
+    "title": "Poker Face",
+    "artist": "Lady Gaga",
+    "year": 2008,
+    "rank": 5,
+    "fact": "Selon l’IFPI, c’est le single le plus vendu au monde en 2009, avec 9,8 millions d’exemplaires. Lady Gaga a expliqué que la chanson évoque sa bisexualité.",
+    "film": "Glee (saison 1, épisode Theatricality, 2010) : Lea Michele et Idina Menzel en chantent une version acoustique au piano.",
+    "context": "En pleine crise financière mondiale, le téléchargement légal sur iTunes relance les ventes de singles, et Lady Gaga devient l’une des grandes gagnantes de ce nouveau marché.",
+    "decoys": [
+     [ "Hot N Cold", "Katy Perry"
+     ],
+     [ "Womanizer", "Britney Spears"
+     ],
+     [ "Disturbia", "Rihanna"
+     ]
+    ]
+   },
+   {
+    "title": "Lambada",
+    "artist": "Kaoma",
+    "year": 1989,
+    "rank": 6,
+    "fact": "Le titre reprend sans autorisation Llorando se fue, des Boliviens Los Kjarkas, qui portent plainte en 1990. Plus de 4 millions d’exemplaires vendus en Europe en 1989.",
+    "film": "Orangina a financé le clip, réalisé par Olivier Lorsac, et l’a utilisé dans une publicité télévisée en France.",
+    "context": "Tube de l’été 1989, année du Bicentenaire de la Révolution, il est encore n°1 en Europe quand le mur de Berlin tombe, le 9 novembre.",
+    "decoys": [
+     [ "Yé ké yé ké", "Mory Kanté"
+     ],
+     [ "Bamboléo", "Gipsy Kings"
+     ],
+     [ "Djobi Djoba", "Gipsy Kings"
+     ]
+    ]
+   },
+   {
+    "title": "Rhythm Is a Dancer",
+    "artist": "Snap!",
+    "year": 1992,
+    "rank": 7,
+    "fact": "Les producteurs allemands Michael Münzing et Luca Anzilotti signaient sous les pseudonymes Benito Benites et John Garrett III. Le rappeur Turbo B a d’abord refusé le morceau.",
+    "context": "Produit en Allemagne deux ans après la réunification, le titre incarne l’eurodance, portée par les raves et les clubs qui se multiplient en Europe au début des années 1990.",
+    "decoys": [
+     [ "Mr. Vain", "Culture Beat"
+     ],
+     [ "No Limit", "2 Unlimited"
+     ],
+     [ "It's My Life", "Dr. Alban"
+     ]
+    ]
+   },
+   {
+    "title": "Love Is All Around",
+    "artist": "Wet Wet Wet",
+    "year": 1994,
+    "rank": 8,
+    "fact": "Reprise d’un tube des Troggs de 1967. Après 15 semaines n°1 au Royaume-Uni, le groupe retire le single de la vente, laissant la place à Saturday Night de Whigfield.",
+    "film": "Quatre mariages et un enterrement (1994). En 2003, Love Actually la parodie en Christmas Is All Around, chantée par Bill Nighy en rock star sur le retour.",
+    "context": "Petit budget devenu succès mondial en 1994, Quatre mariages et un enterrement relance la comédie romantique britannique et entraîne la chanson dans son sillage.",
+    "decoys": [
+     [ "Baby, I Love Your Way", "Big Mountain"
+     ],
+     [ "Without You", "Mariah Carey"
+     ],
+     [ "Always", "Bon Jovi"
+     ]
+    ]
+   },
+   {
+    "title": "Without Me",
+    "artist": "Eminem",
+    "year": 2002,
+    "rank": 9,
+    "fact": "Eminem s’y moque de Moby, de Limp Bizkit, du vice-président Dick Cheney et de l’autorité américaine des médias. Le clip remporte le prix de la vidéo de l’année aux MTV VMA 2002.",
+    "film": "Figure dans la bande originale de Suicide Squad (2016) de David Ayer.",
+    "context": "Dans l’Amérique de l’après-11 Septembre, Eminem tourne en dérision la censure, les régulateurs et les politiques, en pleine querelle sur les paroles explicites du rap.",
+    "decoys": [
+     [ "Hot in Herre", "Nelly"
+     ],
+     [ "In Da Club", "50 Cent"
+     ],
+     [ "The Real Slim Shady", "Eminem"
+     ]
+    ]
+   },
+   {
+    "title": "Hips Don't Lie",
+    "artist": "Shakira",
+    "year": 2006,
+    "rank": 10,
+    "fact": "Les cuivres viennent d’Amores como el nuestro, un tube salsa de Jerry Rivera de 1992. Le morceau dérive de Dance Like This, enregistré par Wyclef Jean en 2004.",
+    "context": "Shakira la chante à Berlin à la clôture de la Coupe du monde 2006, devant plus de 700 millions de téléspectateurs. Le titre se vend aussi par millions en sonneries de téléphone.",
+    "decoys": [
+     [ "SOS", "Rihanna"
+     ],
+     [ "Crazy", "Gnarls Barkley"
+     ],
+     [ "Buttons", "The Pussycat Dolls"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 14,
+  "tier": 2,
+  "decadeKey": "europe",
+  "groupTitle": "Europe",
+  "groupBlurb": "Il n’existe pas de classement officiel des ventes de singles à l’échelle européenne : ce top 30 classe donc les titres selon leur nombre total de semaines à la 1re place du European Hot 100 Singles, le classement paneuropéen compilé de mars 1984 à décembre 2010 à partir des classements nationaux (comptage fait sur les listes annuelles de Wikipédia, à égalité par ordre chronologique). Il couvre 1984-2010 seulement, mesure la domination et non les ventes réelles, et parmi les neuf titres à égalité à 10 semaines, trois ont été retenus par choix éditorial (Alors on danse, Joyride, We Are the World). Aucun titre n’est antérieur à 1969.",
+  "source": {
+   "label": "European Hot 100 Singles (Music & Media puis Billboard), semaines à la 1re place, listes annuelles Wikipédia 1984-2010",
+   "url": "https://en.wikipedia.org/wiki/European_Hot_100_Singles"
+  },
+  "decade": "Rangs 1 à 30 · depuis 1969",
+  "instrument": "trophy",
+  "color": "#f2b134",
+  "name": "Europe · Moyen",
+  "blurb": "Rangs 11 à 20.",
+  "tracks": [
+   {
+    "title": "Apologize",
+    "artist": "Timbaland",
+    "year": 2007,
+    "rank": 11,
+    "fact": "À l’origine une chanson du groupe OneRepublic, sortie en 2006. Le remix de Timbaland, sorti en 2007, s’est vendu à plus de 5,8 millions d’exemplaires aux États-Unis.",
+    "film": "La version européenne du clip intègre des images de la comédie allemande Keinohrhasen (2007) de Til Schweiger.",
+    "context": "Le titre domine l’hiver 2007-2008, juste avant la crise financière, quand le téléchargement légal pèse de plus en plus dans les classements européens.",
+    "decoys": [
+     [ "Bleeding Love", "Leona Lewis"
+     ],
+     [ "The Way I Are", "Timbaland"
+     ],
+     [ "Hey There Delilah", "Plain White T's"
+     ]
+    ]
+   },
+   {
+    "title": "I Just Called To Say I Love You",
+    "artist": "Stevie Wonder",
+    "year": 1984,
+    "rank": 12,
+    "fact": "Elle remporte l’Oscar et le Golden Globe de la meilleure chanson. C’est le seul n°1 en solo de Stevie Wonder au Royaume-Uni et le single le plus vendu de Motown dans ce pays.",
+    "film": "La Fille en rouge (1984), comédie réalisée et interprétée par Gene Wilder, pour laquelle la chanson a été écrite.",
+    "context": "Music & Media lance le classement paneuropéen en 1984. Cette ballade aux synthétiseurs y est le premier titre à rester plus de trois mois en tête.",
+    "decoys": [
+     [ "Hello", "Lionel Richie"
+     ],
+     [ "Careless Whisper", "George Michael"
+     ],
+     [ "Against All Odds (Take a Look at Me Now)", "Phil Collins"
+     ]
+    ]
+   },
+   {
+    "title": "Gangsta's Paradise",
+    "artist": "Coolio",
+    "year": 1995,
+    "rank": 13,
+    "fact": "Le morceau reprend Pastime Paradise de Stevie Wonder (1976), qui a exigé qu’il n’y ait aucun gros mot. Coolio remporte le Grammy de la meilleure performance rap solo.",
+    "film": "Esprits rebelles (1995), avec Michelle Pfeiffer en professeure dans un lycée difficile. L’actrice apparaît aussi dans le clip.",
+    "context": "Au milieu des années 1990, le gangsta rap fait entendre la violence des quartiers pauvres américains. Coolio en tire un récit sombre et sans grossièretés, diffusé partout.",
+    "decoys": [
+     [ "California Love", "2Pac"
+     ],
+     [ "Boombastic", "Shaggy"
+     ],
+     [ "Tha Crossroads", "Bone Thugs-N-Harmony"
+     ]
+    ]
+   },
+   {
+    "title": "Believe",
+    "artist": "Cher",
+    "year": 1998,
+    "rank": 14,
+    "fact": "Premier grand tube à utiliser l’Auto-Tune comme effet. Les producteurs ont d’abord parlé d’un vocodeur pour garder le secret. Plus de 11 millions d’exemplaires vendus.",
+    "context": "Le numérique entre dans les studios à la fin des années 1990 : l’outil de correction de justesse devient un son à la mode, qui marquera la pop et le rap des décennies suivantes.",
+    "decoys": [
+     [ "Ray of Light", "Madonna"
+     ],
+     [ "Blue (Da Ba Dee)", "Eiffel 65"
+     ],
+     [ "Strong Enough", "Cher"
+     ]
+    ]
+   },
+   {
+    "title": "I Will Always Love You",
+    "artist": "Whitney Houston",
+    "year": 1992,
+    "rank": 15,
+    "fact": "Dolly Parton l’a écrite en 1973 pour quitter son mentor Porter Wagoner. Elle a refusé qu’Elvis l’enregistre, car son manager exigeait la moitié des droits d’édition.",
+    "film": "Bodyguard (1992), avec Kevin Costner, premier rôle au cinéma de Whitney Houston.",
+    "context": "Fin 1992, la bande originale de Bodyguard devient l’une des plus vendues de l’histoire, au sommet de l’ère du CD.",
+    "decoys": [
+     [ "I Have Nothing", "Whitney Houston"
+     ],
+     [ "End of the Road", "Boyz II Men"
+     ],
+     [ "Hero", "Mariah Carey"
+     ]
+    ]
+   },
+   {
+    "title": "Children",
+    "artist": "Robert Miles",
+    "year": 1995,
+    "rank": 16,
+    "fact": "Robert Miles l’a composé après avoir vu des photos d’enfants victimes de la guerre en Bosnie, rapportées par son père d’une mission humanitaire. Single le plus vendu en Europe en 1996.",
+    "context": "Il voulait aussi un morceau apaisant pour finir les soirées et calmer les clubbers avant la route, à l’époque des nombreux accidents mortels à la sortie des discothèques en Italie.",
+    "decoys": [
+     [ "Fable", "Robert Miles"
+     ],
+     [ "Seven Days and One Week", "BBE"
+     ],
+     [ "Insomnia", "Faithless"
+     ]
+    ]
+   },
+   {
+    "title": "Whenever, Wherever",
+    "artist": "Shakira",
+    "year": 2001,
+    "rank": 17,
+    "fact": "Premier single en anglais de la Colombienne, avec charango, quena et flûte de Pan andins. La version espagnole s’intitule Suerte. Le titre est n°1 dans 22 pays.",
+    "context": "Au tournant des années 2000, Ricky Martin, Jennifer Lopez et Enrique Iglesias percent en anglais. Shakira suit ce chemin en mêlant pop et sonorités andines.",
+    "decoys": [
+     [ "Escape", "Enrique Iglesias"
+     ],
+     [ "Ain't It Funny", "Jennifer Lopez"
+     ],
+     [ "Underneath Your Clothes", "Shakira"
+     ]
+    ]
+   },
+   {
+    "title": "Relax",
+    "artist": "Frankie Goes To Hollywood",
+    "year": 1983,
+    "rank": 18,
+    "fact": "Interdite par la BBC en janvier 1984 après qu’un animateur a dénoncé ses paroles, elle atteint quand même la 1re place. Environ deux millions de ventes au Royaume-Uni.",
+    "film": "Body Double (1984) de Brian De Palma, où le groupe l’interprète dans un film dans le film. Elle sert aussi de ressort comique dans Zoolander (2001).",
+    "context": "Dans le Royaume-Uni des années Thatcher, ce titre aux paroles sexuellement explicites ouvre un débat sur la censure à la radio publique.",
+    "decoys": [
+     [ "Two Tribes", "Frankie Goes To Hollywood"
+     ],
+     [ "Smalltown Boy", "Bronski Beat"
+     ],
+     [ "Blue Monday", "New Order"
+     ]
+    ]
+   },
+   {
+    "title": "Like a Prayer",
+    "artist": "Madonna",
+    "year": 1989,
+    "rank": 19,
+    "fact": "Pepsi avait signé Madonna pour 5 millions de dollars. Le clip, avec croix enflammées et stigmates, est condamné par le Vatican : Pepsi annule sa pub, mais Madonna garde l’argent.",
+    "context": "Le clip met en scène un saint noir et un homme noir accusé à tort, abordant le racisme et la religion dans l’Amérique de la fin des années 1980.",
+    "decoys": [
+     [ "Express Yourself", "Madonna"
+     ],
+     [ "Eternal Flame", "The Bangles"
+     ],
+     [ "The Look", "Roxette"
+     ]
+    ]
+   },
+   {
+    "title": "I'd Do Anything for Love (But I Won't Do That)",
+    "artist": "Meat Loaf",
+    "year": 1993,
+    "rank": 20,
+    "fact": "Écrite par Jim Steinman, elle dure 12 minutes sur l’album Bat Out of Hell II. N°1 dans 28 pays. La voix féminine, Lorraine Crosby, n’est créditée que sous le nom de Mrs. Loud.",
+    "context": "Seize ans après Bat Out of Hell, ce retour au rock à grand spectacle s’impose en pleine vague grunge et eurodance. Le clip est réalisé par Michael Bay.",
+    "decoys": [
+     [ "Please Forgive Me", "Bryan Adams"
+     ],
+     [ "Bed of Roses", "Bon Jovi"
+     ],
+     [ "November Rain", "Guns N' Roses"
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": 15,
+  "tier": 3,
+  "decadeKey": "europe",
+  "groupTitle": "Europe",
+  "groupBlurb": "Il n’existe pas de classement officiel des ventes de singles à l’échelle européenne : ce top 30 classe donc les titres selon leur nombre total de semaines à la 1re place du European Hot 100 Singles, le classement paneuropéen compilé de mars 1984 à décembre 2010 à partir des classements nationaux (comptage fait sur les listes annuelles de Wikipédia, à égalité par ordre chronologique). Il couvre 1984-2010 seulement, mesure la domination et non les ventes réelles, et parmi les neuf titres à égalité à 10 semaines, trois ont été retenus par choix éditorial (Alors on danse, Joyride, We Are the World). Aucun titre n’est antérieur à 1969.",
+  "source": {
+   "label": "European Hot 100 Singles (Music & Media puis Billboard), semaines à la 1re place, listes annuelles Wikipédia 1984-2010",
+   "url": "https://en.wikipedia.org/wiki/European_Hot_100_Singles"
+  },
+  "decade": "Rangs 1 à 30 · depuis 1969",
+  "instrument": "trophy",
+  "color": "#f2b134",
+  "name": "Europe · Difficile",
+  "blurb": "Rangs 21 à 30.",
+  "tracks": [
+   {
+    "title": "Dragostea din tei",
+    "artist": "O-Zone",
+    "year": 2003,
+    "rank": 21,
+    "fact": "Le titre signifie l’amour du tilleul. Fin 2004, la vidéo Numa Numa de l’Américain Gary Brolsma, qui danse sur sa chaise devant sa webcam, en fait l’un des premiers mèmes viraux.",
+    "context": "Groupe moldave installé en Roumanie, O-Zone triomphe en Europe l’été 2004, juste après l’élargissement de l’Union européenne à l’Est, que la Roumanie rejoindra en 2007.",
+    "decoys": [
+     [ "Despre tine", "O-Zone"
+     ],
+     [ "Mundian To Bach Ke", "Panjabi MC"
+     ],
+     [ "Obsesión", "Aventura"
+     ]
+    ]
+   },
+   {
+    "title": "Hung Up",
+    "artist": "Madonna",
+    "year": 2005,
+    "rank": 22,
+    "fact": "Construite sur un sample de Gimme! Gimme! Gimme! d’ABBA. Benny et Björn, qui refusent presque toujours, acceptent contre une large part des droits. N°1 dans 41 pays, record Guinness.",
+    "film": "Dévoilée dans une pub pour un téléphone Motorola, puis ajoutée à des épisodes des Experts : Miami et des Experts : Manhattan en novembre 2005.",
+    "context": "Lancée d’abord en téléchargement, à l’heure où iTunes et le téléphone mobile deviennent des canaux de vente, elle marque le retour de Madonna au disco.",
+    "decoys": [
+     [ "Sorry", "Madonna"
+     ],
+     [ "Push the Button", "Sugababes"
+     ],
+     [ "Don't Cha", "The Pussycat Dolls"
+     ]
+    ]
+   },
+   {
+    "title": "Self Control",
+    "artist": "Laura Branigan",
+    "year": 1984,
+    "rank": 23,
+    "fact": "Reprise d’un titre de l’Italien Raf sorti la même année. Le clip, réalisé par William Friedkin, le cinéaste de L’Exorciste, a dû être retouché pour passer sur MTV.",
+    "context": "Au milieu des années 1980, l’italo disco, produite en Italie et souvent chantée en anglais, envahit les pistes européennes. Une Américaine en fait un n°1 en Allemagne et en Suisse.",
+    "decoys": [
+     [ "Gloria", "Laura Branigan"
+     ],
+     [ "Flashdance... What a Feeling", "Irene Cara"
+     ],
+     [ "Dolce Vita", "Ryan Paris"
+     ]
+    ]
+   },
+   {
+    "title": "Black or White",
+    "artist": "Michael Jackson",
+    "year": 1991,
+    "rank": 24,
+    "fact": "Le clip, avec Macaulay Culkin et des visages qui se transforment par morphing, est diffusé simultanément dans de nombreux pays le 14 novembre 1991. Single le plus vendu au monde en 1992.",
+    "context": "Chanson contre le racisme, sortie quelques mois après le passage à tabac de Rodney King à Los Angeles. La fin du clip, jugée trop violente, est coupée après les critiques.",
+    "decoys": [
+     [ "Remember the Time", "Michael Jackson"
+     ],
+     [ "Jump", "Kris Kross"
+     ],
+     [ "Gonna Make You Sweat (Everybody Dance Now)", "C+C Music Factory"
+     ]
+    ]
+   },
+   {
+    "title": "Barbie Girl",
+    "artist": "Aqua",
+    "year": 1997,
+    "rank": 25,
+    "fact": "Mattel attaque la maison de disques pour atteinte à sa marque. En 2002, le juge Alex Kozinski clôt l’affaire par une phrase restée célèbre : les parties sont priées de se détendre.",
+    "film": "Samplée dans Barbie World de Nicki Minaj et Ice Spice, sur la bande originale du film Barbie (2023) de Greta Gerwig.",
+    "context": "Groupe dano-norvégien, Aqua incarne la dance acidulée venue de Scandinavie à la fin des années 1990, quand l’Europe du Nord devient une usine à tubes pop.",
+    "decoys": [
+     [ "Doctor Jones", "Aqua"
+     ],
+     [ "Coco Jamboo", "Mr. President"
+     ],
+     [ "Butterfly", "Smile.dk"
+     ]
+    ]
+   },
+   {
+    "title": "Axel F",
+    "artist": "Crazy Frog",
+    "year": 2005,
+    "rank": 26,
+    "fact": "Le bruit de la grenouille vient d’un lycéen suédois, Daniel Malmedahl, qui imitait en 1997 un moteur deux-temps. Le personnage a été animé en 2003 par Erik Wernquist.",
+    "film": "Reprise du thème composé par Harold Faltermeyer pour Le Flic de Beverly Hills (1984), associé au personnage d’Axel Foley joué par Eddie Murphy.",
+    "context": "Le titre est né du marché des sonneries de portable. Au Royaume-Uni, ses publicités omniprésentes sont interdites avant 21 h par l’autorité de régulation en 2005.",
+    "decoys": [
+     [ "Popcorn", "Crazy Frog"
+     ],
+     [ "Schnappi, das kleine Krokodil", "Schnappi"
+     ],
+     [ "Cha Cha Slide", "DJ Casper"
+     ]
+    ]
+   },
+   {
+    "title": "Umbrella",
+    "artist": "Rihanna",
+    "year": 2007,
+    "rank": 27,
+    "fact": "Écrite par The-Dream et Tricky Stewart, elle avait été pensée pour Britney Spears, dont le label l’a refusée. Elle reste 10 semaines n°1 au Royaume-Uni.",
+    "context": "Son règne au Royaume-Uni coïncide avec les inondations de l’été 2007, et le tabloïd The Sun parle alors de malédiction Rihanna.",
+    "decoys": [
+     [ "Don't Stop the Music", "Rihanna"
+     ],
+     [ "Beautiful Liar", "Beyoncé"
+     ],
+     [ "Girlfriend", "Avril Lavigne"
+     ]
+    ]
+   },
+   {
+    "title": "We Are the World",
+    "artist": "USA For Africa",
+    "year": 1985,
+    "rank": 28,
+    "fact": "Écrite par Michael Jackson et Lionel Richie, produite par Quincy Jones, elle est enregistrée le 28 janvier 1985 après les American Music Awards. Plus de 20 millions d’exemplaires.",
+    "film": "Le documentaire Netflix The Greatest Night in Pop (2024) raconte la nuit d’enregistrement.",
+    "context": "Inspirée par Band Aid au Royaume-Uni, l’opération collecte des fonds contre la famine en Éthiopie. Plus de 80 millions de dollars ont été réunis depuis sa sortie.",
+    "decoys": [
+     [ "Do They Know It's Christmas?", "Band Aid"
+     ],
+     [ "Say You, Say Me", "Lionel Richie"
+     ],
+     [ "Easy Lover", "Philip Bailey"
+     ]
+    ]
+   },
+   {
+    "title": "Joyride",
+    "artist": "Roxette",
+    "year": 1991,
+    "rank": 29,
+    "fact": "Le titre vient d’une interview de Paul McCartney comparant l’écriture avec John Lennon à une longue virée. N°1 dans une douzaine de pays, dont les États-Unis.",
+    "context": "Au début des années 1990, la Suède devient une puissance de la pop mondiale dans le sillage d’ABBA, avec Roxette, puis Ace of Base et les producteurs du studio Cheiron.",
+    "decoys": [
+     [ "Fading Like a Flower (Every Time You Leave)", "Roxette"
+     ],
+     [ "Wind of Change", "Scorpions"
+     ],
+     [ "The Shoop Shoop Song (It's in His Kiss)", "Cher"
+     ]
+    ]
+   },
+   {
+    "title": "Alors on danse",
+    "artist": "Stromae",
+    "year": 2009,
+    "rank": 30,
+    "fact": "Premier tube du Belge Paul Van Haver, alias Stromae. Sorti en Belgique en 2009, il gagne le reste de l’Europe en 2010 et reste 57 semaines classé en Allemagne.",
+    "film": "La série Les 100 (saison 6, épisode The Gospel of Josephine, 2019).",
+    "context": "Les paroles enchaînent études, travail, crédit, dettes et huissier, qu’on oublie en dansant, en pleine crise économique qui suit le krach de 2008.",
+    "decoys": [
+     [ "We No Speak Americano", "Yolanda Be Cool"
+     ],
+     [ "Memories", "David Guetta"
+     ],
+     [ "Barbra Streisand", "Duck Sauce"
+     ]
+    ]
+   }
+  ]
+ }
+];
+
 /* ===================== Thèmes ===================== */
 const THEMES = [
   { id: "jazz", name: "Jazz Club", eyebrow: "Swing, bebop & free", hero: "trumpet", color: "#e0b04f",
@@ -5125,8 +7877,11 @@ const THEMES = [
     yearLabel: "sorti en", difficulty: false, levels: RETRO },
   { id: "mix", name: "Le Mix", eyebrow: "Musique & culture générale", hero: "lightbulb", color: "#45b7c4",
     tagline: "Des extraits et des questions de culture générale, certaines en images. Quatre niveaux de 10 manches.",
-    yearLabel: "sorti en", difficulty: true, bars: 4, chip: "4 niveaux · 40 manches", levels: MIX }
-];
+    yearLabel: "sorti en", difficulty: true, bars: 4, chip: "4 niveaux · 40 manches", levels: MIX },
+  { id: "charts", name: "Top Charts", eyebrow: "Meilleures ventes depuis 1969", hero: "trophy", color: "#f2b134",
+    tagline: "Les singles les plus vendus depuis 1969 : monde, États-Unis, Royaume-Uni, France et Europe. Trois niveaux par classement.",
+    yearLabel: "sorti en", difficulty: false, chip: "5 classements · 150 titres", levels: CHARTS }
+].filter(th => th.levels.length);
 THEMES.forEach(th => th.levels.forEach(l => l.tracks.forEach(t => { if (t.kind !== "quiz") t.q = `${t.artist.split(" & ")[0]} ${t.title}`; })));
 const PCOLORS = ["#e0b04f", "#5fc4d6"]; // couleur de chaque joueur en Duo
 
@@ -5300,7 +8055,7 @@ function groupsOf(th) {
     const keys = [...new Set(th.levels.map(l => l.decadeKey))];
     return keys.map(k => {
       const levels = th.levels.filter(l => l.decadeKey === k).sort((a, b) => a.tier - b.tier);
-      return { title: levels[0].groupTitle, sub: levels[0].decade, blurb: levels[0].groupBlurb, art: levels[0].instrument, color: levels[0].color, tiered: true, levels };
+      return { title: levels[0].groupTitle, sub: levels[0].decade, blurb: levels[0].groupBlurb, source: levels[0].source, art: levels[0].instrument, color: levels[0].color, tiered: true, levels };
     });
   }
   const byLevel = th.levels.filter(l => l.group !== "style"), byStyle = th.levels.filter(l => l.group === "style");
@@ -5322,7 +8077,7 @@ function renderTheme(th) {
     ${groupsOf(th).map((g, gi) => g.tiered ? `<section aria-labelledby="sets-h${gi}" class="stack decade-group" style="--lvl:${g.color}">
       <div class="decade-head">
         <span class="decade-art">${ART[g.art](g.color)}</span>
-        <div><h2 id="sets-h${gi}">${g.title}</h2><span class="eyebrow">${g.sub} · 3 niveaux</span><p class="blurb">${g.blurb || ""}</p></div>
+        <div><h2 id="sets-h${gi}">${g.title}</h2><span class="eyebrow">${g.sub} · 3 niveaux</span><p class="blurb">${g.blurb || ""}</p>${g.source ? `<p class="src">Source : <a href="${g.source.url}" target="_blank" rel="noopener">${g.source.label}</a></p>` : ""}</div>
       </div>
       <ol class="sets tiers">
         ${g.levels.map(l => {
@@ -5537,6 +8292,7 @@ function renderGame() {
             ${S.clip && S.clip.link ? `<a class="dz" href="${S.clip.link}" target="_blank" rel="noopener">Écouter en entier sur Deezer ↗</a>` : ""}
           </div>
         </div>`}
+        ${t.rank ? `<p class="rank"><span class="mono">N°${t.rank}</span> des ventes depuis 1969 · ${l.groupTitle}</p>` : ""}
         <p class="fact">${t.fact}</p>
         ${t.film || t.context ? `<dl class="notes">
           ${t.film ? `<div><dt>À l'écran</dt><dd>${t.film}</dd></div>` : ""}
