@@ -306,6 +306,49 @@ p { margin: 0; }
 .duo-form { display: flex; flex-direction: column; gap: 16px; max-width: 420px; }
 .field { display: flex; flex-direction: column; gap: 6px; }
 .answer-mode { display: flex; flex-direction: column; gap: 8px; }
+/* Multijoueur */
+.field select { font: inherit; color: var(--cream); background: var(--velvet); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.avatars { border: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.avatars legend { font-weight: 700; margin-bottom: 8px; padding: 0; }
+.av-opt { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 6px; border-radius: 16px;
+  border: 1px solid var(--line); background: var(--velvet); cursor: pointer; text-align: center; font-size: 13px; }
+.av-opt input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.av-opt .av-pic { width: 56px; height: 56px; display: block; }
+.av-opt:has(input:checked) { border-color: var(--ac); box-shadow: 0 0 0 2px var(--ac); }
+.av-opt:has(input:focus-visible) { outline: 3px solid var(--cream); outline-offset: 2px; }
+.av { width: 34px; height: 34px; flex: none; display: inline-block; }
+.av svg { width: 100%; height: 100%; display: block; }
+.mp-link { display: flex; flex-direction: column; gap: 6px; }
+.mp-link-row { display: flex; gap: 8px; }
+.mp-link-row input { flex: 1; min-width: 0; font: inherit; font-size: 14px; color: var(--cream); background: var(--velvet); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.icon-btn { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 9px 14px; font-weight: 700;
+  border: 1px solid var(--line); background: var(--velvet); color: var(--cream); }
+.icon-btn svg { width: 18px; height: 18px; }
+.icon-btn[aria-pressed="true"] { border-color: var(--ko); color: var(--ko); }
+.mp-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.mp-pl { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 14px; background: var(--velvet); border: 1px solid var(--line); }
+.mp-pl.me { border-color: var(--lvl); }
+.mp-pl .nm { font-weight: 700; flex: 1; }
+.tag-host { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: var(--brass); color: #231a08; }
+.mp-board { display: flex; flex-wrap: wrap; gap: 8px; }
+.mp-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px 4px 4px; border-radius: 999px; background: var(--velvet); border: 1px solid var(--line); font-size: 14px; }
+.mp-chip .av { width: 26px; height: 26px; }
+.mp-chip.me { border-color: var(--lvl); }
+.mp-chip .val { font-weight: 700; }
+.mp-winner { display: flex; align-items: center; gap: 10px; margin: 0; font-weight: 700; }
+.mp-group { margin: 8px 0 0; font-size: 17px; }
+.mp-sets { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.mp-set { border-color: var(--lvl); }
+.mp-rank { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.mp-rank li { display: grid; grid-template-columns: 32px 40px 1fr auto; grid-template-areas: "pos av nm val" "pos av tot tot"; align-items: center; column-gap: 12px;
+  padding: 12px 16px; border-radius: 16px; background: var(--velvet); border: 1px solid var(--line); }
+.mp-rank .pos { grid-area: pos; font-size: 20px; font-weight: 700; }
+.mp-rank .av { grid-area: av; width: 40px; height: 40px; }
+.mp-rank .nm { grid-area: nm; font-weight: 700; }
+.mp-rank .val { grid-area: val; font-weight: 700; }
+.mp-rank .tot { grid-area: tot; font-size: 13px; color: var(--smoke); }
+.mp-rank li.first { border-color: var(--brass); background: color-mix(in srgb, var(--brass) 14%, var(--velvet)); }
+.mp-rank li.me .nm::after { content: " (toi)"; font-weight: 400; color: var(--smoke); }
 .voice { display: flex; align-items: center; gap: 12px; min-height: 48px; }
 .mic { display: inline-flex; align-items: center; gap: 10px; flex: none; border-radius: 999px; padding: 10px 18px 10px 12px;
   background: var(--velvet); border: 1px solid var(--line); color: var(--cream); font-weight: 700;
@@ -7955,7 +7998,7 @@ const THEMES = [
     yearLabel: "sorti en", difficulty: true, bars: 4, chip: "4 niveaux · 40 manches", levels: MIX },
   { id: "charts", name: "Top Charts", eyebrow: "Meilleures ventes depuis 1969", hero: "trophy", color: "#f2b134",
     tagline: "Les singles les plus vendus depuis 1969 : monde, États-Unis, Royaume-Uni, France et Europe. Trois niveaux par classement.",
-    yearLabel: "sorti en", difficulty: false, chip: "5 classements · 150 titres", levels: CHARTS }
+    yearLabel: "sorti en", difficulty: false, chip: `5 classements · ${CHARTS.reduce((n, l) => n + l.tracks.length, 0)} titres`, levels: CHARTS }
 ].filter(th => th.levels.length);
 THEMES.forEach(th => th.levels.forEach(l => l.tracks.forEach(t => { if (t.kind !== "quiz") t.q = `${t.artist.split(" & ")[0]} ${t.title}`; })));
 const PCOLORS = ["#e0b04f", "#5fc4d6"]; // couleur de chaque joueur en Duo
@@ -8165,6 +8208,542 @@ function renderDuoSetup() {
   const first = document.getElementById(names[0] ? "p2" : "p1"); first.focus();
 }
 
+/* ===================== Multijoueur (Supabase Realtime) =====================
+   Chacun joue sur son appareil. L'hôte crée la partie et partage un lien ; les invités entrent un prénom
+   et choisissent un avatar. L'hôte choisit la salle et le set, puis envoie chaque question : la musique
+   part chez tout le monde, le premier qui trouve gagne le point. Pas de pause, mais chacun peut couper son son.
+   Les messages passent par un canal Supabase Realtime (Broadcast + Presence), sans base de données.
+   Sans configuration (ou avec ?local), un canal entre onglets du même navigateur sert aux tests. */
+const SB_URL = "https://wydafhopszhzhhcbfznj.supabase.co", SB_KEY = "sb_publishable_5eK9TMRcHDwBqf6LXRYokQ_gBeN9D8o";
+const MP_MAX = 10, MP_Q_DELAY = 900;
+const AVATARS = [
+  { id: "trumpet", name: "Trompette", color: "#e0b04f" },
+  { id: "guitar", name: "Guitare", color: "#e85fa8" },
+  { id: "discoball", name: "Boule disco", color: "#45b7c4" },
+  { id: "headphones", name: "Casque", color: "#9d8be0" }
+];
+const avOf = id => AVATARS.find(a => a.id === id) || AVATARS[0];
+const avSvg = id => { const a = avOf(id); return ART[a.id](a.color); };
+const MP_ME_KEY = "blindtest-mp-me";
+const COPY_ICO = `<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="5" width="9" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3 11V3.5A1.5 1.5 0 0 1 4.5 2H11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+const SOUND_ICO = on => on
+  ? `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2z" fill="currentColor"/><path d="M11 5.5a3.5 3.5 0 0 1 0 5M12.8 3.6a6 6 0 0 1 0 8.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`
+  : `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2z" fill="currentColor"/><path d="M11 6l4 4M15 6l-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+const fmtPts = n => String(Math.round(n * 10) / 10).replace(".", ",");
+let M = null;
+
+function mpLoadMe() { try { const m = JSON.parse(localStorage.getItem(MP_ME_KEY)); if (m && m.name) return m; } catch (e) {} return { name: "", av: AVATARS[0].id }; }
+function mpSaveMe(m) { try { localStorage.setItem(MP_ME_KEY, JSON.stringify({ name: m.name, av: m.av })); } catch (e) {} }
+function mpId() {
+  try { let id = sessionStorage.getItem("blindtest-mp-id"); if (!id) { id = Math.random().toString(36).slice(2, 10); sessionStorage.setItem("blindtest-mp-id", id); } return id; }
+  catch (e) { return Math.random().toString(36).slice(2, 10); }
+}
+const mpLink = code => `${location.origin}${location.pathname}?join=${code}`;
+const mpLocal = () => !SB_URL || new URLSearchParams(location.search).has("local");
+
+/* ---------- Transport ---------- */
+async function mpNet(code, info, on) {
+  if (mpLocal()) return mpLocalNet(code, info, on);
+  const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
+  const sb = createClient(SB_URL, SB_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
+  const ch = sb.channel("blindtest-" + code, { config: { broadcast: { self: false }, presence: { key: info.id } } });
+  ch.on("broadcast", { event: "m" }, ({ payload }) => on.msg(payload));
+  ch.on("presence", { event: "sync" }, () => {
+    const st = ch.presenceState(), out = {};
+    for (const [k, arr] of Object.entries(st)) if (arr && arr.length) out[k] = arr[arr.length - 1];
+    on.presence(out);
+  });
+  await new Promise((res, rej) => {
+    const to = setTimeout(() => rej(new Error("délai dépassé")), 12000);
+    ch.subscribe(async s => {
+      if (s === "SUBSCRIBED") { clearTimeout(to); try { await ch.track(info); } catch (e) {} res(); }
+      else if (s === "CHANNEL_ERROR" || s === "TIMED_OUT") { clearTimeout(to); rej(new Error(s)); }
+    });
+  });
+  return {
+    send: payload => ch.send({ type: "broadcast", event: "m", payload }),
+    track: i => ch.track(i),
+    leave: () => { try { ch.untrack(); sb.removeChannel(ch); } catch (e) {} }
+  };
+}
+function mpLocalNet(code, info, on) {
+  const bc = new BroadcastChannel("blindtest-" + code), seen = {};
+  let me = info;
+  const emit = () => { const now = Date.now(), out = { [me.id]: me }; for (const [k, v] of Object.entries(seen)) if (now - v.t < 5000) out[k] = v.info; on.presence(out); };
+  bc.onmessage = e => {
+    const m = e.data;
+    if (m.kind === "hb") { const fresh = !seen[m.info.id]; seen[m.info.id] = { info: m.info, t: Date.now() }; if (fresh) { emit(); bc.postMessage({ kind: "hb", info: me }); } }
+    else if (m.kind === "bye") { delete seen[m.id]; emit(); }
+    else if (m.kind === "m") on.msg(m.payload);
+  };
+  const hb = setInterval(() => { bc.postMessage({ kind: "hb", info: me }); emit(); }, 1500);
+  bc.postMessage({ kind: "hb", info: me }); setTimeout(emit, 30);
+  return Promise.resolve({
+    send: payload => bc.postMessage({ kind: "m", payload }),
+    track: i => { me = i; bc.postMessage({ kind: "hb", info: me }); emit(); },
+    leave: () => { clearInterval(hb); bc.postMessage({ kind: "bye", id: me.id }); bc.close(); }
+  });
+}
+/* Envoi à tous, y compris soi-même. */
+function mpSend(type, data = {}) {
+  const payload = { type, from: M.me.id, ...data };
+  try { M.net && M.net.send(payload); } catch (e) {}
+  mpOnMsg(payload);
+}
+
+/* ---------- Entrée : création ou invitation ---------- */
+function avatarPicker(sel) {
+  return `<fieldset class="avatars"><legend>Ton avatar</legend>
+    ${AVATARS.map(a => `<label class="av-opt" style="--ac:${a.color}">
+      <input type="radio" name="av" value="${a.id}" ${a.id === sel ? "checked" : ""}>
+      <span class="av-pic">${avSvg(a.id)}</span><span class="av-name">${a.name}</span></label>`).join("")}
+  </fieldset>`;
+}
+function renderMpSetup() {
+  S.screen = "mp"; const me = mpLoadMe();
+  $app.style.setProperty("--lvl", "#45b7c4");
+  $app.innerHTML = `
+    <div class="topbar"><button class="back" id="back">← Accueil</button><span class="eyebrow">Multijoueur</span></div>
+    <header class="room-head">
+      <div><p class="eyebrow">Blind Test</p><h1 class="room-title">Multijoueur</h1>
+        <p class="tag">Chacun joue sur son téléphone. La musique part chez tout le monde : le premier qui trouve gagne le point.</p></div>
+      <div class="room-art lg">${ART.headphones("#45b7c4")}</div>
+    </header>
+    <form class="duo-form" id="mp-form" novalidate>
+      <div class="field"><label for="mp-cap">Nombre de joueurs</label>
+        <select id="mp-cap">${Array.from({ length: MP_MAX - 1 }, (_, i) => i + 2).map(n => `<option value="${n}" ${n === 4 ? "selected" : ""}>${n} joueurs</option>`).join("")}</select></div>
+      <div class="field"><label for="mp-name">Ton prénom</label><input id="mp-name" maxlength="20" autocomplete="off" value="${esc(me.name)}" placeholder="Prénom"></div>
+      ${avatarPicker(me.av)}
+      <p class="err" id="mp-err" role="alert" hidden></p>
+      <div class="actions"><button class="btn primary" type="submit">Créer la partie →</button></div>
+    </form>`;
+  $app.querySelector("#back").addEventListener("click", renderHome);
+  $app.querySelector("#mp-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const name = document.getElementById("mp-name").value.trim(), av = (document.querySelector('input[name="av"]:checked') || {}).value || AVATARS[0].id;
+    if (!name) return mpFormErr("mp-name", "Donne ton prénom.");
+    unlockAudio();
+    const code = Math.random().toString(36).slice(2, 7).toUpperCase().replace(/[^A-Z0-9]/g, "X");
+    mpEnter({ role: "host", code, cap: +document.getElementById("mp-cap").value, name, av });
+  });
+  document.getElementById("mp-name").focus();
+}
+function renderMpJoin(code) {
+  S.screen = "mp"; const me = mpLoadMe();
+  $app.style.setProperty("--lvl", "#45b7c4");
+  $app.innerHTML = `
+    <div class="topbar"><button class="back" id="back">← Accueil</button><span class="eyebrow">Partie ${esc(code)}</span></div>
+    <header class="room-head">
+      <div><p class="eyebrow">Invitation</p><h1 class="room-title">Rejoins la partie</h1>
+        <p class="tag">La musique part chez tout le monde en même temps : le premier qui trouve gagne le point. Garde le son de ton téléphone allumé.</p></div>
+      <div class="room-art lg">${ART.headphones("#45b7c4")}</div>
+    </header>
+    <form class="duo-form" id="mp-form" novalidate>
+      <div class="field"><label for="mp-name">Ton prénom</label><input id="mp-name" maxlength="20" autocomplete="off" value="${esc(me.name)}" placeholder="Prénom"></div>
+      ${avatarPicker(me.av)}
+      <p class="err" id="mp-err" role="alert" hidden></p>
+      <div class="actions"><button class="btn primary" type="submit">Rejoindre →</button></div>
+    </form>`;
+  $app.querySelector("#back").addEventListener("click", () => { history.replaceState(null, "", location.pathname); renderHome(); });
+  $app.querySelector("#mp-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const name = document.getElementById("mp-name").value.trim(), av = (document.querySelector('input[name="av"]:checked') || {}).value || AVATARS[0].id;
+    if (!name) return mpFormErr("mp-name", "Donne ton prénom.");
+    unlockAudio();
+    mpEnter({ role: "guest", code, name, av });
+  });
+  document.getElementById("mp-name").focus();
+}
+function mpFormErr(id, msg) {
+  const err = document.getElementById("mp-err"); err.textContent = msg; err.hidden = false;
+  const f = document.getElementById(id); f.setAttribute("aria-invalid", "true"); f.focus();
+}
+async function mpEnter({ role, code, cap, name, av }) {
+  mpSaveMe({ name, av });
+  if (M) mpLeave(true);
+  M = { role, code, cap: cap || MP_MAX, me: { id: mpId(), name, av }, peers: {}, scores: {}, round: {}, mode: MODE,
+    view: "connecting", game: null, q: null, muted: false, hostSeen: Date.now(), manche: 0, err: "" };
+  mpRender();
+  const info = { id: M.me.id, name, av, host: role === "host", cap: M.cap, ver: APP_VERSION, t: Date.now() };
+  try {
+    M.net = await mpNet(code, info, { msg: mpOnMsg, presence: mpOnPresence });
+  } catch (e) {
+    M.view = "msg"; M.err = "Connexion impossible au serveur de jeu. Vérifie ta connexion et réessaie."; mpRender(); return;
+  }
+  if (role === "guest") { M.view = "lobby"; mpRender(); M.hostTimer = setInterval(mpCheckHost, 2000); }
+  else { M.view = "lobby"; mpRender(); }
+}
+function mpLeave(silent) {
+  if (!M) return;
+  clearInterval(M.hostTimer); clearTimeout(M.qTimer); cancelAnimationFrame(M.raf);
+  if (M.role === "host" && M.net) try { M.net.send({ type: "end", from: M.me.id }); } catch (e) {}
+  try { M.net && M.net.leave(); } catch (e) {}
+  stopCrackle(); stopClip(); players.forEach(a => { a.muted = false; });
+  M = null;
+  if (!silent) { history.replaceState(null, "", location.pathname); renderHome(); }
+}
+
+/* ---------- Présence ---------- */
+function mpOnPresence(p) {
+  if (!M) return;
+  M.peers = p;
+  Object.keys(p).forEach(id => { if (!(id in M.scores)) M.scores[id] = 0; });
+  if (Object.values(p).some(x => x.host)) M.hostSeen = Date.now();
+  if (M.role === "host") {
+    // capacité : les derniers arrivés au-delà de la limite sont refusés
+    const guests = Object.values(p).filter(x => !x.host).sort((a, b) => a.t - b.t);
+    guests.slice(M.cap - 1).forEach(g => { try { M.net.send({ type: "full", from: M.me.id, to: g.id }); } catch (e) {} });
+    // un nouvel arrivant en cours de partie reçoit l'état
+    if (M.game) try { M.net.send({ type: "state", from: M.me.id, game: M.game, scores: M.scores, round: M.round, mode: M.mode, view: M.view }); } catch (e) {}
+  }
+  if (["lobby", "rank", "pick"].includes(M.view)) mpRender();
+  else mpBoard();
+}
+function mpCheckHost() {
+  if (!M || M.role !== "guest") return;
+  if (Date.now() - M.hostSeen > 9000) { M.view = "msg"; M.err = "L'hôte a quitté la partie."; mpRender(); clearInterval(M.hostTimer); }
+}
+const mpPlayers = () => Object.values(M.peers).filter(p => !M.full).sort((a, b) => (b.host - a.host) || (a.t - b.t));
+
+/* ---------- Messages ---------- */
+function mpOnMsg(m) {
+  if (!M || !m) return;
+  if (m.to && m.to !== M.me.id) return;
+  switch (m.type) {
+    case "full": M.view = "msg"; M.err = "La partie est complète."; try { M.net.leave(); } catch (e) {} M.net = null; mpRender(); break;
+    case "end": if (M.role === "guest") { M.view = "msg"; M.err = "L'hôte a terminé la partie."; mpStopAudio(); mpRender(); } break;
+    case "mode": M.mode = m.mode; if (M.view === "lobby") mpRender(); break;
+    case "lobby": M.game = null; M.q = null; mpStopAudio(); M.view = m.pick ? "pickwait" : "lobby"; mpRender(); break;
+    case "start": mpOnStart(m); break;
+    case "state": if (M.role === "guest" && !M.game && m.game) { M.scores = m.scores; M.round = m.round; M.mode = m.mode; mpOnStart(m.game, true); } break;
+    case "q": mpOnQuestion(m.qi); break;
+    case "ans": if (M.role === "host") mpHostAnswer(m); break;
+    case "reveal": mpOnReveal(m); break;
+    case "rank": M.scores = m.scores; M.round = m.round; mpStopAudio(); M.view = "rank"; mpRender(); break;
+  }
+}
+function mpResolve(g) {
+  const th = THEMES.find(t => t.id === g.themeId), l = th && th.levels.find(x => x.id === g.levelId);
+  if (!l) return null;
+  const order = g.keys.map(k => l.tracks.find(t => tkey(t) === k));
+  return order.every(Boolean) ? { th, l, order } : null;
+}
+function mpOnStart(g, late) {
+  const r = mpResolve(g);
+  if (!r) { M.view = "msg"; M.err = "Ta version de l'app n'est pas la même que celle de l'hôte. Recharge la page, puis rouvre le lien."; mpRender(); return; }
+  M.game = g; M.th = r.th; M.l = r.l; M.order = r.order; M.mode = g.mode;
+  if (!late) M.round = {};
+  M.view = "starting"; M.q = null;
+  M.order.forEach((t, i) => { if (i < 3) prefetch(t, i === 0); else prefetch(t); });
+  mpRender();
+}
+
+/* ---------- Questions ---------- */
+function mpOnQuestion(qi) {
+  if (!M || !M.order) return;
+  clearInterval(fadeT); if (!player.paused) player.pause(); stopCrackle();
+  const t = M.order[qi], quiz = t.kind === "quiz", ord = M.game.orders[qi];
+  const base = quiz ? [{ title: t.answer, ok: true }, ...t.decoys.map(d => ({ title: d, ok: false }))]
+    : [{ title: t.title, artist: t.artist, ok: true }, ...t.decoys.map(([title, artist]) => ({ title, artist, ok: false }))];
+  M.q = { qi, t, quiz, choices: ord.map(i => base[i]), phase: "wait", picked: null, locked: false, typed: "", msg: "", sent: false,
+    dur: (M.mode === "saisie" ? TYPE_SECONDS : ROUND_SECONDS), start: 0, clip: undefined, img: undefined, rev: null };
+  M.view = "q";
+  const q = M.q;
+  if (quiz && t.img) getImage(t.img.wiki).then(info => { if (M && M.q === q) { q.img = info; mpRender(); } });
+  const pv = quiz ? Promise.resolve(null) : getPreview(t);
+  pv.then(c => { if (M && M.q === q) q.clip = c; });
+  mpRender();
+  setTimeout(() => {
+    if (!M || M.q !== q) return;
+    q.phase = "playing"; q.start = performance.now();
+    if (!quiz) {
+      const go = c => {
+        if (!M || M.q !== q || q.phase === "revealed") return;
+        if (c) { const p = playClip(c.url); if (p) p.catch(() => { q.blocked = true; mpRender(); }); }
+        else startCrackle();
+        mpApplyMute();
+      };
+      if (q.clip !== undefined) go(q.clip); else pv.then(go);
+    }
+    M.order[qi + 1] && prefetch(M.order[qi + 1], true);
+    mpRender(); mpTick();
+    if (M.role === "host") {
+      M.wrong = new Set();
+      clearTimeout(M.qTimer);
+      M.qTimer = setTimeout(() => mpHostReveal(qi, null), q.dur * 1000 + 700);
+    }
+  }, MP_Q_DELAY);
+}
+function mpTick() {
+  cancelAnimationFrame(M.raf);
+  const step = () => {
+    if (!M || !M.q || M.q.phase !== "playing") return;
+    const left = Math.max(0, M.q.dur - (performance.now() - M.q.start) / 1000);
+    const c = document.getElementById("clock"), b = document.getElementById("bar");
+    if (c) c.textContent = "00:" + pad2(Math.ceil(left));
+    if (b) b.style.transform = `scaleX(${left / M.q.dur})`;
+    if (left <= 0) { M.q.phase = "timeup"; mpRender(); return; }
+    M.raf = requestAnimationFrame(step);
+  };
+  M.raf = requestAnimationFrame(step);
+}
+function mpAnswerChoice(i) {
+  const q = M.q; if (!q || q.phase !== "playing" || q.locked || q.sent) return;
+  q.picked = i;
+  if (q.choices[i].ok) { q.sent = true; mpSend("ans", { qi: q.qi, ok: true }); }
+  else { q.locked = true; mpSend("ans", { qi: q.qi, ok: false }); say("Raté. Attends les autres."); }
+  if (M && M.q === q && q.phase !== "revealed") mpRender();
+}
+function mpAnswerTyped(v) {
+  const q = M.q; if (!q || q.phase !== "playing" || q.sent) return;
+  q.typed = v; if (!v.trim()) return;
+  const t = q.t;
+  if (typedMatch(v, t)) { q.sent = true; mpSend("ans", { qi: q.qi, ok: true, typed: v }); }
+  else if (!q.quiz && titleMatch(v, t.title)) { q.sent = true; mpSend("ans", { qi: q.qi, ok: true, partial: true, typed: v }); }
+  else {
+    q.msg = "Pas ça. Essaie encore.";
+    const msg = document.getElementById("type-msg"), row = document.querySelector(".type-row"), inp = document.getElementById("type-in");
+    if (msg) { msg.textContent = q.msg; msg.classList.add("ko"); }
+    if (row) { row.classList.remove("shake"); void row.offsetWidth; row.classList.add("shake"); }
+    if (inp) { inp.focus(); inp.select(); }
+    say(q.msg); return;
+  }
+  if (M && M.q === q && q.phase !== "revealed") mpRender();
+}
+/* L'hôte arbitre : la première bonne réponse reçue gagne. */
+function mpHostAnswer(m) {
+  const g = M.game; if (!g || g.revealed === m.qi || !M.q || M.q.qi !== m.qi) return;
+  if (m.ok) return mpHostReveal(m.qi, m.from, !!m.partial, m.typed);
+  M.wrong.add(m.from);
+  const active = Object.keys(M.peers).length;
+  if (M.wrong.size >= active) mpHostReveal(m.qi, null);
+}
+function mpHostReveal(qi, winner, partial, typed) {
+  const g = M.game; if (!g || g.revealed === qi) return;
+  g.revealed = qi; clearTimeout(M.qTimer);
+  if (winner) { const pts = partial ? 0.5 : 1; M.scores[winner] = (M.scores[winner] || 0) + pts; M.round[winner] = (M.round[winner] || 0) + pts; }
+  const w = winner && M.peers[winner];
+  mpSend("reveal", { qi, winner, wname: w ? w.name : "", wav: w ? w.av : "", partial: !!partial, typed: typed || "", scores: M.scores, round: M.round });
+}
+function mpOnReveal(m) {
+  const q = M.q; if (!q || q.qi !== m.qi) return;
+  M.scores = m.scores; M.round = m.round;
+  q.phase = "revealed"; q.rev = m; cancelAnimationFrame(M.raf); stopCrackle();
+  const mine = m.winner === M.me.id;
+  say(m.winner ? (mine ? "Tu as trouvé le premier !" : `${m.wname} a trouvé.`) + ` C'était ${q.quiz ? q.t.answer : `${q.t.title}, de ${q.t.artist}`}.` : `Personne n'a trouvé. C'était ${q.quiz ? q.t.answer : `${q.t.title}, de ${q.t.artist}`}.`);
+  mpRender();
+  const fb = document.getElementById("fb-h"); if (fb) { fb.focus({ preventScroll: true }); fb.closest(".feedback").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "nearest" }); }
+}
+function mpHostNext() {
+  const qi = M.q ? M.q.qi : -1;
+  if (qi + 1 < M.order.length) { M.game.revealed = -1; mpSend("q", { qi: qi + 1 }); }
+  else mpSend("rank", { scores: M.scores, round: M.round });
+}
+function mpHostStart(th, l) {
+  const order = drawOrder(th, l); markSeen(th, l, order);
+  const game = { themeId: th.id, levelId: l.id, keys: order.map(tkey), orders: order.map(() => shuffle([0, 1, 2, 3])), mode: M.mode, revealed: -1 };
+  mpSend("start", game);
+  setTimeout(() => { if (M && M.game && M.game.keys === game.keys) mpSend("q", { qi: 0 }); }, 1400);
+}
+function mpStopAudio() { cancelAnimationFrame(M && M.raf); stopCrackle(); stopClip(); }
+function mpApplyMute() {
+  const mu = !!(M && M.muted);
+  players.forEach(a => { a.muted = mu; });
+  try { if (crackleSrc && crackleGain && actx) crackleGain.gain.setTargetAtTime(mu ? 0 : 0.45, actx.currentTime, 0.03); } catch (e) {}
+}
+
+/* ---------- Affichage ---------- */
+function mpPlayerChip(p, extra = "") {
+  return `<li class="mp-pl ${p.id === M.me.id ? "me" : ""}"><span class="av">${avSvg(p.av)}</span><span class="nm">${esc(p.name)}${p.id === M.me.id ? " (toi)" : ""}</span>${p.host ? `<span class="tag-host">Hôte</span>` : ""}${extra}</li>`;
+}
+function mpBoard() {
+  const el = document.getElementById("mp-board"); if (!el || !M) return;
+  el.innerHTML = mpBoardHtml();
+}
+function mpBoardHtml() {
+  return mpPlayers().slice().sort((a, b) => (M.scores[b.id] || 0) - (M.scores[a.id] || 0))
+    .map(p => `<span class="mp-chip ${p.id === M.me.id ? "me" : ""}"><span class="av">${avSvg(p.av)}</span><span class="nm">${esc(p.name)}</span><span class="val mono">${fmtPts(M.scores[p.id] || 0)}</span></span>`).join("");
+}
+function mpLinkRow() {
+  return `<div class="mp-link">
+      <label for="mp-url" class="eyebrow">Lien d'invitation</label>
+      <div class="mp-link-row">
+        <input id="mp-url" readonly value="${esc(mpLink(M.code))}">
+        <button type="button" class="icon-btn" id="mp-copy" aria-label="Copier le lien">${COPY_ICO}<span>Copier</span></button>
+      </div>
+      <p class="mode-line" id="mp-copied" role="status"></p>
+    </div>`;
+}
+function mpBindLink() {
+  const b = document.getElementById("mp-copy"); if (!b) return;
+  b.addEventListener("click", async () => {
+    const url = mpLink(M.code), out = document.getElementById("mp-copied");
+    try { await navigator.clipboard.writeText(url); out.textContent = "Lien copié. Envoie-le aux autres joueurs."; }
+    catch (e) { const i = document.getElementById("mp-url"); i.focus(); i.select(); out.textContent = "Lien sélectionné : copie-le avec Ctrl + C."; }
+  });
+}
+function mpRender() {
+  if (!M) return;
+  S.screen = M.view === "q" ? "mpgame" : "mp";
+  $app.style.setProperty("--lvl", M.l ? M.l.color : "#45b7c4");
+  const top = (label) => `<div class="topbar"><button class="back" id="mp-quit">← Quitter</button><span class="eyebrow">${label}</span></div>`;
+  const bindQuit = () => { const q = document.getElementById("mp-quit"); if (q) q.addEventListener("click", () => mpLeave()); };
+  if (M.view === "connecting") {
+    $app.innerHTML = `${top("Multijoueur")}<p class="hint" role="status">Connexion à la partie ${esc(M.code)}…</p>`; bindQuit(); return;
+  }
+  if (M.view === "msg") {
+    $app.innerHTML = `${top("Multijoueur")}<section class="feedback ko"><h3 tabindex="-1" id="fb-h">${esc(M.err)}</h3>
+      <div class="actions"><button class="btn primary" id="mp-home">Retour à l'accueil</button></div></section>`;
+    bindQuit(); document.getElementById("mp-home").addEventListener("click", () => mpLeave()); document.getElementById("fb-h").focus(); return;
+  }
+  const pl = mpPlayers(), isHost = M.role === "host";
+  if (M.view === "lobby" || M.view === "pickwait") {
+    $app.innerHTML = `${top(`Partie ${esc(M.code)}`)}
+      <header class="room-head"><div><p class="eyebrow">Multijoueur</p><h1 class="room-title">Salle d'attente</h1>
+        <p class="tag">${isHost ? "Envoie le lien aux autres joueurs. Quand tout le monde est là, choisis la salle." : M.view === "pickwait" ? "L'hôte choisit la prochaine salle…" : "Tu es dans la partie. L'hôte va bientôt lancer la musique."}</p></div>
+        <div class="room-art lg">${ART.headphones("#45b7c4")}</div></header>
+      ${mpLinkRow()}
+      <section class="stack" aria-labelledby="pl-h">
+        <div class="section-head"><h2 id="pl-h">Joueurs</h2><span class="eyebrow">${pl.length} / ${M.cap}</span></div>
+        <ul class="mp-list">${pl.map(p => mpPlayerChip(p, M.scores[p.id] ? `<span class="val mono">${fmtPts(M.scores[p.id])} pt</span>` : "")).join("")}</ul>
+      </section>
+      ${isHost ? `<section class="answer-mode" aria-label="Mode de réponse">
+        <div class="seg" role="group" aria-label="Mode de réponse">
+          <button class="seg-b ${M.mode === "qcm" ? "on" : ""}" id="am-qcm" aria-pressed="${M.mode === "qcm"}">QCM</button>
+          <button class="seg-b ${M.mode === "saisie" ? "on" : ""}" id="am-saisie" aria-pressed="${M.mode === "saisie"}">Saisie</button>
+        </div>
+        <p class="mode-line">${M.mode === "saisie" ? "Chacun tape l'artiste (le titre seul vaut un demi-point). Plusieurs essais permis." : "Quatre propositions, un seul essai par morceau."}</p>
+      </section>
+      <div class="actions"><button class="btn primary" id="mp-pick" ${pl.length < 2 ? "disabled" : ""}>Choisir la salle →</button></div>
+      ${pl.length < 2 ? `<p class="mode-line">Il faut au moins deux joueurs.</p>` : ""}`
+      : `<p class="mode-line">Mode de réponse : <strong>${M.mode === "saisie" ? "Saisie" : "QCM"}</strong>.</p>`}`;
+    bindQuit(); mpBindLink();
+    if (isHost) {
+      [["#am-qcm", "qcm"], ["#am-saisie", "saisie"]].forEach(([sel, m]) => $app.querySelector(sel).addEventListener("click", () => { M.mode = m; mpSend("mode", { mode: m }); }));
+      $app.querySelector("#mp-pick").addEventListener("click", () => { M.view = "pick"; M.pickTheme = null; mpRender(); });
+    }
+    return;
+  }
+  if (M.view === "pick") {
+    const th = M.pickTheme;
+    $app.innerHTML = `<div class="topbar"><button class="back" id="mp-back">← ${th ? "Salles" : "Salle d'attente"}</button><span class="eyebrow">Partie ${esc(M.code)}</span></div>
+      <section class="stack" aria-labelledby="pick-h">
+        <div class="section-head"><h2 id="pick-h">${th ? th.name : "Choisis la salle"}</h2><span class="eyebrow">${pl.length} joueurs</span></div>
+        ${th ? groupsOf(th).map(g => `<h3 class="mp-group">${g.title}</h3><ul class="mp-sets">${g.levels.map(l => `<li><button class="btn mp-set" style="--lvl:${l.color}" data-level="${l.id}">${l.tier ? TIER_NAMES[l.tier] : l.name}</button></li>`).join("")}</ul>`).join("")
+          : `<ul class="rooms">${THEMES.map(t => `<li><button class="room" style="--lvl:${t.color}" data-theme="${t.id}"><span class="room-art">${ART[t.hero](t.color)}</span><span class="room-txt"><span class="num">${t.eyebrow}</span><h3>${t.name}</h3></span></button></li>`).join("")}</ul>`}
+      </section>`;
+    document.getElementById("mp-back").addEventListener("click", () => { if (th) { M.pickTheme = null; } else M.view = "lobby"; mpRender(); });
+    $app.querySelectorAll(".room").forEach(b => b.addEventListener("click", () => { M.pickTheme = THEMES.find(t => t.id === b.dataset.theme); mpRender(); window.scrollTo({ top: 0 }); }));
+    $app.querySelectorAll(".mp-set").forEach(b => b.addEventListener("click", () => { unlockAudio(); mpHostStart(th, th.levels.find(l => l.id === +b.dataset.level)); }));
+    return;
+  }
+  if (M.view === "starting") {
+    $app.innerHTML = `${top(`${M.th.name} · Partie ${esc(M.code)}`)}
+      <div class="level-title"><span class="eyebrow">${M.l.tier ? `Niveau ${M.l.tier}` : `Set ${pad2(M.l.id)}`} · ${M.order.length} manches</span><h2>${M.l.name}</h2></div>
+      <p class="hint" role="status">Préparez-vous, la musique arrive…</p>
+      <div class="mp-board" id="mp-board">${mpBoardHtml()}</div>`;
+    bindQuit(); return;
+  }
+  if (M.view === "rank") {
+    const ranked = pl.slice().sort((a, b) => (M.round[b.id] || 0) - (M.round[a.id] || 0) || (M.scores[b.id] || 0) - (M.scores[a.id] || 0));
+    let prev = null, rank = 0;
+    const rows = ranked.map((p, i) => { const v = M.round[p.id] || 0; if (v !== prev) { rank = i + 1; prev = v; } return { p, rank, v }; });
+    const order = M.th ? playOrder(M.th) : [], nextL = order[order.indexOf(M.l) + 1];
+    $app.innerHTML = `${top(`Partie ${esc(M.code)}`)}
+      <header class="verdict-head"><p class="eyebrow">${M.th ? `${M.th.name} · ${M.l.name}` : "Manche terminée"}</p>
+        <h1 tabindex="-1" id="verdict">${rows[0] && rows[0].v > 0 ? `${esc(rows[0].p.name)} gagne la manche !` : "Manche terminée"}</h1></header>
+      <ol class="mp-rank">${rows.map(r => `<li class="${r.rank === 1 && r.v > 0 ? "first" : ""} ${r.p.id === M.me.id ? "me" : ""}">
+        <span class="pos mono">${r.rank}</span><span class="av">${avSvg(r.p.av)}</span><span class="nm">${esc(r.p.name)}</span>
+        <span class="val mono">${fmtPts(r.v)} pt${r.v > 1 ? "s" : ""}</span><span class="tot mono">Total ${fmtPts(M.scores[r.p.id] || 0)}</span></li>`).join("")}</ol>
+      ${isHost ? `<div class="actions">
+        ${nextL ? `<button class="btn primary" id="mp-nextset">Manche suivante : ${esc(nextL.name)} →</button>` : ""}
+        <button class="btn ${nextL ? "" : "primary"}" id="mp-again">Rejouer ce set</button>
+        <button class="btn" id="mp-room">Changer de salle</button></div>`
+      : `<p class="hint" role="status">L'hôte va lancer la manche suivante…</p>`}`;
+    bindQuit();
+    if (isHost) {
+      const nb = document.getElementById("mp-nextset"); if (nb) nb.addEventListener("click", () => { unlockAudio(); mpHostStart(M.th, nextL); });
+      document.getElementById("mp-again").addEventListener("click", () => { unlockAudio(); mpHostStart(M.th, M.l); });
+      document.getElementById("mp-room").addEventListener("click", () => { mpSend("lobby", { pick: true }); M.view = "pick"; M.pickTheme = null; mpRender(); });
+    }
+    document.getElementById("verdict").focus();
+    return;
+  }
+  if (M.view === "q") return mpRenderQ();
+}
+function mpRenderQ() {
+  const q = M.q, t = q.t, l = M.l, th = M.th, quiz = q.quiz, isHost = M.role === "host";
+  const live = q.phase === "playing", rev = q.phase === "revealed" ? q.rev : null;
+  const typeMode = M.mode === "saisie";
+  const typeFocused = document.activeElement && document.activeElement.id === "type-in";
+  const left = live ? Math.max(0, q.dur - (performance.now() - q.start) / 1000) : q.phase === "wait" ? q.dur : 0;
+  const status = q.phase === "wait" ? "Préparez-vous…" : rev ? "" : q.sent ? "Réponse envoyée… on attend de savoir si tu es le premier."
+    : q.locked ? "Raté pour ce morceau. Attends les autres." : q.phase === "timeup" ? "Temps écoulé…" : "";
+  const timer = `<div class="timer"><div class="row"><span>Temps restant</span><span class="clock mono" id="clock">00:${pad2(Math.ceil(left))}</span></div>
+      <div class="bar"><i id="bar" style="transform:scaleX(${left / q.dur})"></i></div></div>`;
+  const muteBtn = `<button type="button" class="icon-btn" id="mp-mute" aria-pressed="${M.muted}" aria-label="${M.muted ? "Remettre le son" : "Couper le son"}">${SOUND_ICO(!M.muted)}<span>${M.muted ? "Son coupé" : "Son"}</span></button>`;
+  const canAnswer = live && !q.sent && !q.locked;
+  const res = rev ? { ok: rev.winner === M.me.id } : null;
+  $app.innerHTML = `
+    <div class="topbar"><button class="back" id="mp-quit">← Quitter</button>${muteBtn}</div>
+    <div class="mp-board" id="mp-board" aria-label="Scores">${mpBoardHtml()}</div>
+    <div class="level-title">
+      <span class="eyebrow">${th.name} · ${quiz ? "Question" : "Morceau"} ${q.qi + 1} sur ${M.order.length}</span>
+      <h2>${l.name}</h2>
+    </div>
+    ${quiz ? `<section class="quiz-card" aria-labelledby="qq"><span class="eyebrow">Culture générale</span><h3 id="qq">${t.q}</h3>
+      ${t.img ? (q.img ? `<figure class="qimg"><img src="${q.img.src}" alt="${esc(t.img.clue)}"><figcaption>${rev ? imgCredit(q.img) : "Image : Wikimedia Commons · crédit complet après la réponse"}</figcaption></figure>`
+        : q.img === null ? `<p class="clue"><strong>Indice :</strong> ${t.img.clue}</p>` : `<div class="qimg wait">Chargement de l'image…</div>`) : ""}
+      <div class="qbar">${timer}</div></section>`
+    : `<section class="stage" aria-label="Platine"><div class="deck"><div class="disc ${live || rev ? "spinning" : ""}">${vinyl(l.color)}</div><div class="arm ${live || rev ? "down" : ""}">${ARM}</div></div>
+      <div class="controls">${timer}${q.blocked ? `<button class="btn primary" id="mp-unblock">Toucher pour activer le son</button>` : ""}</div></section>`}
+    ${status ? `<p class="hint" role="status">${status}</p>` : ""}
+    ${typeMode ? `<form class="type-ans ${rev ? (res.ok ? "is-ok" : "is-ko") : canAnswer ? "" : "locked"}" id="type-form" novalidate>
+      <label for="type-in">${quiz ? "Ta réponse" : "Quel artiste ? Le nom de famille suffit"}</label>
+      <div class="type-row"><input id="type-in" type="text" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="go"
+        placeholder="${quiz ? "Pour une personne, le nom de famille suffit" : "Nom de l'artiste ou du groupe"}" value="${esc(q.typed)}" ${canAnswer ? "" : "disabled"} aria-describedby="type-msg">
+        ${rev ? "" : `<button class="btn primary" type="submit" ${canAnswer ? "" : "disabled"}>Valider</button>`}</div>
+      <p class="type-msg ${q.msg ? "ko" : ""}" id="type-msg">${rev || !canAnswer ? "" : q.msg || "Entrée pour valider. Le premier qui trouve gagne le point."}</p>
+    </form>`
+    : `<ol class="choices ${q.phase === "wait" ? "locked" : ""}" aria-label="${quiz ? "Quelle est la bonne réponse ?" : "Quel est ce morceau ?"}">
+      ${q.choices.map((c, i) => {
+        const cls = rev && c.ok ? "is-ok" : q.picked === i && !c.ok ? "is-ko" : "";
+        return `<li><button class="choice ${cls}" data-i="${i}" ${canAnswer ? "" : "disabled"}><span class="k">${i + 1}</span><span class="t"><span class="title">${c.title}</span>${c.artist ? `<span class="artist">${c.artist}</span>` : ""}</span></button></li>`;
+      }).join("")}</ol>`}
+    ${rev ? `<section class="feedback ${res.ok ? "ok" : rev.winner ? "" : "ko"}">
+      <h3 tabindex="-1" id="fb-h">${rev.winner ? (res.ok ? (rev.partial ? "Bon titre, tu marques un demi-point !" : "Tu as trouvé le premier !") : `${esc(rev.wname)} a trouvé${rev.partial ? " le titre" : ""} !`) : "Personne n'a trouvé"}</h3>
+      ${rev.winner ? `<p class="mp-winner"><span class="av">${avSvg(rev.wav)}</span><span>${esc(rev.wname)} · +${fmtPts(rev.partial ? 0.5 : 1)} point${rev.typed ? ` · « ${esc(rev.typed)} »` : ""}</span></p>` : ""}
+      ${quiz ? `<p class="answer">${t.answer}</p>` : `<div class="reveal">
+        ${q.clip && q.clip.cover ? `<img src="${q.clip.cover}" alt="Pochette de l'album ${q.clip.album || ""}" width="72" height="72">` : ""}
+        <div class="reveal-t"><p class="answer">${t.title} <span>· ${t.artist}${t.year ? ` · ${th.yearLabel} ${t.year}` : ""}</span></p></div></div>`}
+      ${t.rank ? `<p class="rank"><span class="mono">N°${t.rank}</span> des ventes depuis 1969 · ${l.groupTitle}</p>` : ""}
+      <p class="fact">${t.fact}</p>
+      ${t.film || t.context ? `<dl class="notes">${t.film ? `<div><dt>À l'écran</dt><dd>${t.film}</dd></div>` : ""}${t.context ? `<div><dt>Contexte</dt><dd>${t.context}</dd></div>` : ""}</dl>` : ""}
+      ${isHost ? `<button class="next" id="next">${q.qi + 1 < M.order.length ? (M.order[q.qi + 1].kind === "quiz" ? "Question suivante →" : "Morceau suivant →") : "Voir le classement →"}</button>`
+        : `<p class="mode-line" role="status">L'hôte passe à la suite…</p>`}
+    </section>` : ""}`;
+  document.getElementById("mp-quit").addEventListener("click", () => mpLeave());
+  document.getElementById("mp-mute").addEventListener("click", () => { M.muted = !M.muted; mpApplyMute(); const b = document.getElementById("mp-mute"); b.setAttribute("aria-pressed", M.muted); b.setAttribute("aria-label", M.muted ? "Remettre le son" : "Couper le son"); b.innerHTML = `${SOUND_ICO(!M.muted)}<span>${M.muted ? "Son coupé" : "Son"}</span>`; });
+  const ub = document.getElementById("mp-unblock"); if (ub) ub.addEventListener("click", () => { unlockAudio(); q.blocked = false; if (q.clip) { const p = playClip(q.clip.url); if (p) p.catch(() => {}); mpApplyMute(); } mpRender(); });
+  $app.querySelectorAll(".choice").forEach(b => b.addEventListener("click", () => mpAnswerChoice(+b.dataset.i)));
+  const tf = document.getElementById("type-form");
+  if (tf) {
+    const inp = tf.querySelector("#type-in");
+    inp.addEventListener("input", () => { q.typed = inp.value; });
+    tf.addEventListener("submit", e => { e.preventDefault(); mpAnswerTyped(inp.value); });
+    if ((typeFocused || (live && q.qi >= 0)) && !inp.disabled) { inp.focus({ preventScroll: true }); const n = inp.value.length; try { inp.setSelectionRange(n, n); } catch (e) {} }
+  }
+  const nx = document.getElementById("next"); if (nx) nx.addEventListener("click", () => { unlockAudio(); mpHostNext(); });
+  if (live) mpTick();
+}
+document.addEventListener("keydown", e => {
+  if (S.screen !== "mpgame" || !M || !M.q || M.mode === "saisie" || e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+  const n = parseInt(e.key, 10);
+  if (n >= 1 && n <= 4) { e.preventDefault(); mpAnswerChoice(n - 1); }
+});
+window.addEventListener("pagehide", () => { if (M && M.net) try { M.net.leave(); } catch (e) {} });
+
 /* ===================== Écrans ===================== */
 function renderHome() {
   S.screen = "home";
@@ -8180,12 +8759,10 @@ function renderHome() {
     </header>
     <section class="modes" aria-label="Mode de jeu">
       <div class="seg" role="group" aria-label="Mode de jeu">
-        <button class="seg-b ${DUO ? "" : "on"}" id="m-solo" aria-pressed="${!DUO}">Solo</button>
-        <button class="seg-b ${DUO ? "on" : ""}" id="m-duo" aria-pressed="${!!DUO}">Duo</button>
+        <button class="seg-b on" id="m-solo" aria-pressed="true">Solo</button>
+        <button class="seg-b" id="m-multi" aria-pressed="false">Multijoueur</button>
       </div>
-      <p class="mode-line">${DUO
-        ? `<strong>${esc(DUO.names[0])}</strong> contre <strong>${esc(DUO.names[1])}</strong>, chacun son tour sur cet appareil. <button class="linkish" id="m-edit">Modifier les joueurs</button>`
-        : "Tu joues seul et tes records sont gardés. En Duo, deux joueurs se passent le téléphone."}</p>
+      <p class="mode-line">Tu joues seul et tes records sont gardés. En multijoueur, jusqu'à ${MP_MAX} joueurs, chacun sur son téléphone : le premier qui trouve marque le point.</p>
     </section>
     <section aria-labelledby="rooms-h" class="stack">
       <div class="section-head">
@@ -8222,10 +8799,9 @@ function renderHome() {
     <p class="foot-note"><span class="chip">Deezer</span><span>Extraits de 30 secondes fournis par Deezer. Si un morceau est introuvable, la platine tourne quand même et grésille.</span></p>
     <p class="app-version mono">Version du ${APP_VERSION}</p>`;
   $app.querySelectorAll(".room").forEach(b => b.addEventListener("click", () => { unlockAudio(); renderTheme(THEMES.find(t => t.id === b.dataset.theme)); }));
-  $app.querySelector("#m-solo").addEventListener("click", () => { DUO = null; renderHome(); });
+  $app.querySelector("#m-solo").addEventListener("click", () => { DUO = null; });
   const ib = $app.querySelector("#install"); if (ib) ib.addEventListener("click", installApp);
-  $app.querySelector("#m-duo").addEventListener("click", renderDuoSetup);
-  const ed = $app.querySelector("#m-edit"); if (ed) ed.addEventListener("click", renderDuoSetup);
+  $app.querySelector("#m-multi").addEventListener("click", renderMpSetup);
 }
 
 function groupsOf(th) {
@@ -8281,7 +8857,7 @@ function renderTheme(th) {
     </section>` : `<section aria-labelledby="sets-h${gi}" class="stack">
       <div class="section-head">
         <h2 id="sets-h${gi}">${g.title}</h2>
-        <span class="eyebrow">${g.levels.length} sets · ${n} morceaux chacun</span>
+        <span class="eyebrow">${g.levels.length} sets · ${n > SET_SIZE ? `${SET_SIZE} morceaux tirés parmi ${n}` : `${n} morceaux chacun`}</span>
       </div>
       <ol class="sets">
         ${g.levels.map(l => {
@@ -8316,8 +8892,9 @@ function renderTheme(th) {
 
 function startLevel(id) {
   S.level = S.theme.levels.find(l => l.id === id);
-  S.order = (S.pre && S.pre[id]) || shuffle(S.level.tracks);
+  S.order = (S.pre && S.pre[id]) || drawOrder(S.theme, S.level);
   if (S.pre) S.pre[id] = null;
+  markSeen(S.theme, S.level, S.order);
   S.qi = 0; S.score = 0; S.results = []; S.mode = MODE;
   S.players = DUO ? DUO.names.map(name => ({ name, score: 0, correct: 0 })) : null;
   window.scrollTo({ top: 0 });
@@ -8350,9 +8927,29 @@ function newQuestion() {
   getPreview(t).then(c => { if (token === S.token) { S.clip = c; autoStart(token); } });
 }
 /* Ordres de jeu tirés à l'avance, pour précharger le premier élément de chaque set. */
+/* Une partie = 10 morceaux tirés parmi les 30 de la carte. On fait tourner : les morceaux déjà joués
+   ne reviennent qu'une fois que toute la carte est passée. Le Mix garde ses 10 manches. */
+const SET_SIZE = 10, SEEN_KEY = "blindtest-seen";
+const tkey = t => t.kind === "quiz" ? "q|" + t.q : t.title + "|" + t.artist;
+function loadSeen() { try { return JSON.parse(localStorage.getItem(SEEN_KEY)) || {}; } catch (e) { return {}; } }
+function drawOrder(th, l) {
+  if (l.tracks.length <= SET_SIZE) return shuffle(l.tracks);
+  const seen = new Set(loadSeen()[th.id + "-" + l.id] || []);
+  let pick = shuffle(l.tracks.filter(t => !seen.has(tkey(t)))).slice(0, SET_SIZE);
+  if (pick.length < SET_SIZE) pick = pick.concat(shuffle(l.tracks.filter(t => !pick.includes(t))).slice(0, SET_SIZE - pick.length));
+  return shuffle(pick);
+}
+function markSeen(th, l, order) {
+  if (l.tracks.length <= SET_SIZE) return;
+  const all = loadSeen(), k = th.id + "-" + l.id;
+  let seen = new Set([...(all[k] || []), ...order.map(tkey)]);
+  if (seen.size >= l.tracks.length) seen = new Set(order.map(tkey)); // carte entièrement jouée : nouveau tour
+  all[k] = [...seen];
+  try { localStorage.setItem(SEEN_KEY, JSON.stringify(all)); } catch (e) {}
+}
 function prepareOrders(levels) {
   S.pre = S.pre || {};
-  levels.forEach(l => { if (!l) return; const o = shuffle(l.tracks); S.pre[l.id] = o; prefetch(o[0]); });
+  levels.forEach(l => { if (!l) return; const o = drawOrder(S.theme, l); S.pre[l.id] = o; prefetch(o[0]); });
 }
 
 async function autoStart(token) {
@@ -8405,7 +9002,7 @@ players.forEach(a => ["play", "pause", "ended"].forEach(ev => a.addEventListener
 /* ===================== Mises à jour =====================
    L'app installée peut garder une ancienne version en mémoire. Au retour sur l'app (et toutes les 10 minutes),
    on regarde si le site a changé ; si oui, un bandeau propose de recharger. */
-const APP_VERSION = "25/11/2026 à 22h47";
+const APP_VERSION = "27/11/2026 à 15h55";
 async function checkUpdate() {
   if (!/^https?:$/.test(location.protocol) || document.getElementById("update-bar")) return;
   try {
@@ -8856,7 +9453,8 @@ document.addEventListener("keydown", e => {
   if (n >= 1 && n <= 4) { e.preventDefault(); answer(n - 1); }
 });
 
-renderHome();
+{ const j = new URLSearchParams(location.search).get("join");
+  if (j && /^[A-Z0-9]{4,8}$/i.test(j)) renderMpJoin(j.toUpperCase()); else renderHome(); }
 </script>
 </body>
 </html>
